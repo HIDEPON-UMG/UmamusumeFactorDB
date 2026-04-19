@@ -167,7 +167,7 @@ def build_overview_slide(prs: Presentation):
 
     # Discord
     _add_box(slide, Inches(9.0), Inches(5.3), Inches(3.8), Inches(1.3), COLOR_DISCORD,
-             "Discord Webhook × 3\n対人 / 査定 / 競技場\n（キタサンブラック bot）", font_size=11)
+             "Discord Webhook × 3\n対人 / 査定 / 競技場\n（おしらせキタちゃん bot）", font_size=11)
 
     # 矢印：投稿フロー
     _add_arrow(slide, Inches(1.7), Inches(3.2), Inches(2.0), Inches(1.5),
@@ -215,7 +215,7 @@ def build_dataflow_slide(prs: Presentation):
         ("⑦ Cloud Run → webhook", "Apps Script doPost に 3 行の解析結果を POST", COLOR_CLOUDRUN),
         ("⑧ factors_normalized 書き込み", "submission_id 共通で main/parent1/parent2 の 3 行追加", COLOR_SHEET),
         ("⑨ 応答タブに status 書き戻し", "submission_id + processed を応答行へ", COLOR_SHEET),
-        ("⑩ Discord 通知（対人/査定/競技場）", "画像公開化 → キタサン口調メッセージ + embed", COLOR_DISCORD),
+        ("⑩ Discord 通知（対人/査定/競技場）", "画像を multipart で直接添付 + キタサン口調メッセージ + embed（おしらせキタちゃん bot）", COLOR_DISCORD),
     ]
 
     x = Inches(0.5)
@@ -284,7 +284,7 @@ def build_security_slide(prs: Presentation):
         ("🔒 画像ファイル名の匿名化", "Apps Script で factor_yyyyMMdd_HHmmss にリネーム（Google アカウント名の除去）", COLOR_SECRET),
         ("🔒 Webhook 認証", "Apps Script ↔ Cloud Run 間は SHARED_SECRET（Secret Manager で管理）", COLOR_SECRET),
         ("🔒 clickjacking 対策", "search.html は XFrameOptionsMode デフォルト（ALLOWALL 解除）", COLOR_SECRET),
-        ("🔒 画像公開範囲", "Discord Webhook 送信対象のみ ANYONE_WITH_LINK（閲覧のみ）", COLOR_SECRET),
+        ("🔒 画像の扱い", "Discord へは multipart で直接添付（Drive 公開権限は変更しない）", COLOR_SECRET),
         ("🔒 XSS 対策", "search.html の全ユーザー入力は escapeHtml() を経由して描画", COLOR_SECRET),
         ("🛠 モデル更新", "scripts/fetch_unique_skills.py で UmaTools から固有スキル対応表を再生成", COLOR_GAS),
         ("🛠 Cloud Run 再デプロイ", "gcloud run deploy factor-processor --source . （新コード反映時）", COLOR_CLOUDRUN),
