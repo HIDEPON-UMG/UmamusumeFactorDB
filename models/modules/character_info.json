@@ -1,0 +1,1272 @@
+[
+    {
+        "sid": 0,
+        "sort_key": 1,
+        "names": [
+            "アグネスタキオン",
+            "あぐねすたきおん",
+            "agunesutakion",
+            "agunesutakion"
+        ]
+    },
+    {
+        "sid": 1,
+        "sort_key": 25,
+        "names": [
+            "キングヘイロー",
+            "きんぐへいろー",
+            "kinguheiroo",
+            "kinguheiroo"
+        ]
+    },
+    {
+        "sid": 2,
+        "sort_key": 52,
+        "names": [
+            "スペシャルウィーク",
+            "すぺしゃるうぃーく",
+            "supesharuuiiku",
+            "supesyaruuiiku"
+        ]
+    },
+    {
+        "sid": 3,
+        "sort_key": 107,
+        "names": [
+            "メイショウドトウ",
+            "めいしょうどとう",
+            "meishoudotou",
+            "meisyoudotou"
+        ]
+    },
+    {
+        "sid": 4,
+        "sort_key": 102,
+        "names": [
+            "マルゼンスキー",
+            "まるぜんすきー",
+            "maruzensukii",
+            "maruzensukii"
+        ]
+    },
+    {
+        "sid": 5,
+        "sort_key": 99,
+        "names": [
+            "マチカネタンホイザ",
+            "まちかねたんほいざ",
+            "machikanetanhoiza",
+            "matikanetanhoiza"
+        ]
+    },
+    {
+        "sid": 6,
+        "sort_key": 35,
+        "names": [
+            "サクラチヨノオー",
+            "さくらちよのおー",
+            "sakurachiyonooo",
+            "sakuratiyonooo"
+        ]
+    },
+    {
+        "sid": 7,
+        "sort_key": 17,
+        "names": [
+            "オグリキャップ",
+            "おぐりきゃっぷ",
+            "ogurikyappu",
+            "ogurikyappu"
+        ]
+    },
+    {
+        "sid": 8,
+        "sort_key": 14,
+        "names": [
+            "エイシンフラッシュ",
+            "えいしんふらっしゅ",
+            "eishinfurasshu",
+            "eisinfurassyu"
+        ]
+    },
+    {
+        "sid": 9,
+        "sort_key": 0,
+        "names": [
+            "アイネスフウジン",
+            "あいねすふうじん",
+            "ainesufuujin",
+            "ainesufuuzin"
+        ]
+    },
+    {
+        "sid": 10,
+        "sort_key": 115,
+        "names": [
+            "ヤエノムテキ",
+            "やえのむてき",
+            "yaenomuteki",
+            "yaenomuteki"
+        ]
+    },
+    {
+        "sid": 11,
+        "sort_key": 103,
+        "names": [
+            "マンハッタンカフェ",
+            "まんはったんかふぇ",
+            "manhattankafe",
+            "manhattankafe"
+        ]
+    },
+    {
+        "sid": 12,
+        "sort_key": 112,
+        "names": [
+            "メジロマックイーン",
+            "めじろまっくいーん",
+            "mejiromakkuiin",
+            "meziromakkuiin"
+        ]
+    },
+    {
+        "sid": 13,
+        "sort_key": 2,
+        "names": [
+            "アグネスデジタル",
+            "あぐねすでじたる",
+            "agunesudejitaru",
+            "agunesudezitaru"
+        ]
+    },
+    {
+        "sid": 14,
+        "sort_key": 36,
+        "names": [
+            "サクラバクシンオー",
+            "さくらばくしんおー",
+            "sakurabakushin'oo",
+            "sakurabakusin'oo"
+        ]
+    },
+    {
+        "sid": 15,
+        "sort_key": 24,
+        "names": [
+            "キタサンブラック",
+            "きたさんぶらっく",
+            "kitasanburakku",
+            "kitasanburakku"
+        ]
+    },
+    {
+        "sid": 16,
+        "sort_key": 91,
+        "names": [
+            "ビワハヤヒデ",
+            "びわはやひで",
+            "biwahayahide",
+            "biwahayahide"
+        ]
+    },
+    {
+        "sid": 17,
+        "sort_key": 86,
+        "names": [
+            "ヒシアケボノ",
+            "ひしあけぼの",
+            "hishiakebono",
+            "hisiakebono"
+        ]
+    },
+    {
+        "sid": 18,
+        "sort_key": 21,
+        "names": [
+            "カレンチャン",
+            "かれんちゃん",
+            "karenchan",
+            "karentyan"
+        ]
+    },
+    {
+        "sid": 19,
+        "sort_key": 22,
+        "names": [
+            "カワカミプリンセス",
+            "かわかみぷりんせす",
+            "kawakamipurinsesu",
+            "kawakamipurinsesu"
+        ]
+    },
+    {
+        "sid": 20,
+        "sort_key": 4,
+        "names": [
+            "アドマイヤベガ",
+            "あどまいやべが",
+            "adomaiyabega",
+            "adomaiyabega"
+        ]
+    },
+    {
+        "sid": 21,
+        "sort_key": 111,
+        "names": [
+            "メジロブライト",
+            "めじろぶらいと",
+            "mejiroburaito",
+            "meziroburaito"
+        ]
+    },
+    {
+        "sid": 22,
+        "sort_key": 78,
+        "names": [
+            "ナリタブライアン",
+            "なりたぶらいあん",
+            "naritaburaian",
+            "naritaburaian"
+        ]
+    },
+    {
+        "sid": 23,
+        "sort_key": 95,
+        "names": [
+            "フジキセキ",
+            "ふじきせき",
+            "fujikiseki",
+            "fuzikiseki"
+        ]
+    },
+    {
+        "sid": 24,
+        "sort_key": 87,
+        "names": [
+            "ヒシアマゾン",
+            "ひしあまぞん",
+            "hishiamazon",
+            "hisiamazon"
+        ]
+    },
+    {
+        "sid": 25,
+        "sort_key": 55,
+        "names": [
+            "セイウンスカイ",
+            "せいうんすかい",
+            "seiunsukai",
+            "seiunsukai"
+        ]
+    },
+    {
+        "sid": 26,
+        "sort_key": 44,
+        "names": [
+            "シンボリルドルフ",
+            "しんぼりるどるふ",
+            "shinborirudorufu",
+            "sinborirudorufu"
+        ]
+    },
+    {
+        "sid": 27,
+        "sort_key": 60,
+        "names": [
+            "タマモクロス",
+            "たまもくろす",
+            "tamamokurosu",
+            "tamamokurosu"
+        ]
+    },
+    {
+        "sid": 28,
+        "sort_key": 108,
+        "names": [
+            "メジロアルダン",
+            "めじろあるだん",
+            "mejiroarudan",
+            "meziroarudan"
+        ]
+    },
+    {
+        "sid": 29,
+        "sort_key": 54,
+        "names": [
+            "スーパークリーク",
+            "すーぱーくりーく",
+            "suupaakuriiku",
+            "suupaakuriiku"
+        ]
+    },
+    {
+        "sid": 30,
+        "sort_key": 79,
+        "names": [
+            "ニシノフラワー",
+            "にしのふらわー",
+            "nishinofurawaa",
+            "nisinofurawaa"
+        ]
+    },
+    {
+        "sid": 31,
+        "sort_key": 83,
+        "names": [
+            "ハルウララ",
+            "はるうらら",
+            "haruurara",
+            "haruurara"
+        ]
+    },
+    {
+        "sid": 32,
+        "sort_key": 39,
+        "names": [
+            "サトノダイヤモンド",
+            "さとのだいやもんど",
+            "satonodaiyamondo",
+            "satonodaiyamondo"
+        ]
+    },
+    {
+        "sid": 33,
+        "sort_key": 92,
+        "names": [
+            "ファインモーション",
+            "ふぁいんもーしょん",
+            "fainmooshon",
+            "fainmoosyon"
+        ]
+    },
+    {
+        "sid": 34,
+        "sort_key": 101,
+        "names": [
+            "マヤノトップガン",
+            "まやのとっぷがん",
+            "mayanotoppugan",
+            "mayanotoppugan"
+        ]
+    },
+    {
+        "sid": 35,
+        "sort_key": 7,
+        "names": [
+            "イナリワン",
+            "いなりわん",
+            "inariwan",
+            "inariwan"
+        ]
+    },
+    {
+        "sid": 36,
+        "sort_key": 57,
+        "names": [
+            "タイキシャトル",
+            "たいきしゃとる",
+            "taikishatoru",
+            "taikisyatoru"
+        ]
+    },
+    {
+        "sid": 37,
+        "sort_key": 31,
+        "names": [
+            "ゴールドシチー",
+            "ごーるどしちー",
+            "goorudoshichii",
+            "goorudositii"
+        ]
+    },
+    {
+        "sid": 38,
+        "sort_key": 118,
+        "names": [
+            "ライスシャワー",
+            "らいすしゃわー",
+            "raisushawaa",
+            "raisusyawaa"
+        ]
+    },
+    {
+        "sid": 39,
+        "sort_key": 8,
+        "names": [
+            "ウイニングチケット",
+            "ういにんぐちけっと",
+            "uininguchiketto",
+            "uiningutiketto"
+        ]
+    },
+    {
+        "sid": 40,
+        "sort_key": 76,
+        "names": [
+            "ナリタタイシン",
+            "なりたたいしん",
+            "naritataishin",
+            "naritataisin"
+        ]
+    },
+    {
+        "sid": 41,
+        "sort_key": 106,
+        "names": [
+            "ミホノブルボン",
+            "みほのぶるぼん",
+            "mihonoburubon",
+            "mihonoburubon"
+        ]
+    },
+    {
+        "sid": 42,
+        "sort_key": 16,
+        "names": [
+            "エルコンドルパサー",
+            "えるこんどるぱさー",
+            "erukondorupasaa",
+            "erukondorupasaa"
+        ]
+    },
+    {
+        "sid": 43,
+        "sort_key": 74,
+        "names": [
+            "ナイスネイチャ",
+            "ないすねいちゃ",
+            "naisuneicha",
+            "naisuneitya"
+        ]
+    },
+    {
+        "sid": 44,
+        "sort_key": 33,
+        "names": [
+            "サイレンススズカ",
+            "さいれんすすずか",
+            "sairensusuzuka",
+            "sairensusuzuka"
+        ]
+    },
+    {
+        "sid": 45,
+        "sort_key": 53,
+        "names": [
+            "スマートファルコン",
+            "すまーとふぁるこん",
+            "sumaatofarukon",
+            "sumaatofarukon"
+        ]
+    },
+    {
+        "sid": 46,
+        "sort_key": 67,
+        "names": [
+            "テイエムオペラオー",
+            "ていえむおぺらおー",
+            "teiemuoperaoo",
+            "teiemuoperaoo"
+        ]
+    },
+    {
+        "sid": 47,
+        "sort_key": 11,
+        "names": [
+            "エアグルーヴ",
+            "えあぐるーゔ",
+            "eaguruuvu",
+            "eaguruuvu"
+        ]
+    },
+    {
+        "sid": 48,
+        "sort_key": 71,
+        "names": [
+            "トーセンジョーダン",
+            "とーせんじょーだん",
+            "toosenjoodan",
+            "toosenjoodan"
+        ]
+    },
+    {
+        "sid": 49,
+        "sort_key": 63,
+        "names": [
+            "ダイワスカーレット",
+            "だいわすかーれっと",
+            "daiwasukaaretto",
+            "daiwasukaaretto"
+        ]
+    },
+    {
+        "sid": 50,
+        "sort_key": 110,
+        "names": [
+            "メジロパーマー",
+            "めじろぱーまー",
+            "mejiropaamaa",
+            "meziropaamaa"
+        ]
+    },
+    {
+        "sid": 51,
+        "sort_key": 32,
+        "names": [
+            "ゴールドシップ",
+            "ごーるどしっぷ",
+            "goorudoshippu",
+            "goorudosippu"
+        ]
+    },
+    {
+        "sid": 52,
+        "sort_key": 109,
+        "names": [
+            "メジロドーベル",
+            "めじろどーべる",
+            "mejirodooberu",
+            "mezirodooberu"
+        ]
+    },
+    {
+        "sid": 53,
+        "sort_key": 69,
+        "names": [
+            "トウカイテイオー",
+            "とうかいていおー",
+            "toukaiteioo",
+            "toukaiteioo"
+        ]
+    },
+    {
+        "sid": 54,
+        "sort_key": 27,
+        "names": [
+            "グラスワンダー",
+            "ぐらすわんだー",
+            "gurasuwandaa",
+            "gurasuwandaa"
+        ]
+    },
+    {
+        "sid": 55,
+        "sort_key": 113,
+        "names": [
+            "メジロライアン",
+            "めじろらいあん",
+            "mejiroraian",
+            "meziroraian"
+        ]
+    },
+    {
+        "sid": 56,
+        "sort_key": 10,
+        "names": [
+            "ウオッカ",
+            "うおっか",
+            "uokka",
+            "uokka"
+        ]
+    },
+    {
+        "sid": 57,
+        "sort_key": 100,
+        "names": [
+            "マチカネフクキタル",
+            "まちかねふくきたる",
+            "machikanefukukitaru",
+            "matikanefukukitaru"
+        ]
+    },
+    {
+        "sid": 58,
+        "sort_key": 12,
+        "names": [
+            "エアシャカール",
+            "えあしゃかーる",
+            "eashakaaru",
+            "easyakaaru"
+        ]
+    },
+    {
+        "sid": 59,
+        "sort_key": 49,
+        "names": [
+            "スイープトウショウ",
+            "すいーぷとうしょう",
+            "suiiputoushou",
+            "suiiputousyou"
+        ]
+    },
+    {
+        "sid": 60,
+        "sort_key": 85,
+        "names": [
+            "バンブーメモリー",
+            "ばんぶーめもりー",
+            "banbuumemorii",
+            "banbuumemorii"
+        ]
+    },
+    {
+        "sid": 61,
+        "sort_key": 30,
+        "names": [
+            "コパノリッキー",
+            "こぱのりっきー",
+            "kopanorikkii",
+            "kopanorikkii"
+        ]
+    },
+    {
+        "sid": 62,
+        "sort_key": 117,
+        "names": [
+            "ユキノビジン",
+            "ゆきのびじん",
+            "yukinobijin",
+            "yukinobizin"
+        ]
+    },
+    {
+        "sid": 63,
+        "sort_key": 45,
+        "names": [
+            "シーキングザパール",
+            "しーきんぐざぱーる",
+            "shiikinguzapaaru",
+            "siikinguzapaaru"
+        ]
+    },
+    {
+        "sid": 64,
+        "sort_key": 3,
+        "names": [
+            "アストンマーチャン",
+            "あすとんまーちゃん",
+            "asutonmaachan",
+            "asutonmaatyan"
+        ]
+    },
+    {
+        "sid": 65,
+        "sort_key": 116,
+        "names": [
+            "ヤマニンゼファー",
+            "やまにんぜふぁー",
+            "yamaninzefaa",
+            "yamaninzefaa"
+        ]
+    },
+    {
+        "sid": 66,
+        "sort_key": 75,
+        "names": [
+            "ナカヤマフェスタ",
+            "なかやまふぇすた",
+            "nakayamafesuta",
+            "nakayamafesuta"
+        ]
+    },
+    {
+        "sid": 67,
+        "sort_key": 123,
+        "names": [
+            "ワンダーアキュート",
+            "わんだーあきゅーと",
+            "wandaaakyuuto",
+            "wandaaakyuuto"
+        ]
+    },
+    {
+        "sid": 68,
+        "sort_key": 56,
+        "names": [
+            "ゼンノロブロイ",
+            "ぜんのろぶろい",
+            "zennoroburoi",
+            "zennoroburoi"
+        ]
+    },
+    {
+        "sid": 69,
+        "sort_key": 98,
+        "names": [
+            "ホッコータルマエ",
+            "ほっこーたるまえ",
+            "hokkootarumae",
+            "hokkootarumae"
+        ]
+    },
+    {
+        "sid": 70,
+        "sort_key": 62,
+        "names": [
+            "ダイタクヘリオス",
+            "だいたくへりおす",
+            "daitakuheriosu",
+            "daitakuheriosu"
+        ]
+    },
+    {
+        "sid": 71,
+        "sort_key": 42,
+        "names": [
+            "シンコウウインディ",
+            "しんこうういんでぃ",
+            "shinkouuindi",
+            "sinkouuindi"
+        ]
+    },
+    {
+        "sid": 72,
+        "sort_key": 65,
+        "names": [
+            "ツインターボ",
+            "ついんたーぼ",
+            "tsuintaabo",
+            "tuintaabo"
+        ]
+    },
+    {
+        "sid": 73,
+        "sort_key": 105,
+        "names": [
+            "ミスターシービー",
+            "みすたーしーびー",
+            "misutaashiibii",
+            "misutaasiibii"
+        ]
+    },
+    {
+        "sid": 74,
+        "sort_key": 61,
+        "names": [
+            "ダイイチルビー",
+            "だいいちるびー",
+            "daiichirubii",
+            "daiitirubii"
+        ]
+    },
+    {
+        "sid": 75,
+        "sort_key": 43,
+        "names": [
+            "シンボリクリスエス",
+            "しんぼりくりすえす",
+            "shinborikurisuesu",
+            "sinborikurisuesu"
+        ]
+    },
+    {
+        "sid": 76,
+        "sort_key": 37,
+        "names": [
+            "サクラローレル",
+            "さくらろーれる",
+            "sakurarooreru",
+            "sakurarooreru"
+        ]
+    },
+    {
+        "sid": 77,
+        "sort_key": 80,
+        "names": [
+            "ネオユニヴァース",
+            "ねおゆにゔぁーす",
+            "neoyunivaasu",
+            "neoyunivaasu"
+        ]
+    },
+    {
+        "sid": 78,
+        "sort_key": 88,
+        "names": [
+            "ヒシミラクル",
+            "ひしみらくる",
+            "hishimirakuru",
+            "hisimirakuru"
+        ]
+    },
+    {
+        "sid": 79,
+        "sort_key": 59,
+        "names": [
+            "タニノギムレット",
+            "たにのぎむれっと",
+            "taninogimuretto",
+            "taninogimuretto"
+        ]
+    },
+    {
+        "sid": 80,
+        "sort_key": 104,
+        "names": [
+            "マーベラスサンデー",
+            "まーべらすさんでー",
+            "maaberasusandee",
+            "maaberasusandee"
+        ]
+    },
+    {
+        "sid": 81,
+        "sort_key": 19,
+        "names": [
+            "カツラギエース",
+            "かつらぎえーす",
+            "katsuragieesu",
+            "katuragieesu"
+        ]
+    },
+    {
+        "sid": 82,
+        "sort_key": 41,
+        "names": [
+            "シリウスシンボリ",
+            "しりうすしんぼり",
+            "shiriusushinbori",
+            "siriususinbori"
+        ]
+    },
+    {
+        "sid": 83,
+        "sort_key": 77,
+        "names": [
+            "ナリタトップロード",
+            "なりたとっぷろーど",
+            "naritatoppuroodo",
+            "naritatoppuroodo"
+        ]
+    },
+    {
+        "sid": 84,
+        "sort_key": 29,
+        "names": [
+            "ケイエスミラクル",
+            "けいえすみらくる",
+            "keiesumirakuru",
+            "keiesumirakuru"
+        ]
+    },
+    {
+        "sid": 85,
+        "sort_key": 114,
+        "names": [
+            "メジロラモーヌ",
+            "めじろらもーぬ",
+            "mejiroramoonu",
+            "meziroramoonu"
+        ]
+    },
+    {
+        "sid": 86,
+        "sort_key": 58,
+        "names": [
+            "タップダンスシチー",
+            "たっぷだんすしちー",
+            "tappudansushichii",
+            "tappudansusitii"
+        ]
+    },
+    {
+        "sid": 87,
+        "sort_key": 38,
+        "names": [
+            "サトノクラウン",
+            "さとのくらうん",
+            "satonokuraun",
+            "satonokuraun"
+        ]
+    },
+    {
+        "sid": 88,
+        "sort_key": 40,
+        "names": [
+            "シュヴァルグラン",
+            "しゅゔぁるぐらん",
+            "shuvaruguran",
+            "syuvaruguran"
+        ]
+    },
+    {
+        "sid": 89,
+        "sort_key": 125,
+        "names": [
+            "ヴィブロス",
+            "ゔぃぶろす",
+            "viburosu",
+            "viburosu"
+        ]
+    },
+    {
+        "sid": 90,
+        "sort_key": 89,
+        "names": [
+            "ビコーペガサス",
+            "びこーぺがさす",
+            "bikoopegasasu",
+            "bikoopegasasu"
+        ]
+    },
+    {
+        "sid": 91,
+        "sort_key": 6,
+        "names": [
+            "イクノディクタス",
+            "いくのでぃくたす",
+            "ikunodikutasu",
+            "ikunodikutasu"
+        ]
+    },
+    {
+        "sid": 92,
+        "sort_key": 72,
+        "names": [
+            "ドゥラメンテ",
+            "どぅらめんて",
+            "douramente",
+            "douramente"
+        ]
+    },
+    {
+        "sid": 93,
+        "sort_key": 70,
+        "names": [
+            "トランセンド",
+            "とらんせんど",
+            "toransendo",
+            "toransendo"
+        ]
+    },
+    {
+        "sid": 94,
+        "sort_key": 119,
+        "names": [
+            "ラインクラフト",
+            "らいんくらふと",
+            "rainkurafuto",
+            "rainkurafuto"
+        ]
+    },
+    {
+        "sid": 95,
+        "sort_key": 34,
+        "names": [
+            "サウンズオブアース",
+            "さうんずおぶあーす",
+            "saunzuobuaasu",
+            "saunzuobuaasu"
+        ]
+    },
+    {
+        "sid": 96,
+        "sort_key": 81,
+        "names": [
+            "ノースフライト",
+            "のーすふらいと",
+            "noosufuraito",
+            "noosufuraito"
+        ]
+    },
+    {
+        "sid": 97,
+        "sort_key": 48,
+        "names": [
+            "ジャングルポケット",
+            "じゃんぐるぽけっと",
+            "jangurupoketto",
+            "jangurupoketto"
+        ]
+    },
+    {
+        "sid": 98,
+        "sort_key": 73,
+        "names": [
+            "ドリームジャーニー",
+            "どりーむじゃーにー",
+            "doriimujaanii",
+            "doriimujaanii"
+        ]
+    },
+    {
+        "sid": 99,
+        "sort_key": 20,
+        "names": [
+            "カルストンライトオ",
+            "かるすとんらいとお",
+            "karusutonraitoo",
+            "karusutonraitoo"
+        ]
+    },
+    {
+        "sid": 100,
+        "sort_key": 47,
+        "names": [
+            "ジェンティルドンナ",
+            "じぇんてぃるどんな",
+            "jienteirudonna",
+            "zienteirudonna"
+        ]
+    },
+    {
+        "sid": 101,
+        "sort_key": 46,
+        "names": [
+            "シーザリオ",
+            "しーざりお",
+            "shiizario",
+            "siizario"
+        ]
+    },
+    {
+        "sid": 102,
+        "sort_key": 68,
+        "names": [
+            "デュランダル",
+            "でゅらんだる",
+            "deyurandaru",
+            "deyurandaru"
+        ]
+    },
+    {
+        "sid": 103,
+        "sort_key": 84,
+        "names": [
+            "バブルガムフェロー",
+            "ばぶるがむふぇろー",
+            "baburugamuferoo",
+            "baburugamuferoo"
+        ]
+    },
+    {
+        "sid": 104,
+        "sort_key": 13,
+        "names": [
+            "エアメサイア",
+            "えあめさいあ",
+            "eamesaia",
+            "eamesaia"
+        ]
+    },
+    {
+        "sid": 105,
+        "sort_key": 9,
+        "names": [
+            "ウインバリアシオン",
+            "ういんばりあしおん",
+            "uinbariashion",
+            "uinbariasion"
+        ]
+    },
+    {
+        "sid": 106,
+        "sort_key": 96,
+        "names": [
+            "フリオーソ",
+            "ふりおーそ",
+            "furiooso",
+            "furiooso"
+        ]
+    },
+    {
+        "sid": 107,
+        "sort_key": 66,
+        "names": [
+            "ツルマルツヨシ",
+            "つるまるつよし",
+            "tsurumarutsuyoshi",
+            "turumarutuyosi"
+        ]
+    },
+    {
+        "sid": 108,
+        "sort_key": 18,
+        "names": [
+            "オルフェーヴル",
+            "おるふぇーゔる",
+            "orufeevuru",
+            "orufeevuru"
+        ]
+    },
+    {
+        "sid": 109,
+        "sort_key": 28,
+        "names": [
+            "グランアレグリア",
+            "ぐらんあれぐりあ",
+            "guran'areguria",
+            "guran'areguria"
+        ]
+    },
+    {
+        "sid": 110,
+        "sort_key": 82,
+        "names": [
+            "ノーリーズン",
+            "のーりーずん",
+            "nooriizun",
+            "nooriizun"
+        ]
+    },
+    {
+        "sid": 111,
+        "sort_key": 93,
+        "names": [
+            "フェノーメノ",
+            "ふぇのーめの",
+            "fenoomeno",
+            "fenoomeno"
+        ]
+    },
+    {
+        "sid": 112,
+        "sort_key": 126,
+        "names": [
+            "ヴィルシーナ",
+            "ゔぃるしーな",
+            "virushiina",
+            "virusiina"
+        ]
+    },
+    {
+        "sid": 113,
+        "sort_key": 121,
+        "names": [
+            "ラヴズオンリーユー",
+            "らゔずおんりーゆー",
+            "ravuzuonriiyuu",
+            "ravuzuonriiyuu"
+        ]
+    },
+    {
+        "sid": 114,
+        "sort_key": 26,
+        "names": [
+            "クロノジェネシス",
+            "くろのじぇねしす",
+            "kuronojieneshisu",
+            "kuronozienesisu"
+        ]
+    },
+    {
+        "sid": 115,
+        "sort_key": 94,
+        "names": [
+            "フサイチパンドラ",
+            "ふさいちぱんどら",
+            "fusaichipandora",
+            "fusaitipandora"
+        ]
+    },
+    {
+        "sid": 116,
+        "sort_key": 50,
+        "names": [
+            "スティルインラブ",
+            "すてぃるいんらぶ",
+            "suteiruinrabu",
+            "suteiruinrabu"
+        ]
+    },
+    {
+        "sid": 117,
+        "sort_key": 15,
+        "names": [
+            "エスポワールシチー",
+            "えすぽわーるしちー",
+            "esupowaarushichii",
+            "esupowaarusitii"
+        ]
+    },
+    {
+        "sid": 118,
+        "sort_key": 90,
+        "names": [
+            "ビリーヴ",
+            "びりーゔ",
+            "biriivu",
+            "biriivu"
+        ]
+    },
+    {
+        "sid": 119,
+        "sort_key": 64,
+        "names": [
+            "ダンツフレーム",
+            "だんつふれーむ",
+            "dantsufureemu",
+            "dantufureemu"
+        ]
+    },
+    {
+        "sid": 120,
+        "sort_key": 97,
+        "names": [
+            "ブエナビスタ",
+            "ぶえなびすた",
+            "buenabisuta",
+            "buenabisuta"
+        ]
+    },
+    {
+        "sid": 121,
+        "sort_key": 51,
+        "names": [
+            "ステイゴールド",
+            "すていごーるど",
+            "suteigoorudo",
+            "suteigoorudo"
+        ]
+    },
+    {
+        "sid": 122,
+        "sort_key": 23,
+        "names": [
+            "キセキ",
+            "きせき",
+            "kiseki",
+            "kiseki"
+        ]
+    },
+    {
+        "sid": 123,
+        "sort_key": 122,
+        "names": [
+            "ロイスアンドロイス",
+            "ろいすあんどろいす",
+            "roisuandoroisu",
+            "roisuandoroisu"
+        ]
+    },
+    {
+        "sid": 124,
+        "sort_key": 5,
+        "names": [
+            "アーモンドアイ",
+            "あーもんどあい",
+            "aamondoai",
+            "aamondoai"
+        ]
+    },
+    {
+        "sid": 125,
+        "sort_key": 124,
+        "names": [
+            "ヴィクトワールピサ",
+            "ゔぃくとわーるぴさ",
+            "vikutowaarupisa",
+            "vikutowaarupisa"
+        ]
+    },
+    {
+        "sid": 126,
+        "sort_key": 120,
+        "names": [
+            "ラッキーライラック",
+            "らっきーらいらっく",
+            "rakkiirairakku",
+            "rakkiirairakku"
+        ]
+    }
+]

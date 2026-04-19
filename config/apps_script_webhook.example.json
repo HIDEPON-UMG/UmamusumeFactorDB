@@ -1,0 +1,5 @@
+{
+  "webhook_url": "https://script.google.com/macros/s/XXXXXXXXXXXXXXXXXXXXX/exec",
+  "secret": "任意の長いランダム文字列（Apps Script 側の SHARED_SECRET と一致させる）",
+  "tab": "factors_raw"
+}

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 仮想環境
+.venv/
+
+# 機密・資格情報
+config/apps_script_webhook.json
+config/service_account.json
+config/*.secret.json
+.env
+
+# モデルバイナリ（サイズが大きいため除外）
+models/**/*.onnx
+
+# デバッグ出力
+debug_crops/
+*.log
+
+# IDE
+.vscode/
+.idea/

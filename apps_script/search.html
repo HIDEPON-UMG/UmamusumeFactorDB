@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <base target="_top">
+  <style>
+    body { font-family: -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif; margin: 0; padding: 14px; background: #f7f8fa; color: #222; font-size: 13px; }
+    h1 { font-size: 18px; margin: 0 0 10px; }
+    .panel { background: #fff; padding: 10px 14px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.05); margin-bottom: 10px; }
+
+    .basic-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .basic-row label { display: flex; flex-direction: column; font-size: 11px; color: #555; }
+    .basic-row input, .basic-row select { padding: 4px 6px; font-size: 13px; border: 1px solid #ccd0d5; border-radius: 4px; margin-top: 2px; }
+
+    .cond-group { border-top: 1px solid #eef0f3; padding: 8px 0; }
+    .cond-group h3 { margin: 0 0 6px; font-size: 12px; color: #444; display: flex; align-items: center; gap: 8px; }
+    .cond-group h3 .add-btn { margin-left: auto; padding: 2px 10px; font-size: 11px; background: #e4e7eb; color: #222; border: none; border-radius: 3px; cursor: pointer; }
+    .cond-group h3 .add-btn:hover { background: #d5d9de; }
+    .cond-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cond-item { display: inline-flex; align-items: center; gap: 4px; background: #f3f5f8; padding: 3px 6px 3px 4px; border-radius: 4px; border: 1px solid #e0e3e8; font-size: 12px; }
+    .cond-item.inactive { opacity: 0.45; filter: grayscale(50%); }
+    .cond-item select { padding: 2px 4px; border: 1px solid #ccd0d5; border-radius: 3px; font-size: 12px; max-width: 240px; }
+    .cond-item .del { background: #d05151; color: #fff; border: none; border-radius: 2px; width: 18px; height: 18px; font-size: 11px; cursor: pointer; line-height: 16px; padding: 0; }
+    .cond-item .toggle { background: none; border: 1px solid #9aa1ac; color: #555; width: 18px; height: 18px; font-size: 11px; cursor: pointer; border-radius: 2px; padding: 0; }
+    .cond-item.inactive .toggle { background: #ccc; border-color: #aaa; }
+
+    .actions { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+    button.primary { padding: 6px 18px; font-size: 13px; background: #2d7dff; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button.primary:hover { background: #1966e6; }
+    button.secondary { padding: 6px 12px; font-size: 12px; background: #e4e7eb; color: #222; border: none; border-radius: 4px; cursor: pointer; }
+    .meta { font-size: 12px; color: #666; margin-left: 8px; }
+
+    table.result { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.05); border-radius: 6px; overflow: hidden; }
+    table.result th, table.result td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 12px; text-align: left; vertical-align: top; }
+    table.result th { background: #f0f2f5; position: sticky; top: 0; font-weight: 600; }
+    table.result td.meta-col { width: 160px; font-size: 11px; color: #555; }
+    table.result td.meta-col .thumb { display: block; width: 100%; max-height: 540px; object-fit: contain; margin-bottom: 4px; border: 1px solid #e0e3e8; border-radius: 3px; background: #f7f8fa; }
+    table.result td.uma-col { width: 26%; }
+    table.result td.uma-col .chara-name { font-weight: 600; font-size: 12px; margin-bottom: 3px; }
+    td.uma-main { background: #fffbe6; }
+    td.uma-parent1 { background: #edf5ff; }
+    td.uma-parent2 { background: #fcf1ff; }
+    .factor-row { margin: 2px 0; display: flex; flex-wrap: wrap; gap: 3px; }
+    .chip { display: inline-block; padding: 1px 6px; border-radius: 10px; font-size: 11px; white-space: nowrap; }
+    .chip-blue { background: #d8e7ff; color: #1956b3; }
+    .chip-red { background: #ffe0e4; color: #b3263d; }
+    .chip-green { background: #def5e0; color: #1f7a2e; }
+    .chip-white { background: #eef0f2; color: #555; }
+    .star { color: #e0a100; font-size: 11px; letter-spacing: -1px; }
+    .empty { color: #999; padding: 24px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>UMG因子保管庫</h1>
+
+  <div class="panel">
+    <div class="basic-row">
+      <label>親ウマ娘
+        <select id="f-char"><option value="">すべて</option></select>
+      </label>
+      <label>連絡先
+        <select id="f-submitter"><option value="">すべて</option></select>
+      </label>
+      <label>目的・用途
+        <select id="f-purpose"><option value="">すべて</option></select>
+      </label>
+      <label>上限件数（submission 単位）
+        <select id="f-limit"><option>50</option><option selected>200</option><option>500</option><option>1000</option></select>
+      </label>
+    </div>
+
+    <div class="cond-group">
+      <h3>青因子 <button class="add-btn" onclick="addBlue()">+ 追加</button></h3>
+      <div id="blue-list" class="cond-list"></div>
+    </div>
+    <div class="cond-group">
+      <h3>赤因子 <button class="add-btn" onclick="addRed()">+ 追加</button></h3>
+      <div id="red-list" class="cond-list"></div>
+    </div>
+    <div class="cond-group">
+      <h3>緑因子 <button class="add-btn" onclick="addGreen()">+ 追加</button></h3>
+      <div id="green-list" class="cond-list"></div>
+    </div>
+    <div class="cond-group">
+      <h3>白因子 <button class="add-btn" onclick="addWhite()">+ 追加</button></h3>
+      <div id="white-list" class="cond-list"></div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="runSearch()">検索</button>
+      <button class="secondary" onclick="resetFilters()">クリア</button>
+      <span class="meta" id="meta"></span>
+    </div>
+  </div>
+
+  <div id="result"></div>
+
+<script>
+var BLUE_TYPES = ["スピード","スタミナ","パワー","根性","賢さ"];
+var RED_TYPES = ["芝","ダート","短距離","マイル","中距離","長距離","逃げ","先行","差し","追込"];
+var STAR_OPTIONS = [{v:0,t:"★指定なし"},{v:1,t:"★1+"},{v:2,t:"★2+"},{v:3,t:"★3"}];
+var SCOPE_OPTIONS = [{v:"all",t:"全体"},{v:"self",t:"親のみ"},{v:"parents",t:"祖のみ"}];
+
+// スプレから取得した選択肢（getFilterOptions の結果）
+var OPTIONS = { characters: [], submitters: [], green_names: [], white_names: [], purposes: [] };
+
+function createSelect(options, selected) {
+  var sel = document.createElement("select");
+  options.forEach(function(op) {
+    var o = document.createElement("option");
+    if (typeof op === "string") { o.value = op; o.textContent = op; }
+    else { o.value = op.v; o.textContent = op.t; }
+    if (String(o.value) === String(selected)) o.selected = true;
+    sel.appendChild(o);
+  });
+  return sel;
+}
+
+function createCondItem(buildInner) {
+  var el = document.createElement("span");
+  el.className = "cond-item";
+  var toggle = document.createElement("button");
+  toggle.className = "toggle";
+  toggle.title = "アクティブ切替";
+  toggle.textContent = "✓";
+  toggle.onclick = function() {
+    el.classList.toggle("inactive");
+    toggle.textContent = el.classList.contains("inactive") ? "○" : "✓";
+  };
+  el.appendChild(toggle);
+  buildInner(el);
+  var del = document.createElement("button");
+  del.className = "del";
+  del.textContent = "×";
+  del.title = "削除";
+  del.onclick = function() { el.parentNode.removeChild(el); };
+  el.appendChild(del);
+  return el;
+}
+
+function appendScope(el) {
+  var scopeSel = createSelect(SCOPE_OPTIONS, "all");
+  scopeSel.dataset.field = "scope";
+  scopeSel.title = "全体 / 親のみ / 祖のみ";
+  el.appendChild(scopeSel);
+}
+
+function addBlue() {
+  var host = document.getElementById("blue-list");
+  host.appendChild(createCondItem(function(el) {
+    var sel = createSelect(BLUE_TYPES, "スピード"); sel.dataset.field = "type";
+    var star = createSelect(STAR_OPTIONS, 0); star.dataset.field = "min_star";
+    el.appendChild(sel);
+    el.appendChild(star);
+    appendScope(el);
+  }));
+}
+function addRed() {
+  var host = document.getElementById("red-list");
+  host.appendChild(createCondItem(function(el) {
+    var sel = createSelect(RED_TYPES, "芝"); sel.dataset.field = "type";
+    var star = createSelect(STAR_OPTIONS, 0); star.dataset.field = "min_star";
+    el.appendChild(sel);
+    el.appendChild(star);
+    appendScope(el);
+  }));
+}
+function addGreen() {
+  var host = document.getElementById("green-list");
+  host.appendChild(createCondItem(function(el) {
+    var opts = [{v:"",t:"(選択)"}].concat(OPTIONS.green_names.map(function(s){ return {v:s,t:s}; }));
+    var sel = createSelect(opts, ""); sel.dataset.field = "name";
+    el.appendChild(sel);
+    appendScope(el);
+  }));
+}
+function addWhite() {
+  var host = document.getElementById("white-list");
+  host.appendChild(createCondItem(function(el) {
+    var opts = [{v:"",t:"(選択)"}].concat(OPTIONS.white_names.map(function(s){ return {v:s,t:s}; }));
+    var sel = createSelect(opts, ""); sel.dataset.field = "name";
+    var star = createSelect(STAR_OPTIONS, 0); star.dataset.field = "min_star";
+    el.appendChild(sel);
+    el.appendChild(star);
+    appendScope(el);
+  }));
+}
+
+function collectConds(hostId) {
+  var out = [];
+  var host = document.getElementById(hostId);
+  var items = host.querySelectorAll(".cond-item");
+  items.forEach(function(it) {
+    if (it.classList.contains("inactive")) return;
+    var cond = {};
+    var fields = it.querySelectorAll("[data-field]");
+    fields.forEach(function(f) { cond[f.dataset.field] = f.value; });
+    if (cond.name !== undefined && !String(cond.name).trim()) return;
+    if (cond.min_star !== undefined) cond.min_star = Number(cond.min_star);
+    out.push(cond);
+  });
+  return out;
+}
+
+function resetFilters() {
+  document.getElementById("f-char").value = "";
+  document.getElementById("f-submitter").value = "";
+  document.getElementById("f-purpose").value = "";
+  document.getElementById("f-limit").value = "200";
+  ["blue-list","red-list","green-list","white-list"].forEach(function(id) {
+    document.getElementById(id).innerHTML = "";
+  });
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("meta").textContent = "";
+}
+
+function runSearch() {
+  var filters = {
+    character: document.getElementById("f-char").value,
+    submitter_id: document.getElementById("f-submitter").value,
+    purpose: document.getElementById("f-purpose").value,
+    blue: collectConds("blue-list"),
+    red: collectConds("red-list"),
+    green: collectConds("green-list"),
+    white: collectConds("white-list"),
+    limit: Number(document.getElementById("f-limit").value),
+  };
+  document.getElementById("meta").textContent = "検索中...";
+  google.script.run
+    .withSuccessHandler(renderResult)
+    .withFailureHandler(function(err) {
+      document.getElementById("meta").textContent = "エラー: " + err.message;
+    })
+    .searchFactors(filters);
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function stars(n) {
+  n = Number(n) || 0;
+  if (n <= 0) return "";
+  return '<span class="star">' + "★".repeat(Math.min(n,3)) + "</span>";
+}
+function driveToThumb(url) {
+  if (!url) return "";
+  var m = url.match(/[?&]id=([a-zA-Z0-9_\-]+)/);
+  if (!m) m = url.match(/\/file\/d\/([a-zA-Z0-9_\-]+)/);
+  if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w400";
+  return url;
+}
+
+function renderUmaCell(uma, cls) {
+  if (!uma) return '<td class="uma-col ' + cls + '" style="opacity:.4">（データなし）</td>';
+  var parts = [];
+  parts.push('<div class="chara-name">' + escapeHtml(uma.character) + '</div>');
+  if (uma.blue_type) {
+    parts.push('<div class="factor-row"><span class="chip chip-blue">' + escapeHtml(uma.blue_type) + ' ' + stars(uma.blue_star) + '</span></div>');
+  }
+  if (uma.red_type) {
+    parts.push('<div class="factor-row"><span class="chip chip-red">' + escapeHtml(uma.red_type) + ' ' + stars(uma.red_star) + '</span></div>');
+  }
+  if (uma.green_name) {
+    parts.push('<div class="factor-row"><span class="chip chip-green">' + escapeHtml(uma.green_name) + ' ' + stars(uma.green_star) + '</span></div>');
+  }
+  (uma.whites || []).forEach(function(w) {
+    parts.push('<div class="factor-row"><span class="chip chip-white">' + escapeHtml(w.name) + ' ' + stars(w.star) + '</span></div>');
+  });
+  return '<td class="uma-col ' + cls + '">' + parts.join("") + '</td>';
+}
+
+function renderResult(res) {
+  var meta = document.getElementById("meta");
+  var host = document.getElementById("result");
+  if (!res || !res.ok) {
+    meta.textContent = "エラー: " + (res && res.error ? res.error : "不明");
+    host.innerHTML = "";
+    return;
+  }
+  meta.textContent = res.total + " 件ヒット";
+  if (res.total === 0) {
+    host.innerHTML = '<div class="empty">該当する投稿がありません</div>';
+    return;
+  }
+  var html = '<table class="result"><thead><tr>'
+    + '<th>連絡先・因子画像</th><th>親</th><th>祖1</th><th>祖2</th>'
+    + '</tr></thead><tbody>';
+  res.submissions.forEach(function(sub) {
+    var when = String(sub.submitted_at || "").substring(0, 19).replace("T", " ");
+    var thumb = "";
+    if (sub.image_url) {
+      thumb = '<a href="' + escapeHtml(sub.image_url) + '" target="_blank" rel="noopener">'
+        + '<img class="thumb" src="' + escapeHtml(driveToThumb(sub.image_url)) + '" alt="factor image" referrerpolicy="no-referrer">'
+        + '</a>';
+    }
+    html += '<tr>';
+    var purposeHtml = sub.purpose ? '<div style="font-weight:600;color:#1956b3">' + escapeHtml(sub.purpose) + '</div>' : "";
+    html += '<td class="meta-col">'
+      + thumb
+      + purposeHtml
+      + '<div>' + escapeHtml(sub.submitter_id) + '</div>'
+      + '<div>' + escapeHtml(when) + '</div>'
+      + '</td>';
+    html += renderUmaCell(sub.main, "uma-main");
+    html += renderUmaCell(sub.parent1, "uma-parent1");
+    html += renderUmaCell(sub.parent2, "uma-parent2");
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  host.innerHTML = html;
+}
+
+// 起動時：プルダウン選択肢を取得 → 検索を自動実行
+function loadOptions() {
+  google.script.run
+    .withSuccessHandler(function(opt) {
+      if (opt && opt.ok) {
+        OPTIONS = opt;
+        var fChar = document.getElementById("f-char");
+        opt.characters.forEach(function(v) {
+          var o = document.createElement("option"); o.value = v; o.textContent = v; fChar.appendChild(o);
+        });
+        var fSub = document.getElementById("f-submitter");
+        opt.submitters.forEach(function(v) {
+          var o = document.createElement("option"); o.value = v; o.textContent = v; fSub.appendChild(o);
+        });
+        var fPur = document.getElementById("f-purpose");
+        (opt.purposes || []).forEach(function(v) {
+          var o = document.createElement("option"); o.value = v; o.textContent = v; fPur.appendChild(o);
+        });
+      }
+      runSearch();
+    })
+    .withFailureHandler(function(err) {
+      document.getElementById("meta").textContent = "選択肢取得エラー: " + err.message;
+      runSearch();
+    })
+    .getFilterOptions();
+}
+
+window.addEventListener("DOMContentLoaded", loadOptions);
+</script>
+</body>
+</html>

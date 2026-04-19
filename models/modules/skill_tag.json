@@ -1,0 +1,166 @@
+[
+    {
+        "id": "style_lead_pace",
+        "name": "逃げ専用"
+    },
+    {
+        "id": "style_lead_pace_compatible",
+        "name": "逃げ可"
+    },
+    {
+        "id": "style_with_pace",
+        "name": "先行専用"
+    },
+    {
+        "id": "style_with_pace_compatible",
+        "name": "先行可"
+    },
+    {
+        "id": "style_off_pace",
+        "name": "差し専用"
+    },
+    {
+        "id": "style_off_pace_compatible",
+        "name": "差し可"
+    },
+    {
+        "id": "style_late_charge",
+        "name": "追込専用"
+    },
+    {
+        "id": "style_late_charge_compatible",
+        "name": "追込可"
+    },
+    {
+        "id": "course_short_range",
+        "name": "短距離専用"
+    },
+    {
+        "id": "course_short_range_compatible",
+        "name": "短距離可"
+    },
+    {
+        "id": "course_mile_range",
+        "name": "マイル専用"
+    },
+    {
+        "id": "course_mile_range_compatible",
+        "name": "マイル可"
+    },
+    {
+        "id": "course_middle_range",
+        "name": "中距離専用"
+    },
+    {
+        "id": "course_middle_range_compatible",
+        "name": "中距離可"
+    },
+    {
+        "id": "course_long_range",
+        "name": "長距離専用"
+    },
+    {
+        "id": "course_long_range_compatible",
+        "name": "長距離可"
+    },
+    {
+        "id": "distance_first_half",
+        "name": "序盤・前半"
+    },
+    {
+        "id": "distance_middle",
+        "name": "中盤・中間"
+    },
+    {
+        "id": "distance_second_half",
+        "name": "終盤・後半"
+    },
+    {
+        "id": "situation_final_corner",
+        "name": "最終コーナー以降"
+    },
+    {
+        "id": "situation_corner",
+        "name": "コーナー"
+    },
+    {
+        "id": "situation_straight",
+        "name": "直線"
+    },
+    {
+        "id": "situation_slope",
+        "name": "坂"
+    },
+    {
+        "id": "state_speed_up",
+        "name": "速度上昇"
+    },
+    {
+        "id": "state_acceleration_up",
+        "name": "加速力上昇"
+    },
+    {
+        "id": "state_endurance_up",
+        "name": "持久力回復"
+    },
+    {
+        "id": "state_positioning_up",
+        "name": "位置取り"
+    },
+    {
+        "id": "state_start_up",
+        "name": "スタート"
+    },
+    {
+        "id": "state_view_up",
+        "name": "視野"
+    },
+    {
+        "id": "skill_debuff",
+        "name": "デバフ"
+    },
+    {
+        "id": "status_speed_up",
+        "name": "スピードステ上昇"
+    },
+    {
+        "id": "status_stamina_up",
+        "name": "スタミナステ上昇"
+    },
+    {
+        "id": "status_power_up",
+        "name": "パワーステ上昇"
+    },
+    {
+        "id": "status_guts_up",
+        "name": "根性ステ上昇"
+    },
+    {
+        "id": "status_intelligence_up",
+        "name": "賢さステ上昇"
+    },
+    {
+        "id": "skill_gold",
+        "name": "金スキル"
+    },
+    {
+        "id": "skill_normal",
+        "name": "白スキル"
+    },
+    {
+        "id": "skill_status_up",
+        "name": "緑スキル"
+    },
+    {
+        "id": "skill_unique",
+        "name": "固有・継承スキル"
+    },
+    {
+        "id": "skill_evolution",
+        "name": "進化スキル"
+    },
+    {
+        "id": "other",
+        "name": "その他"
+    }
+]

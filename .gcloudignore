@@ -1,0 +1,38 @@
+# Cloud Build へアップロードしないファイル一覧
+# （.gitignore の onnx 除外は Cloud Run ビルドでは必要なので上書きしない）
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 機密
+config/apps_script_webhook.json
+config/service_account.json
+config/*.secret.json
+.env
+
+# デバッグ
+debug_crops/
+crops/
+*.log
+
+# IDE / Git
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# テスト用画像（不要）
+tests/fixtures/
+
+# CLI 専用リソース
+apps_script/
+
+# 派生モデル（ビルド時に Dockerfile で生成）
+models/modules/factor/prediction_with_probs.onnx
+
+# models/modules.zip はコピー不要
+models/modules.zip

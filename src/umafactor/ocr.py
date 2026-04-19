@@ -1,0 +1,150 @@
+"""EasyOCR による日本語 OCR ラッパ。
+
+ONNX 因子モデル（umacapture）が系統的に誤認識する因子に対して、
+EasyOCR で生テキストを抽出 → rapidfuzz で因子辞書 813 件に最近傍マッチ、
+という 2 段構えで候補を補完する。
+
+初期化コスト（モデル DL/ロード）が大きいため、FactorOCR はシングルトンで使う。
+"""
+
+from __future__ import annotations
+
+import re
+from functools import lru_cache
+
+import cv2
+import numpy as np
+from rapidfuzz import fuzz, process as fuzz_process
+
+from .config import green_factor_names, load_labels
+
+
+# Reader 初期化が重いのでグローバルキャッシュ
+_READER = None
+
+
+def _get_reader():
+    global _READER
+    if _READER is None:
+        import os
+
+        import easyocr
+
+        # Cloud Run 等で事前 DL したモデル置き場を尊重
+        model_dir = os.environ.get("EASYOCR_MODULE_PATH")
+        kwargs = {"gpu": False, "verbose": False}
+        if model_dir:
+            kwargs["model_storage_directory"] = model_dir
+            kwargs["download_enabled"] = False
+        # 緑因子（固有スキル）には英字混じりが多いため en も併用
+        _READER = easyocr.Reader(["ja", "en"], **kwargs)
+    return _READER
+
+
+def _preprocess_for_ocr(bgr: np.ndarray, upscale: int = 3) -> np.ndarray:
+    """OCR 前処理：拡大してコントラスト強化（Uma の小さいテキスト向け）。"""
+    if bgr.size == 0:
+        return bgr
+    # cv2.INTER_CUBIC で拡大
+    big = cv2.resize(
+        bgr, (bgr.shape[1] * upscale, bgr.shape[0] * upscale), interpolation=cv2.INTER_CUBIC
+    )
+    return big
+
+
+# EasyOCR が誤認識しやすい文字のゆるい置換（因子名辞書の表記に近づける）
+_OCR_NORMALIZE = [
+    ("0", "○"),  # 因子名の「○」は頻出。EasyOCR は 0 と読むことが多い
+    ("◯", "○"),  # 別字形
+    ("Ｏ", "○"),
+]
+
+
+def _normalize_ocr_text(raw: str) -> str:
+    for src, dst in _OCR_NORMALIZE:
+        raw = raw.replace(src, dst)
+    # 連結スペースやタブを削除
+    raw = re.sub(r"\s+", "", raw)
+    return raw
+
+
+class FactorOCR:
+    """因子画像 → 因子辞書候補への変換器。"""
+
+    def __init__(self) -> None:
+        # 辞書をキャッシュ
+        self._factor_names: list[str] = list(load_labels()["factor.name"])
+        # 緑因子（固有スキル）専用の辞書（249 件）— ファジーマッチの範囲を絞って精度を上げる
+        self._green_factor_names: list[str] = green_factor_names()
+
+    def recognize(self, img_bgr: np.ndarray) -> str:
+        """画像から生テキストを抽出。複数領域の結合＋記号正規化を行う。"""
+        if img_bgr is None or img_bgr.size == 0:
+            return ""
+        reader = _get_reader()
+        big = _preprocess_for_ocr(img_bgr, upscale=3)
+        parts = reader.readtext(big, detail=0)
+        if not parts:
+            return ""
+        raw = "".join(parts)
+        return _normalize_ocr_text(raw)
+
+    def match_to_factor(
+        self, raw_text: str, top_k: int = 5, min_score: float = 50.0
+    ) -> list[tuple[str, float]]:
+        """OCR 生テキストを 813 件因子辞書にファジーマッチ。
+
+        戻り値: [(因子名, スコア 0.0-1.0)] を確信度降順で上位 top_k 件。
+        min_score 未満のマッチは除外。
+        """
+        if not raw_text:
+            return []
+        # rapidfuzz の partial_ratio を使うと「地固」から「地固め」を確実に拾える
+        hits = fuzz_process.extract(
+            raw_text,
+            self._factor_names,
+            scorer=fuzz.partial_ratio,
+            limit=top_k * 3,  # 後段で ratio を使って絞るので多めに取る
+        )
+        # partial_ratio で絞った後、ratio で精度を算出し並び替え
+        scored: list[tuple[str, float]] = []
+        for name, pscore, _i in hits:
+            if pscore < min_score:
+                continue
+            # 部分一致＋全体類似度のブレンドを最終スコアに
+            rscore = fuzz.ratio(raw_text, name)
+            final = (pscore * 0.6 + rscore * 0.4) / 100.0  # 0..1 に正規化
+            scored.append((name, final))
+        scored.sort(key=lambda x: -x[1])
+        return scored[:top_k]
+
+    def match_to_green_factor(
+        self, raw_text: str, top_k: int = 5, min_score: float = 40.0
+    ) -> list[tuple[str, float]]:
+        """OCR 生テキストを 249 件の緑因子（固有スキル）辞書にファジーマッチ。
+
+        緑因子は英字混じりが多く全 813 辞書では誤マッチしやすいため、
+        緑因子専用の辞書で別途引き直す。
+        """
+        if not raw_text:
+            return []
+        hits = fuzz_process.extract(
+            raw_text,
+            self._green_factor_names,
+            scorer=fuzz.partial_ratio,
+            limit=top_k * 3,
+        )
+        scored: list[tuple[str, float]] = []
+        for name, pscore, _i in hits:
+            if pscore < min_score:
+                continue
+            rscore = fuzz.ratio(raw_text, name)
+            final = (pscore * 0.6 + rscore * 0.4) / 100.0
+            scored.append((name, final))
+        scored.sort(key=lambda x: -x[1])
+        return scored[:top_k]
+
+
+@lru_cache(maxsize=1)
+def get_ocr() -> FactorOCR:
+    return FactorOCR()

@@ -1,0 +1,16 @@
+# Cloud Run 用依存。ローカル CLI の requirements.txt とは分離：
+# - winocr (Windows 専用) を除外
+# - tkinter 関連 (Pillow 以外) 除外
+# - FastAPI + uvicorn 追加
+# - torch+torchvision は Dockerfile で CPU 版を別途インストール
+
+fastapi>=0.115
+uvicorn[standard]>=0.30
+onnx>=1.16
+onnxruntime>=1.15
+opencv-python-headless>=4.8
+Pillow>=10
+numpy>=1.26
+requests>=2.32
+rapidfuzz>=3.9
+easyocr>=1.7.2

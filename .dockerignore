@@ -1,0 +1,37 @@
+# ビルドコンテキストから除外するもの
+
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# デバッグ成果物
+debug_crops/
+crops/
+
+# IDE / Git
+.git/
+.vscode/
+.idea/
+
+# 機密
+config/apps_script_webhook.json
+config/service_account.json
+config/*.secret.json
+.env
+
+# テスト用画像（必要なら上書き可）
+tests/fixtures/
+
+# models/modules.zip はコピー不要（展開済みフォルダが別途入る）
+models/modules.zip
+
+# 派生モデルはビルド時に Dockerfile 内で生成する
+models/modules/factor/prediction_with_probs.onnx
+
+# Cloud Run ビルドに不要な大きなファイル（Python CLI 用のみ）
+apps_script/
+
+# 計画ファイル等
+C--Users-hidek-OneDrive*

@@ -1,0 +1,38 @@
+[
+    {
+        "id": "factor_status",
+        "name": "青因子"
+    },
+    {
+        "id": "factor_aptitude",
+        "name": "赤因子"
+    },
+    {
+        "id": "factor_unique_skill",
+        "name": "固有スキル因子"
+    },
+    {
+        "id": "factor_normal_skill",
+        "name": "通常スキル因子"
+    },
+    {
+        "id": "factor_scenario",
+        "name": "シナリオ因子"
+    },
+    {
+        "id": "factor_course",
+        "name": "レース場因子"
+    },
+    {
+        "id": "factor_status_gene",
+        "name": "ステータス遺伝子因子"
+    },
+    {
+        "id": "factor_aptitude_gene",
+        "name": "適性遺伝子因子"
+    },
+    {
+        "id": "other",
+        "name": "その他"
+    }
+]
