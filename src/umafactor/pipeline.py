@@ -244,15 +244,22 @@ def analyze_image(
         text_crop_norm = norm_img[y0:y1, x0:x1]
         display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
 
+        # 色チップ検出が弱い合成画像で box.color が "white" に落ちても、
+        # 青/赤因子が常に row 0 の左/右列に並ぶゲーム UI 構造を使って位置で補正する。
+        # これを ONNX/OCR 推論の「カテゴリ限定」段階から適用することで、
+        # 認識自体がカテゴリ外の白因子名にならないようにする。
+        is_blue_slot = box.color == "blue" or (box.row_index == 0 and box.col_index == 0)
+        is_red_slot = box.color == "red" or (box.row_index == 0 and box.col_index == 1)
+
         # ONNX 候補
-        if box.color == "blue":
+        if is_blue_slot:
             crops = [
                 _crop_from_original(img_orig, box.bbox, scale, dy, dx)
                 for dy, dx in PERTURBATIONS_BLUE
             ]
             crops.append(text_crop_norm)
             onnx_candidates = factor_pred.topk_in_category(crops, BLUE_FACTOR_TYPES, k=5)
-        elif box.color == "red":
+        elif is_red_slot:
             crops = [
                 _crop_from_original(img_orig, box.bbox, scale, dy, dx)
                 for dy, dx in PERTURBATIONS_RED
@@ -274,10 +281,10 @@ def analyze_image(
             ocr_candidates = ocr.match_to_green_factor(ocr_raw, top_k=5)
         else:
             ocr_candidates = ocr.match_to_factor(ocr_raw, top_k=5)
-        # 青/赤はカテゴリ外の候補を除外
-        if box.color == "blue":
+        # 青/赤はカテゴリ外の候補を除外（位置ベース判定も含む）
+        if is_blue_slot:
             ocr_candidates = [(n, s) for n, s in ocr_candidates if n in BLUE_FACTOR_TYPES]
-        elif box.color == "red":
+        elif is_red_slot:
             ocr_candidates = [(n, s) for n, s in ocr_candidates if n in RED_FACTOR_TYPES]
 
         # マージ
@@ -293,11 +300,12 @@ def analyze_image(
         uma = umas[box.uma_index]
         slot_kind: str
         white_idx = 0
-        if box.color == "blue" and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
+        # is_blue_slot / is_red_slot は ONNX 推論ブロックで位置ベース補正込みに算出済み。
+        if is_blue_slot and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
             uma.blue_type = top_name
             uma.blue_star = star
             slot_kind = "blue"
-        elif box.color == "red" and top_name in RED_FACTOR_TYPES and not uma.red_type:
+        elif is_red_slot and top_name in RED_FACTOR_TYPES and not uma.red_type:
             uma.red_type = top_name
             uma.red_star = star
             slot_kind = "red"

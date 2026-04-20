@@ -149,7 +149,13 @@ def detect_chara_sections(img: np.ndarray) -> list[CharaSection]:
     runs = _find_low_sat_runs(row_sat, LOW_SAT_THRESHOLD, MIN_GRID_RUN_LEN)
     runs_by_len = sorted(runs, key=lambda r: r[1] - r[0], reverse=True)[:3]
     grids = sorted(runs_by_len, key=lambda r: r[0])
+
     if len(grids) != 3:
+        # 低彩度 run 検出が 3 セクション分取れなかった場合は、★検出クラスタの y
+        # 分布から 3 セクションを推定する fallback を試す。
+        fallback = _detect_chara_sections_by_stars(img)
+        if fallback is not None:
+            return fallback
         raise RuntimeError(f"因子グリッドを 3 領域検出できませんでした（{len(grids)} 件）")
 
     sections: list[CharaSection] = []
@@ -163,6 +169,59 @@ def detect_chara_sections(img: np.ndarray) -> list[CharaSection]:
                 uma_index=i,
                 factor_y_start=g_start,
                 factor_y_end=g_end,
+                portrait_bbox=(int(w * 0.01), portrait_y0, int(w * 0.18), portrait_y1),
+            )
+        )
+    return sections
+
+
+def _detect_chara_sections_by_stars(img: np.ndarray) -> list[CharaSection] | None:
+    """★検出クラスタの y 分布から 3 セクションを推定する fallback。
+
+    行ピッチ (~45px) を基準に ★行を密集群としてグループ化し、
+    偽陽性（ヘッダー装飾等）を除外したうえで 3 セクションを取り出す。
+    - gap > SECTION_SPLIT_GAP (= 65px) で群を分割
+    - 群の中で行数 >= MIN_ROWS_PER_SECTION (= 5) かつ 長さ >= MIN_SECTION_SPAN (= 100px)
+      のものだけを因子欄セクション候補とみなす
+    - 3 つ以上取れたら y 順に先頭 3 つを採用、取れなければ None（legacy を素通り）
+    """
+    SECTION_SPLIT_GAP = 65
+    MIN_ROWS_PER_SECTION = 5
+    MIN_SECTION_SPAN = 100
+
+    stars = _detect_golden_stars(img)
+    classified = _cluster_stars_into_rows(stars, img.shape[1])
+    if len(classified) < MIN_ROWS_PER_SECTION * 3:
+        return None
+    ys = sorted(r[0] for r in classified)
+
+    groups: list[list[int]] = [[ys[0]]]
+    for i in range(1, len(ys)):
+        if ys[i] - ys[i - 1] > SECTION_SPLIT_GAP:
+            groups.append([ys[i]])
+        else:
+            groups[-1].append(ys[i])
+
+    big_groups = [
+        g for g in groups
+        if len(g) >= MIN_ROWS_PER_SECTION and (g[-1] - g[0]) >= MIN_SECTION_SPAN
+    ]
+    if len(big_groups) < 3:
+        return None
+
+    sections_y = sorted(big_groups, key=lambda g: g[0])[:3]
+    w = img.shape[1]
+    sections: list[CharaSection] = []
+    for i, grp in enumerate(sections_y):
+        y_s, y_e = grp[0], grp[-1]
+        header_h = SELF_HEADER_HEIGHT if i == 0 else PARENT_HEADER_HEIGHT
+        portrait_y0 = max(0, y_s - header_h)
+        portrait_y1 = max(portrait_y0 + 10, y_s - 10)
+        sections.append(
+            CharaSection(
+                uma_index=i,
+                factor_y_start=y_s,
+                factor_y_end=y_e,
                 portrait_bbox=(int(w * 0.01), portrait_y0, int(w * 0.18), portrait_y1),
             )
         )
@@ -349,6 +408,8 @@ def _assign_row_to_section(
     return None
 
 
+
+
 def extract_factor_boxes(
     img: np.ndarray,
     sections: list[CharaSection],
@@ -383,53 +444,88 @@ def extract_factor_boxes(
             continue
         row_idx = per_section_row_idx.get(uma_idx, 0)
         per_section_row_idx[uma_idx] = row_idx + 1
+        boxes.extend(
+            _build_boxes_for_row(
+                img, uma_idx, row_idx, y_center, left_stars, right_stars,
+                x_L0, x_L1, x_R0, x_R1,
+            )
+        )
+    if len(boxes) < MIN_DETECTED_ROWS:
+        return _extract_factor_boxes_legacy(img, sections, layout)
+    return boxes
 
-        # ★中心 y が bbox 内 y=STAR_Y_IN_TILE に来るよう bbox y0 を決める
-        y_top = max(0, y_center - STAR_Y_IN_TILE)
-        y_bot = min(img.shape[0], y_top + TILE_HEIGHT)
-        if y_bot - y_top < TILE_HEIGHT // 2:
+
+def _build_boxes_for_row(
+    img: np.ndarray,
+    uma_idx: int,
+    row_idx: int,
+    y_center: int,
+    left_stars: list,
+    right_stars: list,
+    x_L0: int,
+    x_L1: int,
+    x_R0: int,
+    x_R1: int,
+) -> list[FactorBox]:
+    """1 つの★行について左右列の FactorBox を生成する（等間隔チェーン抽出後に呼ぶ）。"""
+    boxes: list[FactorBox] = []
+    # ★中心 y が bbox 内 y=STAR_Y_IN_TILE に来るよう bbox y0 を決める
+    y_top = max(0, y_center - STAR_Y_IN_TILE)
+    y_bot = min(img.shape[0], y_top + TILE_HEIGHT)
+    if y_bot - y_top < TILE_HEIGHT // 2:
+        return boxes
+
+    for col_idx, (xa, xb, col_stars) in enumerate(
+        [(x_L0, x_L1, left_stars), (x_R0, x_R1, right_stars)]
+    ):
+        # row 0 は各ウマ娘の青(col=0)/赤(col=1)スロット。このペアが常に存在する
+        # ゲーム UI 構造を使い、★が全て空のケース（金★0 で検出できない）でも
+        # row 0 に限って bbox を作る（位置ベース救済で pipeline 側が赤/青に割り当てる）。
+        # row >= 1 はノイズを拾わないよう従来通り★未検出はスキップ。
+        if not col_stars and row_idx > 0:
             continue
+        xa_c = max(0, xa)
+        xb_c = min(img.shape[1], xb)
+        box_bgr = img[y_top:y_bot, xa_c:xb_c]
+        if box_bgr.size == 0 or _is_blank_row(box_bgr):
+            continue
+        color = detect_factor_color(box_bgr)
+        text_img = cv2.resize(box_bgr, (168, 16), interpolation=cv2.INTER_AREA)
 
-        for col_idx, (xa, xb, col_stars) in enumerate(
-            [(x_L0, x_L1, left_stars), (x_R0, x_R1, right_stars)]
-        ):
-            if not col_stars:
-                # この行のこの列は★0（未検出 or 全て空）
-                # 現状はスキップ。TODO: 空★検出で補完する
-                continue
-            xa_c = max(0, xa)
-            xb_c = min(img.shape[1], xb)
-            box_bgr = img[y_top:y_bot, xa_c:xb_c]
-            if box_bgr.size == 0 or _is_blank_row(box_bgr):
-                continue
-            color = detect_factor_color(box_bgr)
-            text_img = cv2.resize(box_bgr, (168, 16), interpolation=cv2.INTER_AREA)
-
-            # rank 領域は ★クラスタの bbox をタイトに切り出して 52x16 へリサイズ
+        if col_stars:
+            # ★クラスタの bbox をタイトに切り出して 52x16 へリサイズ
             rx0 = max(0, min(s[0] for s in col_stars) - 2)
             rx1 = min(img.shape[1], max(s[0] + s[2] for s in col_stars) + 2)
             ry0 = max(0, min(s[1] for s in col_stars) - 2)
             ry1 = min(img.shape[0], max(s[1] + s[3] for s in col_stars) + 2)
-            rank_raw = img[ry0:ry1, rx0:rx1]
-            if rank_raw.size == 0:
-                continue
-            rank_img = cv2.resize(rank_raw, (52, 16), interpolation=cv2.INTER_AREA)
+            rank_bbox: tuple[int, int, int, int] | None = (rx0, ry0, rx1, ry1)
+        else:
+            # ★未検出（全て空★）: bbox 右端の layout 比率から rank 領域を推定
+            rel_x0 = 0.6786  # = FactorLayout.rank_x0_in_box_rel
+            box_w = xb_c - xa_c
+            rx0 = xa_c + int(round(box_w * rel_x0))
+            rx1 = xb_c
+            ry0 = y_top + 11
+            ry1 = min(img.shape[0], y_top + 27)
+            rank_bbox = None  # pipeline は bbox の layout 比率で再計算できるよう明示的に None
 
-            boxes.append(
-                FactorBox(
-                    uma_index=uma_idx,
-                    row_index=row_idx,
-                    col_index=col_idx,
-                    color=color,
-                    text_img=text_img,
-                    rank_img=rank_img,
-                    bbox=(xa_c, y_top, xb_c, y_bot),
-                    rank_bbox=(rx0, ry0, rx1, ry1),
-                )
+        rank_raw = img[ry0:ry1, rx0:rx1]
+        if rank_raw.size == 0:
+            continue
+        rank_img = cv2.resize(rank_raw, (52, 16), interpolation=cv2.INTER_AREA)
+
+        boxes.append(
+            FactorBox(
+                uma_index=uma_idx,
+                row_index=row_idx,
+                col_index=col_idx,
+                color=color,
+                text_img=text_img,
+                rank_img=rank_img,
+                bbox=(xa_c, y_top, xb_c, y_bot),
+                rank_bbox=rank_bbox,
             )
-    if len(boxes) < MIN_DETECTED_ROWS:
-        # 新経路で極端に取れない場合は legacy にフォールバック
-        return _extract_factor_boxes_legacy(img, sections, layout)
+        )
     return boxes
 
 
