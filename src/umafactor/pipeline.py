@@ -40,6 +40,13 @@ PERTURBATIONS_RED: list[tuple[int, int]] = [
     (dy, dx) for dy in range(-5, 6) for dx in range(-3, 4)
 ]
 
+# ★数（rank）向けの軽量摂動（9 パターン）
+# rank モデルは softmax 出力を持たないため、infer.predict_with_perturbation で
+# 各シフト画像の argmax+confidence を集計し、confidence 加算投票で判定する。
+PERTURBATIONS_RANK: list[tuple[int, int]] = [
+    (dy, dx) for dy in range(-1, 2) for dx in range(-1, 2)
+]
+
 UMA_ROLES = ["main", "parent1", "parent2"]
 
 
@@ -159,15 +166,36 @@ def _crop_rank_from_original(
     img_orig: np.ndarray,
     bbox: tuple[int, int, int, int],
     scale: float,
+    rank_bbox: tuple[int, int, int, int] | None = None,
 ) -> np.ndarray:
+    """因子ボックスの★領域を元解像度から切り出す。
+
+    rank_bbox が与えられた場合（★検出駆動の新経路）はその正規化座標を元解像度に
+    投影して切り出す。与えられなかった場合（legacy 経路）は layout.rank_x0_in_box_rel
+    に従って bbox 幅の 67.86%〜100% を★領域として取り出す。
+    """
     inv = 1.0 / scale if scale != 0 else 1.0
-    x0, y0, x1, y1 = bbox
-    ox0 = int(round(x0 * inv))
-    oy0 = int(round(y0 * inv))
-    rx0 = ox0 + int(round(48 * inv))
-    ry0 = oy0 + int(round(11 * inv))
-    rx1 = rx0 + int(round(52 * inv))
-    ry1 = ry0 + int(round(16 * inv))
+
+    if rank_bbox is not None:
+        rank_x0_norm, rank_y0_norm, rank_x1_norm, rank_y1_norm = rank_bbox
+        # 実★クラスタは bbox より狭いので、モデル入力が 52x16 の比率に近づくよう
+        # y 方向に若干のパディング（2px）を足して安定化させる
+        rank_y0_norm -= 2
+        rank_y1_norm += 2
+    else:
+        x0, y0, x1, y1 = bbox
+        box_w_norm = x1 - x0
+        rel_x0 = 0.6786  # = FactorLayout.rank_x0_in_box_rel
+        rel_x1 = 1.0
+        rank_x0_norm = x0 + int(round(box_w_norm * rel_x0))
+        rank_x1_norm = x0 + int(round(box_w_norm * rel_x1))
+        rank_y0_norm = y0 + 11
+        rank_y1_norm = y0 + 27
+
+    rx0 = int(round(rank_x0_norm * inv))
+    ry0 = int(round(rank_y0_norm * inv))
+    rx1 = int(round(rank_x1_norm * inv))
+    ry1 = int(round(rank_y1_norm * inv))
     rx0 = max(0, rx0)
     ry0 = max(0, ry0)
     rx1 = min(img_orig.shape[1], rx1)
@@ -211,7 +239,7 @@ def analyze_image(
         umas[section.uma_index].character = pred.label
 
     for box in boxes:
-        rank_crop_orig = _crop_rank_from_original(img_orig, box.bbox, scale)
+        rank_crop_orig = _crop_rank_from_original(img_orig, box.bbox, scale, box.rank_bbox)
         x0, y0, x1, y1 = box.bbox
         text_crop_norm = norm_img[y0:y1, x0:x1]
         display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
@@ -256,7 +284,7 @@ def analyze_image(
         merged, sources = _merge_candidates(onnx_candidates, ocr_candidates, limit=8)
         top_name = merged[0][0] if merged else ""
 
-        rpred = rank_pred.predict(rank_crop_orig)
+        rpred = rank_pred.predict_with_perturbation(rank_crop_orig, PERTURBATIONS_RANK)
         try:
             star = int(rpred.label)
         except ValueError:

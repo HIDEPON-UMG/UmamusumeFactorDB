@@ -84,6 +84,60 @@ class OnnxPredictor:
         label = self.labels[idx] if 0 <= idx < len(self.labels) else f"<out_of_range:{idx}>"
         return Prediction(index=idx, label=label, confidence=conf)
 
+    def predict_with_perturbation(
+        self,
+        img_hwc_bgr: np.ndarray,
+        perturbations: list[tuple[int, int]],
+    ) -> Prediction:
+        """(dy, dx) シフト画像群で推論し、confidence 加算投票でラベル決定する。
+
+        softmax 確率出力を持たないモデル（factor_rank など）向けの軽量アンサンブル。
+        入力を expected_hw にリサイズしてから warpAffine (BORDER_REPLICATE) でシフト。
+        同じラベルを出した予測の confidence を加算し、合計が最大のラベルを採用する。
+        """
+        import cv2
+
+        if not perturbations:
+            return self.predict(img_hwc_bgr)
+
+        eh, ew = self.expected_hw
+        h, w = img_hwc_bgr.shape[:2]
+        if (h, w) != (eh, ew):
+            base = cv2.resize(img_hwc_bgr, (ew, eh), interpolation=cv2.INTER_LINEAR)
+        else:
+            base = img_hwc_bgr
+
+        label_score: dict[int, float] = {}
+        label_count: dict[int, int] = {}
+        for dy, dx in perturbations:
+            if dy == 0 and dx == 0:
+                shifted = base
+            else:
+                affine = np.float32([[1, 0, dx], [0, 1, dy]])
+                shifted = cv2.warpAffine(
+                    base,
+                    affine,
+                    (ew, eh),
+                    flags=cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_REPLICATE,
+                )
+            batch = shifted.astype(np.uint8)[None, ...]
+            outs = self.session.run(
+                [self.index_output, self.confidence_output],
+                {self.input_name: batch},
+            )
+            idx = int(outs[0][0])
+            conf = float(outs[1][0])
+            label_score[idx] = label_score.get(idx, 0.0) + conf
+            label_count[idx] = label_count.get(idx, 0) + 1
+
+        best_idx = max(label_score.keys(), key=lambda k: label_score[k])
+        avg_conf = label_score[best_idx] / label_count[best_idx]
+        label = (
+            self.labels[best_idx] if 0 <= best_idx < len(self.labels) else f"<oor:{best_idx}>"
+        )
+        return Prediction(index=best_idx, label=label, confidence=avg_conf)
+
     def predict_probs(self, img_hwc_bgr: np.ndarray) -> np.ndarray:
         """softmax 確率（全クラス）を返す。extra_outputs を使える predictor のみ。"""
         if not self.extra_outputs:

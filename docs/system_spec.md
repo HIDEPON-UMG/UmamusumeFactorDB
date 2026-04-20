@@ -71,7 +71,10 @@ Apps Script (Code.gs)
   ▼
 Cloud Run /process (FastAPI)
   │ ├─ ③ 画像クロップ（cropper.py）
+  │ │     - 3 体のウマ娘セクションを左端低彩度帯から検出
+  │ │     - 各因子ボックスは ★検出駆動で bbox を画像内容から動的算出（★が取れない場合は layout 比率の legacy 経路にフォールバック）
   │ ├─ ④ ONNX 因子推論（infer.py）
+  │ │     - 赤/青因子は近傍摂動でアンサンブル、★数 (rank) も軽量摂動で投票
   │ ├─ ⑤ EasyOCR 補完（ocr.py）
   │ ├─ ⑥ 固有スキル → ウマ娘 逆引き（unique_skill_to_character.json）
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST
@@ -296,8 +299,8 @@ UmamusumeFactorDB/
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── src/umafactor/
-│   ├── cropper.py           # 画像クロップ・ウマ娘セクション検出
-│   ├── infer.py             # ONNX 推論
+│   ├── cropper.py           # 画像クロップ・ウマ娘セクション検出・★検出駆動の因子ボックス抽出
+│   ├── infer.py             # ONNX 推論（predict_with_perturbation で摂動アンサンブル）
 │   ├── ocr.py               # EasyOCR + rapidfuzz
 │   ├── pipeline.py          # 統合パイプライン
 │   ├── review.py / review_ui.py  # tkinter レビュー UI（CLI 用）

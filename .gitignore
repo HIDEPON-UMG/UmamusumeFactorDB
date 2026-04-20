@@ -18,7 +18,15 @@ models/**/*.onnx
 
 # デバッグ出力
 debug_crops/
+debug_crops*/
 *.log
+
+# OCR 精度評価の生成物（ラベラー UI / バッチ推論結果 / 途中保存 / ダウンロード CSV）
+tests/fixtures/colored_factors/recognition_results.json
+tests/fixtures/colored_factors/recognition_results_before_*.json
+tests/fixtures/colored_factors/labeler.html
+tests/fixtures/colored_factors/labels_*.csv
+tests/fixtures/colored_factors/labels_progress_*.json
 
 # IDE
 .vscode/

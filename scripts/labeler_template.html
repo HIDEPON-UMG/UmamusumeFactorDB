@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>色付き因子 正解ラベラー</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+    margin: 0;
+    background: #1e1e24;
+    color: #e8e8f0;
+    font-size: 14px;
+  }
+  header {
+    background: #2d2d3a;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #3e3e4e;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1 { margin: 0; font-size: 18px; color: #fff; }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #404050;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  button {
+    background: #5a7fd6;
+    color: #fff;
+    border: 0;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+  button:hover { background: #3f63b9; }
+  button.ghost { background: #4a4a58; }
+  button.ghost:hover { background: #5a5a68; }
+  button:disabled { background: #3e3e4e; cursor: not-allowed; color: #888; }
+
+  .empty-state {
+    padding: 60px 40px;
+    text-align: center;
+    color: #aaa;
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  .empty-state ol { text-align: left; display: inline-block; }
+  .empty-state code {
+    background: #333;
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: #ffd97a;
+  }
+
+  main { display: flex; height: calc(100vh - 56px); }
+  .left {
+    flex: 1 1 55%;
+    padding: 12px;
+    background: #181820;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .left .img-wrap {
+    flex: 1;
+    overflow: auto;
+    background: #000;
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .left img { max-width: 100%; display: block; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 4px 4px;
+    gap: 8px;
+  }
+  .pager .name { font-family: monospace; color: #aaa; flex: 1; text-align: center; font-size: 12px; }
+
+  .right {
+    flex: 1 1 45%;
+    padding: 12px 16px;
+    overflow: auto;
+    background: #252530;
+  }
+
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 10px; }
+  .tab-bar button {
+    flex: 1;
+    background: #3a3a48;
+    padding: 8px;
+  }
+  .tab-bar button.active { background: #5a7fd6; }
+
+  .role-panel { display: none; }
+  .role-panel.active { display: block; }
+
+  .field-group {
+    background: #2f2f3c;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border-left: 4px solid transparent;
+  }
+  .field-group.blue { border-left-color: #5a9fd6; }
+  .field-group.red { border-left-color: #e06666; }
+  .field-group.green { border-left-color: #7fc87f; }
+  .field-group.edited { background: #3a2f2f; }
+
+  .field-group .label {
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .field-group .label .hint {
+    font-size: 11px;
+    font-weight: normal;
+    color: #aaa;
+  }
+  .field-group .controls-row {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 8px;
+    align-items: center;
+  }
+  .field-group select, .field-group input[type="text"] {
+    width: 100%;
+    padding: 6px 8px;
+    background: #1e1e24;
+    color: #fff;
+    border: 1px solid #4a4a58;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .field-group .stars {
+    display: flex;
+    gap: 4px;
+    justify-content: space-around;
+  }
+  .field-group .stars label {
+    cursor: pointer;
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  .field-group .stars input:checked + span {
+    background: #e6b85c;
+    color: #222;
+  }
+  .field-group .stars span {
+    display: inline-block;
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: #4a4a58;
+  }
+
+  .actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 12px; border-top: 1px solid #3e3e4e; }
+  .actions button { flex: 1; }
+
+  .status-line {
+    padding: 6px 12px;
+    background: #2d2d3a;
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    justify-content: space-between;
+  }
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    background: #555;
+    margin-left: 4px;
+  }
+  .badge.done { background: #4a8a4a; }
+  .badge.diff { background: #b8744a; }
+  .char-hint {
+    font-size: 11px;
+    color: #9ac3e6;
+    margin-bottom: 6px;
+    padding: 4px 8px;
+    background: #232834;
+    border-radius: 4px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🏷️ 色付き因子 正解ラベラー</h1>
+    <div class="controls">
+      <label>
+        📥 認識結果 JSON
+        <input type="file" id="loadRecognition" accept="application/json" style="display:none">
+      </label>
+      <label>
+        📋 途中保存を復元
+        <input type="file" id="loadCorrections" accept="application/json" style="display:none">
+      </label>
+      <button id="downloadCsv" disabled>⬇ CSV ダウンロード</button>
+      <button id="downloadJson" class="ghost" disabled>💾 途中保存 (JSON)</button>
+    </div>
+  </header>
+
+  <div id="emptyState" class="empty-state">
+    <h2>はじめに</h2>
+    <ol>
+      <li>プロジェクトルートで <code>python scripts/batch_recognize.py</code> を実行し、<code>tests/fixtures/colored_factors/recognition_results.json</code> を生成</li>
+      <li>上部の <strong>📥 認識結果 JSON</strong> からそのファイルを選択</li>
+      <li>画像を見ながら、違う値だけ選び直す（変更した行は赤くなります）</li>
+      <li>全画像を見たら <strong>⬇ CSV ダウンロード</strong></li>
+    </ol>
+    <p>ブラウザは Chrome / Edge を推奨。画像は <code>&lt;img src="../xxx.png"&gt;</code> で親ディレクトリから参照します。</p>
+  </div>
+
+  <main id="main" style="display:none">
+    <div class="left">
+      <div class="img-wrap">
+        <img id="currentImg" alt="">
+      </div>
+      <div class="pager">
+        <button id="prev" class="ghost">◀ 前</button>
+        <div class="name" id="imgName">-</div>
+        <button id="next" class="ghost">次 ▶</button>
+      </div>
+    </div>
+    <div class="right">
+      <div class="tab-bar">
+        <button data-role="main" class="active">main</button>
+        <button data-role="parent1">parent1</button>
+        <button data-role="parent2">parent2</button>
+      </div>
+      <div id="panels"></div>
+      <div class="actions">
+        <button id="markOk" class="ghost">✅ この画像は全部正解</button>
+        <button id="markSkip" class="ghost">⏭️ スキップ（判定不能）</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="status-line" id="statusLine" style="display:none">
+    <span id="progressText">-</span>
+    <span id="diffText">-</span>
+  </div>
+</div>
+
+<script>
+// ─── 選択肢データ（ビルド時に埋め込み） ───────────────────────────
+const BLUE_TYPES = ["スピード", "スタミナ", "パワー", "根性", "賢さ"];
+const RED_TYPES = ["芝", "ダート", "短距離", "マイル", "中距離", "長距離", "逃げ", "先行", "差し", "追込"];
+const GREEN_NAMES = __GREEN_NAMES_JSON__;
+const CHARACTER_OF_SKILL = __CHARACTER_OF_SKILL_JSON__;
+
+// ─── 状態 ────────────────────────────────────────────────────────
+let recognition = null;       // { "receipt_xxx.png": { main: {...}, parent1: {...}, parent2: {...} } }
+let imageNames = [];          // 画像名の配列
+let currentIdx = 0;           // 現在表示中の画像 idx
+let currentRole = "main";     // 現在のタブ
+let corrections = {};         // { "receipt_xxx.png": { main: { blue: {type, star}, ... }, ... } }
+let statuses = {};            // { "receipt_xxx.png": "ok" | "edited" | "skip" | undefined }
+
+const STORAGE_KEY = "umafactor-labeler-v1";
+
+// ─── ユーティリティ ─────────────────────────────────────────────
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function autosave() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ corrections, statuses }));
+  } catch (e) { /* 容量超過などは無視 */ }
+}
+
+function restoreAutosave() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const { corrections: c, statuses: s } = JSON.parse(raw);
+    if (c) corrections = c;
+    if (s) statuses = s;
+    return true;
+  } catch (e) { return false; }
+}
+
+// ─── 画像読み込み ───────────────────────────────────────────────
+function loadRecognitionFile(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      recognition = JSON.parse(fr.result);
+      imageNames = Object.keys(recognition).filter(n => !recognition[n].error);
+      if (imageNames.length === 0) {
+        alert("認識結果 JSON に有効なエントリがありません");
+        return;
+      }
+      document.getElementById("emptyState").style.display = "none";
+      document.getElementById("main").style.display = "flex";
+      document.getElementById("statusLine").style.display = "flex";
+      document.getElementById("downloadCsv").disabled = false;
+      document.getElementById("downloadJson").disabled = false;
+      currentIdx = 0;
+      if (restoreAutosave()) {
+        console.log("途中保存を復元しました");
+      }
+      render();
+    } catch (e) {
+      alert("JSON 読み込みエラー: " + e.message);
+    }
+  };
+  fr.readAsText(file, "UTF-8");
+}
+
+function loadCorrectionsFile(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const { corrections: c, statuses: s } = JSON.parse(fr.result);
+      if (c) corrections = c;
+      if (s) statuses = s;
+      render();
+      alert("途中保存を読み込みました");
+    } catch (e) {
+      alert("途中保存 JSON 読み込みエラー: " + e.message);
+    }
+  };
+  fr.readAsText(file, "UTF-8");
+}
+
+// ─── UI 構築 ────────────────────────────────────────────────────
+function render() {
+  if (!recognition || imageNames.length === 0) return;
+
+  const name = imageNames[currentIdx];
+  const rec = recognition[name];
+
+  // 画像
+  const img = document.getElementById("currentImg");
+  img.src = "../" + name;
+  img.alt = name;
+  document.getElementById("imgName").textContent = `[${currentIdx + 1}/${imageNames.length}] ${name}`;
+
+  // タブ
+  document.querySelectorAll(".tab-bar button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.role === currentRole);
+  });
+
+  // 編集パネル
+  const roleData = rec[currentRole] || {};
+  const correctionRole = (corrections[name] && corrections[name][currentRole]) || {};
+
+  const charRecognized = roleData.character || "-";
+  const panels = document.getElementById("panels");
+  panels.innerHTML = `
+    <div class="char-hint">🐎 認識キャラ: <strong>${escapeHtml(charRecognized)}</strong></div>
+    ${buildFieldHtml("blue", "青（5 種）", BLUE_TYPES, roleData.blue || {}, correctionRole.blue)}
+    ${buildFieldHtml("red", "赤（10 種）", RED_TYPES, roleData.red || {}, correctionRole.red)}
+    ${buildGreenFieldHtml(roleData.green || {}, correctionRole.green, charRecognized)}
+  `;
+  wireFieldEvents();
+  updateStatusLine();
+}
+
+function buildFieldHtml(color, title, options, recognized, correction) {
+  const recType = recognized.type || "";
+  const recStar = recognized.star || 0;
+  const curType = correction ? correction.type : recType;
+  const curStar = correction ? correction.star : recStar;
+  const edited = correction !== undefined;
+
+  const opts = ['<option value="">（なし）</option>']
+    .concat(options.map(v => `<option value="${escapeHtml(v)}"${v === curType ? " selected" : ""}>${escapeHtml(v)}</option>`))
+    .join("");
+
+  const stars = [1, 2, 3].map(n =>
+    `<label><input type="radio" name="${color}-star" value="${n}"${n === curStar ? " checked" : ""} style="display:none">
+      <span>★${n}</span></label>`
+  ).join("");
+
+  return `
+    <div class="field-group ${color}${edited ? " edited" : ""}" data-field="${color}">
+      <div class="label">
+        <span>${title}${edited ? " 🖊" : ""}</span>
+        <span class="hint">認識: ${escapeHtml(recType || "(なし)")} / ★${recStar}</span>
+      </div>
+      <div class="controls-row">
+        <select data-key="type">${opts}</select>
+        <div class="stars" data-key="star">${stars}</div>
+      </div>
+    </div>
+  `;
+}
+
+function buildGreenFieldHtml(recognized, correction, characterName) {
+  const recName = recognized.name || "";
+  const recStar = recognized.star || 0;
+  const curName = correction ? correction.name : recName;
+  const curStar = correction ? correction.star : recStar;
+  const edited = correction !== undefined;
+
+  // キャラ名から逆引きして候補があれば先頭に置く
+  const priorSkills = [];
+  if (characterName) {
+    for (const [skill, cname] of Object.entries(CHARACTER_OF_SKILL)) {
+      if (cname === characterName) priorSkills.push(skill);
+    }
+  }
+
+  // 全選択肢: 優先候補 + 空行区切り + 全辞書
+  const priorOpts = priorSkills.map(v =>
+    `<option value="${escapeHtml(v)}"${v === curName ? " selected" : ""}>⭐ ${escapeHtml(v)}</option>`
+  ).join("");
+  const restOpts = GREEN_NAMES
+    .filter(v => !priorSkills.includes(v))
+    .map(v => `<option value="${escapeHtml(v)}"${v === curName ? " selected" : ""}>${escapeHtml(v)}</option>`)
+    .join("");
+
+  const stars = [1, 2, 3].map(n =>
+    `<label><input type="radio" name="green-star" value="${n}"${n === curStar ? " checked" : ""} style="display:none">
+      <span>★${n}</span></label>`
+  ).join("");
+
+  return `
+    <div class="field-group green${edited ? " edited" : ""}" data-field="green">
+      <div class="label">
+        <span>緑（249 種）${edited ? " 🖊" : ""}</span>
+        <span class="hint">認識: ${escapeHtml(recName || "(なし)")} / ★${recStar}</span>
+      </div>
+      ${priorSkills.length ? `<div class="char-hint">候補: ${priorSkills.map(escapeHtml).join(" / ")}</div>` : ""}
+      <div class="controls-row">
+        <select data-key="name"><option value="">（なし）</option>${priorOpts}${priorOpts && restOpts ? '<option disabled>──────</option>' : ""}${restOpts}</select>
+        <div class="stars" data-key="star">${stars}</div>
+      </div>
+    </div>
+  `;
+}
+
+function wireFieldEvents() {
+  const name = imageNames[currentIdx];
+  const rec = recognition[name];
+  const role = currentRole;
+
+  document.querySelectorAll(".field-group").forEach(group => {
+    const fieldColor = group.dataset.field;
+    const handler = () => {
+      const select = group.querySelector('select');
+      const starInput = group.querySelector('.stars input:checked');
+      const selKey = select.dataset.key; // "type" or "name"
+      const newValue = select.value;
+      const newStar = starInput ? parseInt(starInput.value, 10) : 0;
+
+      const recField = rec[role] && rec[role][fieldColor];
+      const recValue = recField ? (recField.type || recField.name || "") : "";
+      const recStar = recField ? (recField.star || 0) : 0;
+
+      if (newValue !== recValue || newStar !== recStar) {
+        // 差分あり → corrections に書き込み
+        if (!corrections[name]) corrections[name] = {};
+        if (!corrections[name][role]) corrections[name][role] = {};
+        const field = {};
+        field[selKey] = newValue;
+        field.star = newStar;
+        corrections[name][role][fieldColor] = field;
+        statuses[name] = "edited";
+      } else {
+        // 差分なし → corrections から削除
+        if (corrections[name] && corrections[name][role]) {
+          delete corrections[name][role][fieldColor];
+          if (Object.keys(corrections[name][role]).length === 0) delete corrections[name][role];
+          if (Object.keys(corrections[name]).length === 0) delete corrections[name];
+        }
+      }
+      autosave();
+      render();
+    };
+    group.querySelector("select").addEventListener("change", handler);
+    group.querySelectorAll(".stars input").forEach(i => i.addEventListener("change", handler));
+  });
+}
+
+function updateStatusLine() {
+  const total = imageNames.length;
+  const done = imageNames.filter(n => statuses[n] === "ok" || statuses[n] === "edited" || statuses[n] === "skip").length;
+  const editedCount = Object.keys(corrections).length;
+  const cur = imageNames[currentIdx];
+  const curStatus = statuses[cur] || "未確認";
+  document.getElementById("progressText").textContent = `進捗: ${done}/${total}  現在: ${curStatus}`;
+  document.getElementById("diffText").textContent = `差分のある画像: ${editedCount} 枚`;
+}
+
+// ─── タブ / ページ遷移 ──────────────────────────────────────────
+document.querySelectorAll(".tab-bar button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentRole = btn.dataset.role;
+    render();
+  });
+});
+
+document.getElementById("prev").addEventListener("click", () => {
+  if (currentIdx > 0) { currentIdx--; render(); }
+});
+document.getElementById("next").addEventListener("click", () => {
+  if (currentIdx < imageNames.length - 1) { currentIdx++; render(); }
+});
+
+document.getElementById("markOk").addEventListener("click", () => {
+  const name = imageNames[currentIdx];
+  statuses[name] = "ok";
+  // ok 指定時は corrections を削除（全スロット正解の宣言）
+  delete corrections[name];
+  autosave();
+  if (currentIdx < imageNames.length - 1) currentIdx++;
+  render();
+});
+document.getElementById("markSkip").addEventListener("click", () => {
+  const name = imageNames[currentIdx];
+  statuses[name] = "skip";
+  delete corrections[name];
+  autosave();
+  if (currentIdx < imageNames.length - 1) currentIdx++;
+  render();
+});
+
+// ─── CSV ダウンロード ───────────────────────────────────────────
+function buildCsv() {
+  // 出力スキーマ: image_name, status, role, color, wrong_value, correct_value, wrong_star, correct_star
+  // status = "ok"（差分なし全正解）/ "edited"（差分あり）/ "skip"（判定不能）
+  // "ok" の行はヘッダーだけ出して 1 行にまとめる
+  const rows = [["image_name", "status", "role", "color", "wrong_value", "correct_value", "wrong_star", "correct_star"]];
+  for (const name of imageNames) {
+    const st = statuses[name];
+    if (st === "ok") {
+      rows.push([name, "ok", "", "", "", "", "", ""]);
+      continue;
+    }
+    if (st === "skip") {
+      rows.push([name, "skip", "", "", "", "", "", ""]);
+      continue;
+    }
+    if (!corrections[name]) {
+      rows.push([name, "unreviewed", "", "", "", "", "", ""]);
+      continue;
+    }
+    for (const role of ["main", "parent1", "parent2"]) {
+      const cr = corrections[name][role];
+      if (!cr) continue;
+      for (const color of ["blue", "red", "green"]) {
+        const c = cr[color];
+        if (!c) continue;
+        const rec = (recognition[name][role] || {})[color] || {};
+        const recValue = rec.type || rec.name || "";
+        const recStar = rec.star || 0;
+        const newValue = c.type !== undefined ? c.type : c.name;
+        rows.push([name, "edited", role, color, recValue, newValue, recStar, c.star]);
+      }
+    }
+  }
+  return rows.map(r => r.map(csvCell).join(",")).join("\n");
+}
+
+function csvCell(v) {
+  const s = String(v ?? "");
+  if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("downloadCsv").addEventListener("click", () => {
+  const csv = buildCsv();
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  download(`labels_${ts}.csv`, "\uFEFF" + csv, "text/csv;charset=utf-8");
+});
+
+document.getElementById("downloadJson").addEventListener("click", () => {
+  const ts = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  download(`labels_progress_${ts}.json`, JSON.stringify({ corrections, statuses }, null, 2), "application/json");
+});
+
+// ─── ファイル入力 ───────────────────────────────────────────────
+document.getElementById("loadRecognition").addEventListener("change", e => {
+  if (e.target.files[0]) loadRecognitionFile(e.target.files[0]);
+});
+document.getElementById("loadCorrections").addEventListener("change", e => {
+  if (e.target.files[0]) loadCorrectionsFile(e.target.files[0]);
+});
+
+// ─── キーボードショートカット ──────────────────────────────────
+document.addEventListener("keydown", e => {
+  if (!recognition) return;
+  if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if (e.key === "ArrowLeft") document.getElementById("prev").click();
+  else if (e.key === "ArrowRight") document.getElementById("next").click();
+  else if (e.key === "1") { currentRole = "main"; render(); }
+  else if (e.key === "2") { currentRole = "parent1"; render(); }
+  else if (e.key === "3") { currentRole = "parent2"; render(); }
+});
+</script>
+</body>
+</html>
