@@ -94,8 +94,11 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.ui === "search") {
     // XFrameOptionsMode は指定せずデフォルト（SAMEORIGIN 相当）にして
     // 任意サイトへの iframe 埋め込みを防ぐ（clickjacking 対策）。
+    // ※ HtmlService は <meta name="viewport"> を無視するため、
+    //    モバイルレイアウトを機能させるには addMetaTag でサーバ側から注入する必要がある。
     return HtmlService.createHtmlOutputFromFile("search")
-      .setTitle("UMG因子保管庫");
+      .setTitle("UMG因子保管庫")
+      .addMetaTag("viewport", "width=device-width, initial-scale=1, viewport-fit=cover");
   }
   return _json({ok: true, message: "UmamusumeFactorDB webhook alive"});
 }
