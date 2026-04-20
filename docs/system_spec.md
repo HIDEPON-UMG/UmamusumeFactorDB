@@ -16,6 +16,8 @@
 | **バグ報告** | 検索画面から誤認識を報告 → `bug_reports` シートに蓄積 |
 | **バグ自動反映ワーカ** | 時限トリガ（1 時間毎）または手動メニューで `bug_reports` を走査し、`factors_normalized` を自動補正 |
 | **画像匿名化ツール** | スプレッドシートメニュー `UMG因子DB → 🙈 投稿画像ファイル名を一括匿名化` / `🔒 フォーム設定を安全化` で個人情報の残留を除去 |
+| **Discord 再通知** | `UMG因子DB → 📣 Discord に再通知` で `factor_no` を指定して過去投稿を Webhook に再送 |
+| **列ズレ修復** | `UMG因子DB → 🔧 列ズレ行を修復` で factor_no 導入直後の移行期に発生した 1 列シフトを補正 |
 | **Discord 通知** | 目的・用途（対人/査定/競技場）別に Webhook でキタサンブラック口調メッセージ投稿（表示名は Webhook 設定「おしらせキタちゃん」） |
 
 ## 3. システム構成
@@ -71,7 +73,10 @@ Cloud Run /process (FastAPI)
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST
   ▼
 Apps Script doPost
-  │
+  │ ├─ payload の columns 名をシートヘッダーで引き、対応位置に書き込む
+  │ │  （旧実装は常に A 列から書いていたため factor_no 列挿入後に 1 列ズレる
+  │ │   バグがあった。列名マッピング方式に変更済み）
+  │ └─ 未知列は末尾に追加してから書き込み
   ▼ 3 行を書き込み
 Google Sheet「factors_normalized」
   │
@@ -81,10 +86,19 @@ Google Sheet「factors_normalized」
         ・画像は Drive から Blob で取得
         ・multipart/form-data で Discord に直接添付（Drive 公開化はしない）
         ・embed.image は `attachment://<filename>` で参照
+        ・embed.description 先頭に OCR 誤認識の注意書き（blockquote）を挿入
+        ・embed.fields に 🆔 トレーナーID（コードブロック）と投稿フォーム誘導
 Discord Webhook（目的別チャンネル）
   │
-  ▼ キタサン口調メッセージ + 添付画像 + 因子サマリ
+  ▼ キタサン口調メッセージ + 添付画像 + 因子サマリ + トレーナーID
 Discord チャンネル（表示名は Webhook 設定の「おしらせキタちゃん」）
+
+── 再通知（後追い投稿）：メニュー `📣 Discord に再通知` →
+   factor_no 指定でプロンプト入力 → resendDiscordByFactorNo が
+   ① submission_id UUID 完全一致
+   ② image_filename の `form-<sid 先頭 8 文字>` prefix で Form 応答に前方一致
+   ③ submitted_at とタイムスタンプの近接（±10 分）
+   の順で Form 応答レコードを特定し、通知されなかった投稿を遡って Webhook へ送信する。
 ```
 
 ### 4.2 検索フロー
@@ -298,6 +312,9 @@ UmamusumeFactorDB/
 - **過去画像の一括匿名化（初回のみ）**：既存の投稿画像が `combine_XXXX - トレーナー◯◯.png` のような投稿者名入りファイル名になっている場合、メニュー `UMG因子DB → 🙈 投稿画像ファイル名を一括匿名化` で応答シート全件を `factor_yyyyMMdd_HHmmss.ext` に置換可能。
 - **フォーム結果の非公開化（初回のみ）**：メニュー `UMG因子DB → 🔒 フォーム設定を安全化` を 1 回クリックすると、投稿完了ページの「結果の概要を表示」リンクと回答編集リンクが恒久的に無効化される。
 - **OAuth 再承認**：`appsscript.json` のスコープを変更した直後は GAS 側で再承認ダイアログが必要。任意の関数を Apps Script エディタから 1 回実行して「許可」すれば以後のトリガも自動で新スコープを使用する。
+- **列ズレの事後修復（一度きりの移行用）**：`factor_no` 列を A 列に挿入した影響で、旧 `doPost` が書いた行は 1 列左にシフトしていた。メニュー `UMG因子DB → 🔧 列ズレ行を修復` を 1 回実行すると、B 列以降を右シフトして復旧する。失われた元 `submission_id` は `recovered-<factor_no>-<短縮 id>` で埋めるため、検索 UI 側の submission_id グルーピングは引き続き機能する。
+- **Discord 通知の後追い送信**：`onFormSubmit` の通知をスキップしてしまった投稿や、Cloud Run/Apps Script 障害時の救済として `UMG因子DB → 📣 Discord に再通知` を使用する。プロンプトに factor_no をカンマ区切りで入力（例：`3,4,5`）。結果 alert には採用されたマッチング戦略（`uuid-exact` / `filename-prefix:xxxxxxxx` / `timestamp-near:<ms>`）も表示される。
+- **OCR 誤認識の一時対応**：OCR 精度が安定するまで `KITASAN_OCR_DISCLAIMER` 定数を Discord embed.description の先頭に blockquote で挿入している。安定後は定数を空文字にするだけで非表示になる。
 - **バグ反映が `needs_review` / `invalid` で止まる典型ケース**：
   - `white_star`・`other` は自動化対象外（`needs_review`）。`bug_reports` で内容を確認し、`factors_normalized` を手動編集してから `status` を `applied` に書き換える。
   - 現在値が `wrong_value` と既に違う場合は `invalid`。別のバグ報告や手動修正と重複している可能性が高いので、`reviewer_note` を見て判断。

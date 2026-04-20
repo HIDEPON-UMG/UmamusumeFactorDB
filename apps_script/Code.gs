@@ -75,9 +75,36 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
+    // ── 列名マッピング方式で書き込む ──
+    // 旧実装は「A 列から payload 順に setValues」していたため、
+    // _ensureFactorNo が factor_no 列を挿入すると全体が 1 列ずれて着地するバグがあった。
+    // 修正版は、シートの現在ヘッダーに対して payload の列名でマッピングし、
+    // 未知の列は末尾に追加してから書き込む。
+    var sheetLastCol = sheet.getLastColumn();
+    var sheetHeader = sheet.getRange(1, 1, 1, sheetLastCol).getValues()[0].map(String);
+    var sheetColIdx = {};
+    for (var si = 0; si < sheetHeader.length; si++) sheetColIdx[sheetHeader[si]] = si;
+
+    for (var ci = 0; ci < columns.length; ci++) {
+      if (sheetColIdx[columns[ci]] === undefined) {
+        sheetLastCol += 1;
+        sheet.getRange(1, sheetLastCol).setValue(columns[ci]);
+        sheetColIdx[columns[ci]] = sheetLastCol - 1;
+      }
+    }
+
     var startRow = sheet.getLastRow() + 1;
-    sheet.getRange(startRow, 1, rows.length, columns.length).setValues(rows);
-    var lastRow = startRow + rows.length - 1;
+    var mappedRows = [];
+    for (var ri = 0; ri < rows.length; ri++) {
+      var newRow = new Array(sheetLastCol);
+      for (var k = 0; k < sheetLastCol; k++) newRow[k] = "";
+      for (var ci2 = 0; ci2 < columns.length; ci2++) {
+        newRow[sheetColIdx[columns[ci2]]] = rows[ri][ci2];
+      }
+      mappedRows.push(newRow);
+    }
+    sheet.getRange(startRow, 1, mappedRows.length, sheetLastCol).setValues(mappedRows);
+    var lastRow = startRow + mappedRows.length - 1;
 
     return _json({
       ok: true,
@@ -819,6 +846,9 @@ function onOpen(e) {
       .addSeparator()
       .addItem("🙈 投稿画像ファイル名を一括匿名化", "_menuRenameFormUploads")
       .addItem("🔒 フォーム設定を安全化（投稿者に回答非公開）", "_menuSecureFormSettings")
+      .addSeparator()
+      .addItem("📣 Discord に再通知（factor_no 指定）", "_menuResendDiscord")
+      .addItem("🔧 列ズレ行を修復（factor_no 導入時の移行用）", "_menuRepairShiftedRows")
       .addToUi();
   } catch (err) {
     Logger.log("onOpen menu failed: " + err);
@@ -839,6 +869,100 @@ function _menuApplyBugReportsDry() {
     ? "【ドライラン・実書込みなし】\n対象 " + res.processed + " 件 / 適用可 " + res.applied + " / 要確認 " + res.needs_review + " / 不整合 " + res.invalid
     : "エラー: " + res.error;
   SpreadsheetApp.getUi().alert("バグ報告 ドライラン", msg, SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+// =============================================================================
+// 列ズレ行の修復
+// =============================================================================
+// _ensureFactorNo で factor_no 列を A 列に追加したのに対し、旧 doPost は
+// payload を常に A 列から書き始めていたため、Cloud Run 経由で追記された行は
+// 全体が 1 列左にズレ、さらに _ensureFactorNo が A 列を通番で上書きしたことで
+// 元の submission_id (UUID) が失われている。
+// この関数は B 列の値が UUID に見えない行を「ズレている」と判定し、
+// B 列以降を 1 列右にシフトしたうえで、失われた submission_id を
+// `recovered-<factor_no>-<short>` という識別子で埋め直す。
+// （新 doPost はこの事象自体を起こさなくなる修正を同時に入れる）
+
+function repairShiftedRows() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(SEARCH_TAB_NAME);
+    if (!sheet) return {ok: false, error: "factors_normalized シートが見つかりません"};
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return {ok: true, repaired: 0, skipped: 0};
+    var values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var noIdx = header.indexOf("factor_no");
+    var sidIdx = header.indexOf("submission_id");
+    if (noIdx < 0 || sidIdx < 0) {
+      return {ok: false, error: "factor_no / submission_id 列が見つかりません"};
+    }
+
+    var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    var RECOVERED_RE = /^recovered-\d+-/;
+
+    var noToRecoveredSid = {};
+    var repaired = 0, skipped = 0;
+
+    for (var r = 1; r < values.length; r++) {
+      var sidVal = String(values[r][sidIdx] || "").trim();
+      // 既に UUID または復元済みなら問題なし
+      if (UUID_RE.test(sidVal) || RECOVERED_RE.test(sidVal)) { skipped += 1; continue; }
+      // 空の行はスキップ（シート末尾の余白）
+      if (!sidVal && !String(values[r][noIdx] || "").trim()) { continue; }
+
+      // ズレている。factor_no を保ちつつ B 列以降を右シフトする
+      var factorNo = Number(values[r][noIdx] || 0);
+      if (!factorNo) { skipped += 1; continue; }
+      if (!noToRecoveredSid[factorNo]) {
+        noToRecoveredSid[factorNo] = "recovered-" + factorNo + "-" + Utilities.getUuid().substring(0, 8);
+      }
+      var recoveredSid = noToRecoveredSid[factorNo];
+
+      // 新しい値列を構築：
+      //   index 0     = factor_no （変更なし）
+      //   index 1     = 復元した submission_id
+      //   index 2..N  = 旧値のそれぞれ 1 つ前 （B→C、C→D、...）
+      var newRow = new Array(lastCol);
+      for (var k = 0; k < lastCol; k++) newRow[k] = "";
+      newRow[noIdx] = factorNo;
+      newRow[sidIdx] = recoveredSid;
+      for (var c = sidIdx + 1; c < lastCol; c++) {
+        // 現在 c 列にある値は、本来 (c-1) 列にあるべき値（シフト前の位置）
+        // 右シフト後は c 列に入っていた値を (c+1) 列へ移す
+        if (c + 0 < lastCol) {
+          // 元の (c-1) 列の値が目的の c 列へ
+          newRow[c] = values[r][c - 1];
+        }
+      }
+      // 最後の 1 列分（lastCol-1 の元値）は失われる（= 元 1 列シフト分の末尾）
+      sheet.getRange(r + 1, 1, 1, lastCol).setValues([newRow]);
+      repaired += 1;
+    }
+    Logger.log("repairShiftedRows: repaired=" + repaired + " skipped=" + skipped);
+    return {ok: true, repaired: repaired, skipped: skipped};
+  } catch (err) {
+    Logger.log("repairShiftedRows error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+function _menuRepairShiftedRows() {
+  var ui = SpreadsheetApp.getUi();
+  var confirm = ui.alert(
+    "列ズレ行を修復",
+    "submission_id 列が UUID でない行を検出して、B 列以降を 1 列右にシフト修復します。\n"
+    + "元の submission_id は失われているため、『recovered-<factor_no>-<短縮 id>』で埋めます。\n\n"
+    + "実行してよろしいですか？",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (confirm !== ui.Button.OK) return;
+  var res = repairShiftedRows();
+  var msg = res.ok
+    ? "修復: " + res.repaired + " 件 / 問題なし: " + res.skipped + " 件"
+    : "エラー: " + res.error;
+  ui.alert("列ズレ行を修復", msg, ui.ButtonSet.OK);
 }
 
 // =============================================================================
@@ -1028,6 +1152,12 @@ var KITASAN_MESSAGES = {
   ]
 };
 
+// AI 誤認識の注意喚起（embed のタイトル直下、因子サマリの前に挿入する短文）。
+// OCR 精度が安定したら空文字に差し替えるだけで無効化可能。
+var KITASAN_OCR_DISCLAIMER =
+  "> ※ 因子情報はAIの自動読み取りなので、たまに誤認識があるんですッ。" +
+  "気になる因子は原本スクショもご確認を。誤認識は 🐛 バグ報告で教えてくださいねッ！🐎";
+
 function _kitasanMessage(purposeKey) {
   var arr = KITASAN_MESSAGES[purposeKey];
   if (arr && arr.length) {
@@ -1082,19 +1212,33 @@ function _buildFactorSummaryText(rows, colIdx) {
 }
 
 /** Discord Webhook に multipart で画像を直接添付して POST。 */
-function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl) {
+function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl, trainerId) {
+  var fields = [];
+  if (trainerId) {
+    fields.push({
+      name: "🆔 トレーナーID",
+      value: "```" + trainerId + "```\n挨拶やフォローにそのままコピーしてお使いくださいねッ！🐎",
+      inline: false
+    });
+  }
+  fields.push({
+    name: "📢 皆さんも因子を投稿してくださいねッ！",
+    value: "あなたの一枚が誰かの勝負を支えるかもしれませんッ！わっしょーい！🐎✨\n▶ [投稿フォームはこちら](" + FORM_URL + ")",
+    inline: false
+  });
+  // タイトル直下に注意書きを挟み、続く因子情報との間に空行を入れて可読性を確保する。
+  var description = KITASAN_OCR_DISCLAIMER
+    ? (KITASAN_OCR_DISCLAIMER + "\n\u200B\n" + summary)  // U+200B で強制段落分離
+    : summary;
+  // Discord の description 上限 4096 文字を超えないよう軽くガード。
+  if (description.length > 4000) description = description.slice(0, 3997) + "...";
+
   var embed = {
     title: "🔍 UMG因子保管庫で詳細を見る",
     url: searchUrl,
-    description: summary,
+    description: description,
     color: 0x000000,
-    fields: [
-      {
-        name: "📢 皆さんも因子を投稿してくださいねッ！",
-        value: "あなたの一枚が誰かの勝負を支えるかもしれませんッ！わっしょーい！🐎✨\n▶ [投稿フォームはこちら](" + FORM_URL + ")",
-        inline: false
-      }
-    ],
+    fields: fields,
     footer: {text: "勝負の神様は、準備した者に微笑むッ！🐎✨"}
   };
   var payloadJson = {content: content, embeds: [embed]};
@@ -1126,6 +1270,160 @@ function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl)
   }
   var res = UrlFetchApp.fetch(webhookUrl, options);
   Logger.log("discord webhook status: " + res.getResponseCode());
+}
+
+// =============================================================================
+// Discord 再通知（factor_no 指定）
+// =============================================================================
+// 列ズレ修復などで submission_id が失われたり、何らかの理由で onFormSubmit 時に
+// 通知されなかった因子について、factor_no を指定して Discord へ投稿し直す。
+// 対応する Form 応答は submitted_at / Timestamp の近さでマッチさせる（±10 分）。
+
+function resendDiscordByFactorNo(factorNo) {
+  try {
+    factorNo = Number(factorNo);
+    if (!factorNo) return {ok: false, error: "factor_no が不正"};
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var factSheet = ss.getSheetByName(SEARCH_TAB_NAME);
+    if (!factSheet) return {ok: false, error: "factors_normalized が見つかりません"};
+    _ensureFactorNo(factSheet);
+    var lastRow = factSheet.getLastRow();
+    var lastCol = factSheet.getLastColumn();
+    var values = factSheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var colIdx = {};
+    for (var i = 0; i < header.length; i++) colIdx[header[i]] = i;
+
+    var rows = [];
+    var submittedAt = "";
+    var imageFilename = "";
+    var storedSid = "";
+    for (var r = 1; r < values.length; r++) {
+      if (Number(values[r][colIdx["factor_no"]] || 0) === factorNo) {
+        rows.push(values[r]);
+        if (!submittedAt) submittedAt = String(values[r][colIdx["submitted_at"]] || "");
+        if (!imageFilename && colIdx["image_filename"] !== undefined) imageFilename = String(values[r][colIdx["image_filename"]] || "");
+        if (!storedSid && colIdx["submission_id"] !== undefined) storedSid = String(values[r][colIdx["submission_id"]] || "");
+      }
+    }
+    if (rows.length === 0) return {ok: false, error: "factor_no=" + factorNo + " の行が見つかりません"};
+
+    // Form 応答シートから該当レコードを特定する
+    var formSheet = _getFormResponsesSheet();
+    if (!formSheet) return {ok: false, error: "Form 応答シートが見つかりません"};
+    var formLastRow = formSheet.getLastRow();
+    var formLastCol = formSheet.getLastColumn();
+    var fvals = formSheet.getRange(1, 1, formLastRow, formLastCol).getValues();
+    var fheader = fvals[0].map(String);
+    var fIdx = {};
+    for (var j = 0; j < fheader.length; j++) fIdx[fheader[j]] = j;
+
+    var purposeIdx = -1, imageIdx = -1, trainerIdx = -1, tsIdx = 0, sidFormIdx = -1;
+    for (var jj = 0; jj < fheader.length; jj++) {
+      if (purposeIdx < 0 && /目的|用途|purpose/i.test(fheader[jj])) purposeIdx = jj;
+      if (imageIdx < 0 && /画像|image|ファイル|スクリーンショット/i.test(fheader[jj])) imageIdx = jj;
+      if (trainerIdx < 0 && /トレーナーID|trainer/i.test(fheader[jj])) trainerIdx = jj;
+      if (/タイムスタンプ|timestamp/i.test(fheader[jj])) tsIdx = jj;
+      if (fheader[jj] === "submission_id") sidFormIdx = jj;
+    }
+
+    var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    // ===== 探索戦略 =====
+    // 1) factors_normalized 側の submission_id が UUID → Form の同 UUID と完全一致
+    // 2) submission_id が失われている（recovered-*）→ image_filename が
+    //    `form-<sid 先頭 8 文字>.png` 形式なので、Form の submission_id との前方一致で復元
+    // 3) それでもダメなら submitted_at と Form タイムスタンプの近似（±10 分）
+    var bestRow = null;
+    var matchStrategy = "";
+
+    // Strategy 1: UUID 完全一致
+    if (!bestRow && sidFormIdx >= 0 && UUID_RE.test(storedSid)) {
+      for (var fr1 = 1; fr1 < fvals.length; fr1++) {
+        if (String(fvals[fr1][sidFormIdx] || "").toLowerCase() === storedSid.toLowerCase()) {
+          bestRow = fvals[fr1]; matchStrategy = "uuid-exact"; break;
+        }
+      }
+    }
+
+    // Strategy 2: image_filename の prefix で Form 側 submission_id に前方一致
+    if (!bestRow && sidFormIdx >= 0) {
+      var m = String(imageFilename).match(/form-([0-9a-f]{8})/i);
+      if (m) {
+        var prefix = m[1].toLowerCase();
+        for (var fr2 = 1; fr2 < fvals.length; fr2++) {
+          var sidCell = String(fvals[fr2][sidFormIdx] || "").toLowerCase();
+          if (sidCell.indexOf(prefix) === 0) {
+            bestRow = fvals[fr2]; matchStrategy = "filename-prefix:" + prefix; break;
+          }
+        }
+      }
+    }
+
+    // Strategy 3: タイムスタンプ近似（最後の頼み）
+    if (!bestRow) {
+      var submittedMs = Date.parse(submittedAt);
+      if (isNaN(submittedMs)) submittedMs = Date.parse(String(submittedAt).replace(" ", "T"));
+      var bestDiff = 10 * 60 * 1000;  // ±10 分
+      for (var fr3 = 1; fr3 < fvals.length; fr3++) {
+        var ts = fvals[fr3][tsIdx];
+        var ms = (ts instanceof Date) ? ts.getTime() : Date.parse(String(ts));
+        if (!ms || isNaN(submittedMs)) continue;
+        var diff = Math.abs(ms - submittedMs);
+        if (diff <= bestDiff) {
+          bestDiff = diff;
+          bestRow = fvals[fr3];
+          matchStrategy = "timestamp-near:" + diff + "ms";
+        }
+      }
+    }
+
+    if (!bestRow) return {ok: false, error: "factor_no=" + factorNo + " の Form 応答がマッチしません（image_filename=" + imageFilename + "）"};
+    Logger.log("resendDiscord #" + factorNo + " matched via " + matchStrategy);
+
+    var purpose = purposeIdx >= 0 ? String(bestRow[purposeIdx] || "").trim() : "";
+    var imageUrl = imageIdx >= 0 ? String(bestRow[imageIdx] || "").split(",")[0].trim() : "";
+    var trainerId = trainerIdx >= 0 ? String(bestRow[trainerIdx] || "").trim() : "";
+
+    var matched = _pickWebhookForPurpose(purpose);
+    if (!matched) return {ok: false, error: "purpose='" + purpose + "' に対応する Webhook がありません"};
+
+    var fileId = _extractDriveFileId(imageUrl);
+    var imageBlob = null;
+    if (fileId) {
+      try { imageBlob = DriveApp.getFileById(fileId).getBlob(); } catch (e) { Logger.log("blob fetch failed: " + e); }
+    }
+
+    var summary = _buildFactorSummaryText(rows, colIdx);
+    var msg = _kitasanMessage(matched.key);
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId);
+    return {ok: true, factor_no: factorNo, purpose: purpose, trainer_id: trainerId, match: matchStrategy};
+  } catch (err) {
+    Logger.log("resendDiscordByFactorNo error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+function _menuResendDiscord() {
+  var ui = SpreadsheetApp.getUi();
+  var input = ui.prompt(
+    "Discord に再通知",
+    "通知したい factor_no を入力してください（カンマ区切りで複数可。例: 3,4,5）",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (input.getSelectedButton() !== ui.Button.OK) return;
+  var text = String(input.getResponseText() || "").trim();
+  if (!text) { ui.alert("入力が空です"); return; }
+  var nos = text.split(",").map(function(s) { return Number(s.trim()); }).filter(function(n) { return n > 0; });
+  if (nos.length === 0) { ui.alert("有効な factor_no がありません"); return; }
+  var lines = [];
+  for (var i = 0; i < nos.length; i++) {
+    var res = resendDiscordByFactorNo(nos[i]);
+    lines.push("#" + nos[i] + ": " + (res.ok ? "送信成功 [" + res.purpose + "] (" + res.match + ")" : "失敗 — " + res.error));
+    Utilities.sleep(500);  // Webhook レート制限対策
+  }
+  ui.alert("Discord 再通知結果", lines.join("\n"), ui.ButtonSet.OK);
 }
 
 /** onFormSubmit の末尾から呼ばれる。目的・用途に応じた Webhook に通知。 */
@@ -1170,8 +1468,13 @@ function _notifyDiscordIfNeeded(submissionId, fileId, namedValues) {
       }
     }
 
+    // トレーナーID を Form 応答から拾う（見つからなければ通知側は省略）
+    var trainerId = _pickFirst(namedValues, [
+      "トレーナーID", "トレーナー ID", "トレーナＩＤ", "trainer id", "trainer"
+    ]) || "";
+
     var msg = _kitasanMessage(matched.key);
-    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL);
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId);
   } catch (err) {
     Logger.log("_notifyDiscordIfNeeded error: " + err);
   }
