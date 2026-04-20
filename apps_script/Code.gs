@@ -108,6 +108,71 @@ var SEARCH_TAB_NAME = "factors_normalized";
 var SEARCH_MAX_SLOTS = 60;
 
 /**
+ * factors_normalized に factor_no 列（A 列想定）を保証し、空の行には
+ * submission_id の登場順に通番を付与する。同じ submission_id は同じ番号。
+ * 既存の採番はそのまま残し、未採番の submission_id に対して次の連番を振る。
+ */
+function _ensureFactorNo(sheet) {
+  var lastRow = sheet.getLastRow();
+  var lastCol = sheet.getLastColumn();
+  if (lastRow < 1 || lastCol < 1) return;
+  var header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+  var noIdx = header.indexOf("factor_no");
+  if (noIdx < 0) {
+    // 先頭列に factor_no を挿入
+    sheet.insertColumnBefore(1);
+    sheet.getRange(1, 1).setValue("factor_no");
+    noIdx = 0;
+    lastCol = sheet.getLastColumn();
+  }
+  if (lastRow < 2) return;
+  var subIdx = header.indexOf("submission_id");
+  if (subIdx < 0) {
+    // ヘッダ再取得（挿入があった場合）
+    header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+    subIdx = header.indexOf("submission_id");
+    if (subIdx < 0) return;
+  } else if (noIdx === 0 && header[0] !== "factor_no") {
+    // 挿入直後に submission_id の列位置が 1 ずれている
+    header = sheet.getRange(1, 1, 1, lastCol).getValues()[0].map(String);
+    subIdx = header.indexOf("submission_id");
+  }
+  var noCol = noIdx + 1;
+  var subCol = subIdx + 1;
+  var rng = sheet.getRange(2, 1, lastRow - 1, lastCol);
+  var values = rng.getValues();
+  // 既存 no を収集して最大値を知る
+  var sidToNo = {};
+  var maxNo = 0;
+  for (var r = 0; r < values.length; r++) {
+    var n = Number(values[r][noIdx] || 0);
+    var sid = String(values[r][subIdx] || "");
+    if (n > 0 && sid) {
+      sidToNo[sid] = n;
+      if (n > maxNo) maxNo = n;
+    }
+  }
+  // 未採番の submission_id に登場順で連番を振る
+  var dirty = false;
+  var noColValues = sheet.getRange(2, noCol, lastRow - 1, 1).getValues();
+  for (var r = 0; r < values.length; r++) {
+    var sid = String(values[r][subIdx] || "");
+    if (!sid) continue;
+    if (!sidToNo[sid]) {
+      maxNo += 1;
+      sidToNo[sid] = maxNo;
+    }
+    if (Number(noColValues[r][0] || 0) !== sidToNo[sid]) {
+      noColValues[r][0] = sidToNo[sid];
+      dirty = true;
+    }
+  }
+  if (dirty) {
+    sheet.getRange(2, noCol, lastRow - 1, 1).setValues(noColValues);
+  }
+}
+
+/**
  * 検索 UI 用のプルダウン選択肢を factors_normalized シートから抽出。
  * 戻り値: { ok, characters, submitters, green_names, white_names }
  */
@@ -116,6 +181,7 @@ function getFilterOptions() {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(SEARCH_TAB_NAME);
     if (!sheet) return {ok: true, characters: [], submitters: [], green_names: [], white_names: []};
+    _ensureFactorNo(sheet);
     var lastRow = sheet.getLastRow();
     var lastCol = sheet.getLastColumn();
     if (lastRow < 2) return {ok: true, characters: [], submitters: [], green_names: [], white_names: []};
@@ -227,6 +293,10 @@ function _buildSubmissionPurposeMap() {
   return _buildSubmissionMap(/目的|用途|purpose/i);
 }
 
+function _buildSubmissionTrainerIdMap() {
+  return _buildSubmissionMap(/トレーナーID|trainer/i);
+}
+
 /**
  * 検索クエリを受けて submission_id 単位で集約した結果を返す。
  *
@@ -247,6 +317,7 @@ function searchFactors(filters) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName(SEARCH_TAB_NAME);
     if (!sheet) return {ok: false, error: "sheet '" + SEARCH_TAB_NAME + "' not found"};
+    _ensureFactorNo(sheet);
     var lastRow = sheet.getLastRow();
     var lastCol = sheet.getLastColumn();
     if (lastRow < 2) return {ok: true, total: 0, submissions: []};
@@ -287,6 +358,7 @@ function searchFactors(filters) {
       if (!subsMap[sid]) {
         subsMap[sid] = {
           submission_id: sid,
+          factor_no: Number(row[colIdx["factor_no"]] || 0),
           submitted_at: String(row[colIdx["submitted_at"]] || ""),
           submitter_id: String(row[colIdx["submitter_id"]] || ""),
           image_filename: String(row[colIdx["image_filename"]] || ""),
@@ -308,6 +380,14 @@ function searchFactors(filters) {
     var green = Array.isArray(filters.green) ? filters.green : [];
     var white = Array.isArray(filters.white) ? filters.white : [];
     var limit = Number(filters.limit || 200);
+    // アーカイブ（30 日超）を含めるか
+    var includeArchive = Boolean(filters.include_archive);
+    var cutoffMs = null;
+    if (!includeArchive) {
+      var _d = new Date();
+      _d.setDate(_d.getDate() - 30);
+      cutoffMs = _d.getTime();
+    }
 
     // purpose フィルタを使う場合のみマップを事前取得
     var purposeMap = (purposeExact || true) ? _buildSubmissionPurposeMap() : {};
@@ -358,6 +438,16 @@ function searchFactors(filters) {
     for (var si = 0; si < subsOrder.length; si++) {
       var sub = subsMap[subsOrder[si]];
 
+      // アーカイブフィルタ：OFF のときは 30 日以内のみ
+      if (cutoffMs !== null) {
+        var tsRaw = String(sub.submitted_at || "");
+        if (!tsRaw) continue;  // 日付不明は古扱い
+        // "yyyy-MM-dd HH:mm:ss" 形式は Date.parse が通りにくいので ISO 化を試みる
+        var tsMs = Date.parse(tsRaw);
+        if (isNaN(tsMs)) tsMs = Date.parse(tsRaw.replace(" ", "T"));
+        if (isNaN(tsMs) || tsMs < cutoffMs) continue;
+      }
+
       // 親ウマ娘名は main.character の完全一致
       if (charExact) {
         if (!sub.main || String(sub.main.character || "") !== charExact) continue;
@@ -385,14 +475,364 @@ function searchFactors(filters) {
     });
 
     var imgMap = _buildSubmissionImageMap();
+    var trainerIdMap = _buildSubmissionTrainerIdMap();
     for (var oi = 0; oi < out.length; oi++) {
       out[oi].image_url = imgMap[out[oi].submission_id] || "";
+      out[oi].trainer_id = trainerIdMap[out[oi].submission_id] || "";
     }
 
     return {ok: true, total: out.length, submissions: out};
   } catch (err) {
     return {ok: false, error: String(err)};
   }
+}
+
+// =============================================================================
+// バグ報告（search.html のモーダルから google.script.run 経由で呼ばれる）
+// =============================================================================
+
+var BUG_TAB_NAME = "bug_reports";
+// 自動修正ワーカで使用する列：
+//   factor_no        → 該当 submission の識別キー
+//   target_role      → main / parent1 / parent2
+//   wrong_field      → factors_normalized の列名
+//   wrong_value      → 現在の値（整合性チェック用）
+//   correct_value    → 修正後の値
+//   status           → pending / applied / rejected / invalid（運用用）
+//   applied_at       → 自動修正ワーカが書き込む
+//   reviewer_note    → 運営側メモ
+var BUG_COLUMNS = [
+  "reported_at", "factor_no", "target_role", "wrong_field",
+  "wrong_value", "correct_value",
+  "status", "applied_at", "reviewer_note"
+];
+
+/**
+ * バグ報告をスプレの bug_reports タブに追記する。
+ * params: {factor_no, target_role, wrong_field, wrong_value, correct_value}
+ */
+function reportBug(params) {
+  try {
+    params = params || {};
+    var factorNo = String(params.factor_no || "").trim();
+    var wrong = String(params.wrong_value || "").trim();
+    var correct = String(params.correct_value || "").trim();
+    var wrongField = String(params.wrong_field || "").trim();
+    var role = String(params.target_role || "").trim();
+    if (!factorNo) {
+      return {ok: false, error: "因子No は必須です"};
+    }
+    if (!/^\d+$/.test(factorNo)) {
+      return {ok: false, error: "因子No は数字で入力してください"};
+    }
+    if (!wrongField && !wrong && !correct) {
+      return {ok: false, error: "修正内容（項目・現在の値・正しい値）のいずれかは必要です"};
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(BUG_TAB_NAME);
+    if (!sheet) {
+      sheet = ss.insertSheet(BUG_TAB_NAME);
+      var existing = sheet.getMaxColumns();
+      if (existing < BUG_COLUMNS.length) {
+        sheet.insertColumnsAfter(existing, BUG_COLUMNS.length - existing);
+      }
+      sheet.appendRow(BUG_COLUMNS);
+      sheet.setFrozenRows(1);
+    }
+    var now = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyy-MM-dd HH:mm:ss");
+    sheet.appendRow([
+      now,
+      Number(factorNo),
+      role,
+      wrongField,
+      wrong,
+      correct,
+      "pending",
+      "",
+      ""
+    ]);
+    return {ok: true};
+  } catch (err) {
+    return {ok: false, error: String(err)};
+  }
+}
+
+// =============================================================================
+// バグ報告の自動反映ワーカ
+// =============================================================================
+// 時限トリガ（setupBugReportTrigger）で定期実行するか、スプレッドシートの
+// メニュー「UMG因子DB → 🛠 バグ報告を適用」から手動実行する。
+//
+// 処理内容：
+//   - bug_reports の status="pending" を対象
+//   - factor_no + target_role で factors_normalized の該当行を特定
+//   - wrong_value が現在値と一致する場合のみ correct_value で上書き
+//   - 星フィールドは数値化
+//   - white_name は wrong_value に一致する factor_NN_name スロットを検索して置換
+//   - 自動化できないケース（white_star / other / 曖昧）は needs_review
+//
+// 結果は status / applied_at / reviewer_note に反映される。
+
+function applyBugReports(options) {
+  options = options || {};
+  var dryRun = Boolean(options.dry_run);
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var bugSheet = ss.getSheetByName(BUG_TAB_NAME);
+    var factSheet = ss.getSheetByName(SEARCH_TAB_NAME);
+    if (!bugSheet) return {ok: true, processed: 0, message: "bug_reports シートがまだ無いのでスキップ"};
+    if (!factSheet) return {ok: false, error: "factors_normalized シートが見つかりません"};
+
+    _ensureFactorNo(factSheet);
+
+    var bugLast = bugSheet.getLastRow();
+    var bugCols = bugSheet.getLastColumn();
+    if (bugLast < 2) return {ok: true, processed: 0, applied: 0, invalid: 0, needs_review: 0};
+    var bugValues = bugSheet.getRange(1, 1, bugLast, bugCols).getValues();
+    var bugHeader = bugValues[0].map(String);
+    var bIdx = {};
+    for (var i = 0; i < bugHeader.length; i++) bIdx[bugHeader[i]] = i;
+
+    // 必要な bug_reports 列が揃っているか確認（旧スキーマ対策）
+    var need = ["factor_no", "target_role", "wrong_field", "wrong_value",
+                "correct_value", "status", "applied_at", "reviewer_note"];
+    for (var n = 0; n < need.length; n++) {
+      if (bIdx[need[n]] === undefined) {
+        return {ok: false, error: "bug_reports に列 '" + need[n] + "' が無い。新規報告を 1 件送ると再生成されます"};
+      }
+    }
+
+    var factLast = factSheet.getLastRow();
+    var factCols = factSheet.getLastColumn();
+    var factValues = factSheet.getRange(1, 1, factLast, factCols).getValues();
+    var factHeader = factValues[0].map(String);
+    var fIdx = {};
+    for (var i = 0; i < factHeader.length; i++) fIdx[factHeader[i]] = i;
+
+    var AUTO_TEXT = {"character": true, "blue_type": true, "red_type": true, "green_name": true};
+    var AUTO_NUM = {"blue_star": true, "red_star": true, "green_star": true};
+
+    var results = {processed: 0, applied: 0, invalid: 0, needs_review: 0, skipped: 0};
+    var factUpdates = [];  // {row, col, value}
+    var bugUpdates = [];   // {row, status, note}
+
+    for (var r = 1; r < bugValues.length; r++) {
+      var br = bugValues[r];
+      var status = String(br[bIdx["status"]] || "").trim();
+      if (status !== "pending") { results.skipped += 1; continue; }
+      results.processed += 1;
+
+      var factorNo = Number(br[bIdx["factor_no"]] || 0);
+      var targetRole = String(br[bIdx["target_role"]] || "").trim();
+      var field = String(br[bIdx["wrong_field"]] || "").trim();
+      var wrong = String(br[bIdx["wrong_value"]] || "").trim();
+      var correct = String(br[bIdx["correct_value"]] || "").trim();
+
+      if (!factorNo) {
+        bugUpdates.push({row: r + 1, status: "invalid", note: "factor_no が空"});
+        results.invalid += 1; continue;
+      }
+      if (!field) {
+        bugUpdates.push({row: r + 1, status: "needs_review", note: "wrong_field が空"});
+        results.needs_review += 1; continue;
+      }
+
+      // factor_no に一致する行群
+      var matched = [];
+      for (var fr = 1; fr < factValues.length; fr++) {
+        if (Number(factValues[fr][fIdx["factor_no"]] || 0) === factorNo) matched.push(fr);
+      }
+      if (matched.length === 0) {
+        bugUpdates.push({row: r + 1, status: "invalid", note: "該当 factor_no なし"});
+        results.invalid += 1; continue;
+      }
+
+      // target_role で絞り込み
+      var candidates = matched;
+      if (targetRole) {
+        candidates = matched.filter(function(fr) {
+          return String(factValues[fr][fIdx["role"]] || "") === targetRole;
+        });
+        if (candidates.length === 0) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "該当 role 行なし: " + targetRole});
+          results.invalid += 1; continue;
+        }
+      }
+
+      // --- テキスト系 ---
+      if (AUTO_TEXT[field]) {
+        if (fIdx[field] === undefined) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "列 '" + field + "' が factors_normalized に無い"});
+          results.invalid += 1; continue;
+        }
+        if (!targetRole) {
+          if (wrong) {
+            candidates = candidates.filter(function(fr) { return String(factValues[fr][fIdx[field]] || "") === wrong; });
+          }
+          if (candidates.length !== 1) {
+            bugUpdates.push({row: r + 1, status: "needs_review", note: "target_role 未指定で一意に特定できず（候補 " + candidates.length + " 件）"});
+            results.needs_review += 1; continue;
+          }
+        }
+        if (candidates.length !== 1) {
+          bugUpdates.push({row: r + 1, status: "needs_review", note: "候補が複数: " + candidates.length});
+          results.needs_review += 1; continue;
+        }
+        var targetRow = candidates[0];
+        var currentStr = String(factValues[targetRow][fIdx[field]] || "");
+        if (wrong && currentStr !== wrong) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "現在値 '" + currentStr + "' が wrong_value '" + wrong + "' と不一致"});
+          results.invalid += 1; continue;
+        }
+        factUpdates.push({row: targetRow + 1, col: fIdx[field] + 1, value: correct});
+        bugUpdates.push({row: r + 1, status: "applied", note: field + ": '" + currentStr + "' → '" + correct + "'"});
+        results.applied += 1;
+        continue;
+      }
+
+      // --- 数値（★）系 ---
+      if (AUTO_NUM[field]) {
+        if (fIdx[field] === undefined) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "列 '" + field + "' が factors_normalized に無い"});
+          results.invalid += 1; continue;
+        }
+        if (candidates.length !== 1 && !targetRole) {
+          bugUpdates.push({row: r + 1, status: "needs_review", note: "target_role 未指定のため特定不能（★系）"});
+          results.needs_review += 1; continue;
+        }
+        if (candidates.length !== 1) {
+          bugUpdates.push({row: r + 1, status: "needs_review", note: "候補が複数: " + candidates.length});
+          results.needs_review += 1; continue;
+        }
+        var newNum = Number(correct);
+        if (isNaN(newNum)) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "correct_value が数値でない: '" + correct + "'"});
+          results.invalid += 1; continue;
+        }
+        var targetRow2 = candidates[0];
+        var currentNum = Number(factValues[targetRow2][fIdx[field]] || 0);
+        if (wrong && String(currentNum) !== wrong) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "現在値 ★" + currentNum + " が wrong_value '" + wrong + "' と不一致"});
+          results.invalid += 1; continue;
+        }
+        factUpdates.push({row: targetRow2 + 1, col: fIdx[field] + 1, value: newNum});
+        bugUpdates.push({row: r + 1, status: "applied", note: field + ": " + currentNum + " → " + newNum});
+        results.applied += 1;
+        continue;
+      }
+
+      // --- 白因子名（スロット検索） ---
+      if (field === "white_name") {
+        if (!wrong) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "wrong_value（置換対象のスキル名）が空"});
+          results.invalid += 1; continue;
+        }
+        var hit = null;  // {row, col, slotKey}
+        for (var ci = 0; ci < candidates.length; ci++) {
+          var fr2 = candidates[ci];
+          for (var s = 1; s <= SEARCH_MAX_SLOTS; s++) {
+            var key = "factor_" + (s < 10 ? "0" + s : s) + "_name";
+            if (fIdx[key] === undefined) break;
+            if (String(factValues[fr2][fIdx[key]] || "") === wrong) {
+              hit = {row: fr2, col: fIdx[key], slotKey: key};
+              break;
+            }
+          }
+          if (hit) break;
+        }
+        if (!hit) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "該当スキル '" + wrong + "' が factor_no=" + factorNo + " の因子に見つからず"});
+          results.invalid += 1; continue;
+        }
+        factUpdates.push({row: hit.row + 1, col: hit.col + 1, value: correct});
+        bugUpdates.push({row: r + 1, status: "applied", note: "white (" + hit.slotKey + "): '" + wrong + "' → '" + correct + "'"});
+        results.applied += 1;
+        continue;
+      }
+
+      // --- 自動適用できない（white_star / other / 不明フィールド） ---
+      bugUpdates.push({row: r + 1, status: "needs_review", note: "field='" + field + "' は手動対応が必要"});
+      results.needs_review += 1;
+    }
+
+    if (!dryRun) {
+      factUpdates.forEach(function(u) {
+        factSheet.getRange(u.row, u.col).setValue(u.value);
+      });
+      var nowStr = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyy-MM-dd HH:mm:ss");
+      bugUpdates.forEach(function(u) {
+        bugSheet.getRange(u.row, bIdx["status"] + 1).setValue(u.status);
+        bugSheet.getRange(u.row, bIdx["applied_at"] + 1).setValue(u.status === "applied" ? nowStr : "");
+        bugSheet.getRange(u.row, bIdx["reviewer_note"] + 1).setValue(u.note || "");
+      });
+    }
+
+    Logger.log("applyBugReports: " + JSON.stringify(results));
+    return {ok: true, dry_run: dryRun, processed: results.processed,
+            applied: results.applied, invalid: results.invalid,
+            needs_review: results.needs_review, skipped: results.skipped};
+  } catch (err) {
+    Logger.log("applyBugReports error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+/** 1 時間ごとの自動反映トリガを設置（同名の既存トリガは削除してから作り直す） */
+function setupBugReportTrigger() {
+  var existing = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < existing.length; i++) {
+    if (existing[i].getHandlerFunction() === "applyBugReports") {
+      ScriptApp.deleteTrigger(existing[i]);
+    }
+  }
+  ScriptApp.newTrigger("applyBugReports").timeBased().everyHours(1).create();
+  SpreadsheetApp.getActive().toast("1 時間ごとの自動反映トリガを設置しました", "UMG因子DB", 5);
+}
+
+/** 自動反映トリガを削除 */
+function removeBugReportTrigger() {
+  var existing = ScriptApp.getProjectTriggers();
+  var removed = 0;
+  for (var i = 0; i < existing.length; i++) {
+    if (existing[i].getHandlerFunction() === "applyBugReports") {
+      ScriptApp.deleteTrigger(existing[i]);
+      removed += 1;
+    }
+  }
+  SpreadsheetApp.getActive().toast("自動反映トリガを " + removed + " 件削除しました", "UMG因子DB", 5);
+}
+
+/** スプレッドシート起動時にメニューを追加 */
+function onOpen(e) {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu("UMG因子DB")
+      .addItem("🛠 バグ報告を適用（今すぐ）", "_menuApplyBugReports")
+      .addItem("🧪 バグ報告を適用（ドライラン）", "_menuApplyBugReportsDry")
+      .addSeparator()
+      .addItem("⏰ 1 時間ごとの自動反映トリガを設置", "setupBugReportTrigger")
+      .addItem("⛔ 自動反映トリガを削除", "removeBugReportTrigger")
+      .addToUi();
+  } catch (err) {
+    Logger.log("onOpen menu failed: " + err);
+  }
+}
+
+function _menuApplyBugReports() {
+  var res = applyBugReports({dry_run: false});
+  var msg = res.ok
+    ? "対象 " + res.processed + " 件 / 適用 " + res.applied + " / 要確認 " + res.needs_review + " / 不整合 " + res.invalid
+    : "エラー: " + res.error;
+  SpreadsheetApp.getUi().alert("バグ報告を適用", msg, SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+function _menuApplyBugReportsDry() {
+  var res = applyBugReports({dry_run: true});
+  var msg = res.ok
+    ? "【ドライラン・実書込みなし】\n対象 " + res.processed + " 件 / 適用可 " + res.applied + " / 要確認 " + res.needs_review + " / 不整合 " + res.invalid
+    : "エラー: " + res.error;
+  SpreadsheetApp.getUi().alert("バグ報告 ドライラン", msg, SpreadsheetApp.getUi().ButtonSet.OK);
 }
 
 // =============================================================================
@@ -406,6 +846,7 @@ var DISCORD_WEBHOOKS = {
 };
 
 var SEARCH_UI_URL = "https://script.google.com/macros/s/***REDACTED_APPS_SCRIPT_ID***/exec?ui=search";
+var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeubzORDqJSksgsDV6v-715_Py3_2FoHIuQ6V2CvORVoY22Hg/viewform";
 
 function _pickWebhookForPurpose(purpose) {
   if (!purpose) return null;
@@ -501,6 +942,13 @@ function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl)
     url: searchUrl,
     description: summary,
     color: 0x000000,
+    fields: [
+      {
+        name: "📢 皆さんも因子を投稿してくださいねッ！",
+        value: "あなたの一枚が誰かの勝負を支えるかもしれませんッ！わっしょーい！🐎✨\n▶ [投稿フォームはこちら](" + FORM_URL + ")",
+        inline: false
+      }
+    ],
     footer: {text: "勝負の神様は、準備した者に微笑むッ！🐎✨"}
   };
   var payloadJson = {content: content, embeds: [embed]};

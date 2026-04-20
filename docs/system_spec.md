@@ -8,10 +8,13 @@
 
 | 機能 | 説明 |
 |---|---|
-| **投稿** | Google Form 経由で因子画像を投稿 |
+| **投稿** | Google Form 経由で因子画像を投稿（トレーナーID・連絡先・目的・用途を同時取得） |
 | **自動解析** | Cloud Run 上で ONNX + EasyOCR により青/赤/緑/白因子 ＋ ★数を抽出 |
-| **データ蓄積** | スプレッドシート `factors_normalized` に 1 投稿 = 3 行（親/祖1/祖2）で記録 |
-| **検索 UI** | Apps Script Web App の HTML で複数条件フィルタ検索 |
+| **データ蓄積** | スプレッドシート `factors_normalized` に 1 投稿 = 3 行（親/祖1/祖2）で記録。投稿単位で `factor_no`（通番）を付与 |
+| **検索 UI** | Apps Script Web App の HTML で複数条件フィルタ検索。目的タグを色分け表示（対人=赤/査定=青/競技場=緑）、青赤緑の条件セクションも色分け |
+| **アーカイブ** | デフォルトは直近 30 日以内のみ表示。トグル ON で全期間を対象に拡張 |
+| **バグ報告** | 検索画面から誤認識を報告 → `bug_reports` シートに蓄積 |
+| **バグ自動反映ワーカ** | 時限トリガ（1 時間毎）または手動メニューで `bug_reports` を走査し、`factors_normalized` を自動補正 |
 | **Discord 通知** | 目的・用途（対人/査定/競技場）別に Webhook でキタサンブラック口調メッセージ投稿（表示名は Webhook 設定「おしらせキタちゃん」） |
 
 ## 3. システム構成
@@ -24,9 +27,10 @@
 | フロント | Apps Script Web App (`search.html`) | 検索 UI |
 | 制御 | Apps Script (`Code.gs`) | Form トリガ / Webhook / 検索 API / Discord 通知 |
 | 処理 | Cloud Run (`factor-processor`) | FastAPI + ONNX + EasyOCR による画像解析 |
-| データ | Google Sheets | `factors_normalized` (解析結果)、`フォームの回答 1` (応答原本) |
+| データ | Google Sheets | `factors_normalized`（解析結果・`factor_no` 付）、`bug_reports`（誤認識報告）、`フォームの回答 1`（応答原本） |
 | データ | Google Drive | 投稿画像ファイル（匿名リネーム済み） |
 | 通知 | Discord Webhook × 3 | 対人 / 査定 / 競技場 チャンネル別 |
+| 運用 | clasp（Google Apps Script CLI） | `apps_script/` 配下の差分 push と URL 保持デプロイを自動化 |
 | 外部 | GCP Secret Manager | `apps-script-secret`, `cloud-run-shared-secret` |
 
 ### 3.2 デプロイ先
@@ -95,26 +99,63 @@ Apps Script doGet
   │
   ▼ 起動時 google.script.run.getFilterOptions()
 Apps Script getFilterOptions
-  │
+  │ └─ _ensureFactorNo: factor_no 列の存在保証 + 未採番行にバックフィル
+  ▼
   ▼ factors_normalized + Form 応答タブから選択肢収集
 プルダウン選択肢を返す
   │
-  ▼ ユーザーが条件を選択 → 検索ボタン
+  ▼ ユーザーが条件を選択 → 検索ボタン（include_archive フラグを送信）
 google.script.run.searchFactors(filters)
   │
   ▼
 Apps Script searchFactors
   │ ├─ factors_normalized 全行読み込み
-  │ ├─ submission_id で 3 行を集約 → submission オブジェクト
+  │ ├─ submission_id で 3 行を集約 → submission オブジェクト（factor_no 付）
+  │ ├─ include_archive=false の場合、submitted_at が「現在 - 30 日」より古い投稿を除外
   │ ├─ 各条件を scope（全体/親のみ/祖のみ）単位で評価
-  │ ├─ 画像 URL / 目的・用途を Form 応答タブから補完
+  │ ├─ 画像 URL / トレーナーID / 目的・用途を Form 応答タブから補完
   │ └─ 新しい順にソート
   ▼
 検索結果を返す（submissions: [...]）
   │
-  ▼ 結果テーブルを描画
+  ▼ 結果テーブルを描画（左端に #factor_no、目的タグは色分け）
 ブラウザ
 ```
+
+### 4.3 バグ報告 → 自動反映フロー
+
+```
+ユーザー（検索画面）
+  │
+  ▼ 🐛 バグ報告 or 結果左端の #factor_no クリック
+バグ報告モーダル（因子No・対象ロール・項目・現在値・正しい値）
+  │
+  ▼ google.script.run.reportBug(params)
+Apps Script reportBug
+  │ └─ bug_reports シートに status="pending" で 1 行追記
+  ▼
+  ─── 時限トリガ（1 時間毎） or メニュー「🛠 バグ報告を適用」 ───
+  ▼
+Apps Script applyBugReports
+  │ ├─ status="pending" の行を走査
+  │ ├─ factor_no + target_role + wrong_value で該当行を特定
+  │ ├─ 現在値が wrong_value と一致する場合のみ correct_value で上書き
+  │ ├─ white_name は factor_NN_name スロットを検索して置換
+  │ └─ 結果を status / applied_at / reviewer_note に書き戻し
+  ▼
+factors_normalized 更新 + bug_reports 状態更新
+  │
+  ▼ applied / invalid / needs_review / skipped の集計を返却
+スプレッドシート（toast または alert 経由で運用者に通知）
+```
+
+**判定結果**
+
+| status | 条件 |
+|---|---|
+| `applied` | 該当行が特定でき、現在値が `wrong_value` と一致、`correct_value` で上書き成功 |
+| `invalid` | 該当 factor_no なし／現在値が `wrong_value` と不一致／数値変換失敗 など |
+| `needs_review` | `white_star` / `other` や、`target_role` 未指定で一意に特定できないケース |
 
 ## 5. データスキーマ
 
@@ -124,6 +165,7 @@ Apps Script searchFactors
 
 | 列 | 型 | 説明 |
 |---|---|---|
+| factor_no | int | 投稿単位の通番（同一 submission は同一番号）。`_ensureFactorNo()` が自動採番・バックフィル |
 | submission_id | string (UUID) | 投稿ごとに一意。3 行で共通 |
 | submitted_at | string (ISO8601) | 投稿日時 |
 | submitter_id | string | 連絡先（Discord 名など、任意） |
@@ -135,17 +177,34 @@ Apps Script searchFactors
 | green_name / green_star | string / int | 緑因子（固有スキル） |
 | factor_01_name / factor_01_star ～ factor_60_name / factor_60_star | string / int | 白因子スロット（最大 60 セット） |
 
-### 5.2 `フォームの回答 1` タブ（応答原本）
+### 5.2 `bug_reports` タブ（誤認識報告）
+
+検索画面のバグ報告モーダルが初回 POST 時に自動作成。自動反映ワーカの入力兼処理ログを兼ねる。
+
+| 列 | 型 | 説明 |
+|---|---|---|
+| reported_at | string | 報告日時（Asia/Tokyo） |
+| factor_no | int | 対象投稿の通番（必須） |
+| target_role | string | `main` / `parent1` / `parent2` / 空 |
+| wrong_field | string | `character` / `blue_type` / `blue_star` / `red_type` / `red_star` / `green_name` / `green_star` / `white_name` / `white_star` / `other` |
+| wrong_value | string | 現在の誤った値（整合性チェック用） |
+| correct_value | string | 正しい値 |
+| status | string | `pending` / `applied` / `invalid` / `needs_review` |
+| applied_at | string | ワーカが適用した日時（`applied` 時のみ） |
+| reviewer_note | string | ワーカの処理結果または運用者メモ |
+
+### 5.3 `フォームの回答 1` タブ（応答原本）
 
 Google Form が自動作成。列の例：
 - タイムスタンプ
+- トレーナーID
 - 【任意】連絡先（Discord 名）
 - 因子画像（Drive URL）
 - 目的・用途
 - submission_id（Apps Script が書き足し）
 - status（同上）
 
-### 5.3 外部参照データ（Cloud Run コンテナ内）
+### 5.4 外部参照データ（Cloud Run コンテナ内）
 
 | ファイル | 件数 | 用途 |
 |---|---|---|
@@ -191,8 +250,10 @@ Google Form が自動作成。列の例：
 ```
 UmamusumeFactorDB/
 ├── apps_script/
-│   ├── Code.gs              # webhook / onFormSubmit / 検索 API / Discord 通知
-│   └── search.html          # 検索 UI（Apps Script Web App）
+│   ├── Code.gs              # webhook / onFormSubmit / 検索 API / Discord 通知 / バグ自動反映
+│   ├── search.html          # 検索 UI（Apps Script Web App）
+│   ├── appsscript.json      # GAS マニフェスト（タイムゾーン・Web App 設定）
+│   └── .clasp.json          # clasp 用 scriptId（rootDir）
 ├── config/
 │   ├── recognizer.json      # 因子ボックス座標（umacapture 由来）
 │   ├── unique_skill_to_character.json  # 固有スキル → ウマ娘対応 249 件
@@ -229,9 +290,14 @@ UmamusumeFactorDB/
 - **モデル更新**：固有スキル → ウマ娘対応表は `python scripts/fetch_unique_skills.py` で UmaTools リポジトリから再生成。新カード追加時に実行。
 - **再デプロイ**：
   - Cloud Run 側コード変更 → `gcloud run deploy factor-processor --source .`
-  - Apps Script コード変更 → エディタで貼り直し → 「デプロイを管理 → 新バージョン」
+  - Apps Script コード変更 → `apps_script/` で `clasp push -f && clasp deploy -i <DEPLOYMENT_ID> -d "<説明>"`。既存 Deployment ID を再利用することで **Web App URL を維持** しつつ新バージョンを差し替えられる。
+- **バグ報告自動反映の有効化（初回のみ）**：対象スプレッドシートを開き、メニュー `UMG因子DB → ⏰ 1 時間ごとの自動反映トリガを設置`。以後 `applyBugReports` が時限実行される。停止は `⛔ 自動反映トリガを削除`、即時適用は `🛠 バグ報告を適用（今すぐ）`、影響確認だけしたい場合は `🧪 ドライラン`。
+- **バグ反映が `needs_review` / `invalid` で止まる典型ケース**：
+  - `white_star`・`other` は自動化対象外（`needs_review`）。`bug_reports` で内容を確認し、`factors_normalized` を手動編集してから `status` を `applied` に書き換える。
+  - 現在値が `wrong_value` と既に違う場合は `invalid`。別のバグ報告や手動修正と重複している可能性が高いので、`reviewer_note` を見て判断。
 - **Discord 画像表示不可**：Drive Blob 取得に失敗、または画像サイズが Discord 制限（通常 8MB / ブースト時 50MB）を超えた場合に表示されない。Apps Script ログで `blob fetch failed:` や webhook status 4xx/413 を確認。
 - **タイムアウト**：Cloud Run は 300 秒制限。コールドスタート約 30〜60 秒 + 解析 30〜60 秒の合計で収まる想定。
+- **検索 UI の既定レンジ**：アーカイブトグル OFF のとき投稿から 30 日以内のみ表示。古い因子を参照したい場合はトグル ON に切替（再検索が自動で走る）。
 
 ## 10. 参照
 

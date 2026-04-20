@@ -5,8 +5,98 @@
   <base target="_top">
   <style>
     body { font-family: -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif; margin: 0; padding: 14px; background: #f7f8fa; color: #222; font-size: 13px; }
-    h1 { font-size: 18px; margin: 0 0 10px; }
     .panel { background: #fff; padding: 10px 14px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,.05); margin-bottom: 10px; }
+
+    /* ===== 豪華タイトル（紺〜青〜ターコイズ：赤いバグ報告ボタンが映える配色） ===== */
+    .site-header {
+      position: relative; display: flex; align-items: center; gap: 18px;
+      padding: 18px 26px; margin-bottom: 14px; border-radius: 12px;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 55%),
+        radial-gradient(circle at 85% 80%, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 55%),
+        linear-gradient(135deg, #0a1938 0%, #12306e 30%, #1f5cb0 60%, #1fb6c2 100%);
+      box-shadow: 0 6px 22px rgba(10,25,56,.35), inset 0 1px 0 rgba(255,255,255,.2);
+      overflow: hidden;
+    }
+    .site-header::before {
+      content: ""; position: absolute; inset: 0;
+      background:
+        radial-gradient(1.5px 1.5px at 12% 30%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 22% 70%, #fff, transparent 60%),
+        radial-gradient(1.2px 1.2px at 40% 20%, #ffe89a, transparent 60%),
+        radial-gradient(1px 1px at 55% 55%, #fff, transparent 60%),
+        radial-gradient(1.4px 1.4px at 72% 25%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 85% 65%, #d5f3ff, transparent 60%),
+        radial-gradient(1.2px 1.2px at 92% 40%, #fff, transparent 60%);
+      opacity: .85; pointer-events: none;
+      animation: twinkle 4s ease-in-out infinite alternate;
+    }
+    @keyframes twinkle { 0% { opacity: .55; } 100% { opacity: .95; } }
+    .site-header .crest {
+      font-size: 40px; line-height: 1; filter: drop-shadow(0 2px 2px rgba(0,0,0,.35));
+      animation: bob 3.2s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+    .site-header .title-wrap {
+      display: flex; flex-direction: column; justify-content: center;
+      min-width: 0;  /* flex 子でも ellipsis 可 */
+    }
+    .site-header h1 {
+      margin: 0; font-size: 34px; letter-spacing: .08em; font-weight: 800;
+      font-family: "Yu Mincho", "Hiragino Mincho Pro", "Noto Serif JP", serif;
+      background: linear-gradient(180deg, #fff7d6 0%, #ffd25a 45%, #c98a1c 70%, #fff2b0 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-shadow: 0 1px 0 rgba(0,0,0,.15);
+      white-space: nowrap;
+    }
+    .site-header .subtitle {
+      margin-top: 4px; font-size: 13px; color: #d9ecff; letter-spacing: .06em;
+      text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    }
+    .site-header .bug-btn {
+      margin-left: auto; padding: 10px 22px; font-size: 14px; font-weight: 700;
+      letter-spacing: .05em; box-shadow: 0 4px 10px rgba(208,81,81,.45);
+    }
+
+    /* ===== 使い方パネル ===== */
+    .howto {
+      background: linear-gradient(180deg, #fffdf2 0%, #fff8d9 100%);
+      border: 1px solid #e7d58a; border-radius: 8px; padding: 10px 14px;
+      margin-bottom: 10px; font-size: 12px; color: #3d3111;
+    }
+    .howto h3 { margin: 0 0 6px; font-size: 13px; color: #7a5a0a; }
+    .howto ul { margin: 0; padding-left: 18px; line-height: 1.7; }
+    .howto .kbd {
+      display: inline-block; padding: 0 6px; background: #fff; border: 1px solid #d0c48a;
+      border-radius: 3px; font-size: 11px; font-weight: 600; color: #7a5a0a;
+    }
+    .howto .hot-red { color: #b53a3a; font-weight: 600; }
+
+    /* ===== アーカイブトグル ===== */
+    .archive-bar {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+      padding: 8px 12px; background: #fff; border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.05);
+    }
+    .archive-bar .archive-label { font-size: 12px; color: #555; }
+    .archive-bar .archive-hint { font-size: 11px; color: #888; margin-left: auto; }
+    .archive-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; font-size: 12px; font-weight: 600;
+      background: #eef1f5; color: #555; border: 1px solid #ccd0d5;
+      border-radius: 999px; cursor: pointer; user-select: none;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .archive-toggle:hover { background: #e2e6ed; }
+    .archive-toggle.on {
+      background: linear-gradient(135deg, #e69b2a 0%, #d77a1d 100%);
+      color: #fff; border-color: #b66314;
+      box-shadow: 0 2px 6px rgba(214,122,29,.35);
+    }
+    .archive-toggle .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #bbb;
+    }
+    .archive-toggle.on .dot { background: #fff; }
 
     .basic-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-bottom: 10px; }
     .basic-row label { display: flex; flex-direction: column; font-size: 11px; color: #555; }
@@ -14,6 +104,14 @@
 
     .cond-group { border-top: 1px solid #eef0f3; padding: 8px 0; }
     .cond-group h3 { margin: 0 0 6px; font-size: 12px; color: #444; display: flex; align-items: center; gap: 8px; }
+
+    /* 因子カテゴリ別の色分け（白因子は既存のまま） */
+    .cond-group.cond-blue h3 { color: #1956b3; }
+    .cond-group.cond-blue .cond-item { background: #e6efff; border-color: #b9cdee; }
+    .cond-group.cond-red h3 { color: #b3263d; }
+    .cond-group.cond-red .cond-item { background: #ffe5ea; border-color: #ebb5bf; }
+    .cond-group.cond-green h3 { color: #1f7a2e; }
+    .cond-group.cond-green .cond-item { background: #e3f5e7; border-color: #b5dcbd; }
     .cond-group h3 .add-btn { margin-left: auto; padding: 2px 10px; font-size: 11px; background: #e4e7eb; color: #222; border: none; border-radius: 3px; cursor: pointer; }
     .cond-group h3 .add-btn:hover { background: #d5d9de; }
     .cond-list { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -33,8 +131,34 @@
     table.result { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.05); border-radius: 6px; overflow: hidden; }
     table.result th, table.result td { padding: 6px 8px; border-bottom: 1px solid #eee; font-size: 12px; text-align: left; vertical-align: top; }
     table.result th { background: #f0f2f5; position: sticky; top: 0; font-weight: 600; }
+    table.result td.factor-no-col {
+      width: 54px; text-align: center; font-weight: 700; color: #1f3b8c;
+      font-size: 14px; background: linear-gradient(180deg, #f3f6ff 0%, #e6ecff 100%);
+    }
+    table.result td.factor-no-col .no-badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      background: #fff; border: 1px solid #b9c7ee; color: #1f3b8c;
+    }
     table.result td.meta-col { width: 160px; font-size: 11px; color: #555; }
-    table.result td.meta-col .thumb { display: block; width: 100%; max-height: 540px; object-fit: contain; margin-bottom: 4px; border: 1px solid #e0e3e8; border-radius: 3px; background: #f7f8fa; }
+    table.result td.meta-col .thumb { display: block; width: 100%; max-height: 540px; object-fit: contain; margin-top: 4px; border: 1px solid #e0e3e8; border-radius: 3px; background: #f7f8fa; }
+    table.result td.meta-col .trainer-id {
+      display: inline-block; cursor: pointer; color: #1956b3; font-weight: 600;
+      font-size: 12px; padding: 2px 6px; border: 1px solid #c8d7ee; border-radius: 4px;
+      background: #eaf2ff; margin-bottom: 4px; user-select: all;
+    }
+    table.result td.meta-col .trainer-id:hover { background: #d8e5ff; text-decoration: underline; }
+    table.result td.meta-col .trainer-id.copied { background: #d3f5d6; color: #1f7a2e; border-color: #1f7a2e; }
+    table.result td.meta-col .contact { margin-bottom: 4px; color: #333; }
+    table.result td.meta-col .purpose-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      margin-bottom: 6px; color: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,.15); white-space: nowrap;
+    }
+    table.result td.meta-col .purpose-pvp { background: linear-gradient(135deg, #e63946 0%, #b5202d 100%); }
+    table.result td.meta-col .purpose-eval { background: linear-gradient(135deg, #2d7dff 0%, #1856c3 100%); }
+    table.result td.meta-col .purpose-arena { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
+    table.result td.meta-col .purpose-other { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
     table.result td.uma-col { width: 26%; }
     table.result td.uma-col .chara-name { font-weight: 600; font-size: 12px; margin-bottom: 3px; }
     td.uma-main { background: #fffbe6; }
@@ -48,10 +172,106 @@
     .chip-white { background: #eef0f2; color: #555; }
     .star { color: #e0a100; font-size: 11px; letter-spacing: -1px; }
     .empty { color: #999; padding: 24px; text-align: center; }
+
+    /* バグ報告ボタン + モーダル */
+    .bug-btn { margin-left: auto; padding: 6px 14px; font-size: 12px; background: #d05151; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    .bug-btn:hover { background: #b53a3a; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.4); z-index: 100; }
+    .modal-overlay.open { display: flex; align-items: center; justify-content: center; }
+    .modal { background: #fff; border-radius: 8px; padding: 18px 22px; width: 460px; max-width: 92vw; max-height: 86vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,.25); }
+    .modal h2 { margin: 0 0 10px; font-size: 16px; }
+    .modal p.hint { margin: 0 0 12px; font-size: 12px; color: #666; line-height: 1.5; }
+    .modal label { display: block; font-size: 11px; color: #555; margin-bottom: 8px; }
+    .modal label input, .modal label select, .modal label textarea { width: 100%; padding: 5px 7px; font-size: 13px; border: 1px solid #ccd0d5; border-radius: 4px; margin-top: 2px; box-sizing: border-box; font-family: inherit; }
+    .modal label textarea { min-height: 50px; resize: vertical; }
+    .modal .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .modal .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }
+    .modal .actions button { padding: 6px 14px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; }
+    .modal .actions button.primary { background: #2d7dff; color: #fff; }
+    .modal .actions button.primary:hover { background: #1966e6; }
+    .modal .actions button.secondary { background: #e4e7eb; color: #222; }
+    .modal .msg { font-size: 12px; margin-right: auto; align-self: center; }
+    .modal .msg.ok { color: #1f7a2e; }
+    .modal .msg.err { color: #b53a3a; }
   </style>
 </head>
 <body>
-  <h1>UMG因子保管庫</h1>
+  <div class="site-header">
+    <span class="crest">🐎</span>
+    <div class="title-wrap">
+      <h1>UMG因子保管庫</h1>
+      <span class="subtitle">〜UMG内の因子を検索しやすくしよう！〜</span>
+    </div>
+    <button class="bug-btn" onclick="openBugModal()">🐛 バグ報告</button>
+  </div>
+
+  <!-- バグ報告モーダル -->
+  <div id="bug-modal" class="modal-overlay" onclick="if(event.target===this)closeBugModal()">
+    <div class="modal">
+      <h2>🐛 誤認識・誤登録の報告</h2>
+      <p class="hint">AI による因子読み取りが間違っていた場合、ここから修正内容を運営に共有できます。内容は <code>bug_reports</code> シートに記録され、定期的に反映されます。</p>
+      <label>該当因子No <span style="color:#d05151">*</span>
+        <input id="bug-factor-no" inputmode="numeric" placeholder="例: 42（検索結果の左端の番号）">
+      </label>
+      <div class="row">
+        <label>対象ロール
+          <select id="bug-role">
+            <option value="">（任意）</option>
+            <option value="main">親</option>
+            <option value="parent1">祖1</option>
+            <option value="parent2">祖2</option>
+          </select>
+        </label>
+        <label>間違っている項目
+          <select id="bug-field">
+            <option value="">（選択）</option>
+            <option value="character">親ウマ娘</option>
+            <option value="blue_type">青因子 タイプ</option>
+            <option value="blue_star">青因子 ★</option>
+            <option value="red_type">赤因子 タイプ</option>
+            <option value="red_star">赤因子 ★</option>
+            <option value="green_name">緑因子 名前</option>
+            <option value="green_star">緑因子 ★</option>
+            <option value="white_name">白因子（スキル名）</option>
+            <option value="white_star">白因子 ★</option>
+            <option value="other">その他</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label>現在の値（誤）
+          <input id="bug-wrong" placeholder="例: 長距離">
+        </label>
+        <label>正しい値
+          <input id="bug-correct" placeholder="例: 中距離">
+        </label>
+      </div>
+      <div class="actions">
+        <span id="bug-msg" class="msg"></span>
+        <button class="secondary" onclick="closeBugModal()">キャンセル</button>
+        <button class="primary" onclick="submitBug()">送信</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="howto">
+    <h3>📖 使い方</h3>
+    <ul>
+      <li><b>検索範囲</b>：デフォルトは <b>直近 30 日以内</b> の投稿のみ表示します。古い因子も見たいときは下の <span class="kbd">🗄 アーカイブを含める</span> を ON にしてください。</li>
+      <li><b>絞り込み</b>：<span class="kbd">親ウマ娘 / 連絡先 / 目的・用途</span> で単一フィルタ、<span class="kbd">青 / 赤 / 緑 / 白</span> 因子は「+ 追加」で複数条件を <b>AND</b> で重ねられます。各条件の <span class="kbd">✓</span> で有効/無効を一時切替可能です。</li>
+      <li><b>因子No</b>：検索結果の左端 <span class="kbd">#番号</span> は投稿単位の通番です。クリックすると下記のバグ報告モーダルに自動入力されます。</li>
+      <li><b>トレーナーID</b>：カードのトレーナーID をクリックでコピー。友達申請や挨拶にそのままどうぞ。</li>
+      <li><b>AI の誤認識を見つけたら</b>：<span class="hot-red">右上の 🐛 バグ報告</span> か結果の <span class="kbd">#番号</span> クリックから <b>該当因子No・項目・現在値・正しい値</b> を送ってください。運営が定期的に反映します。</li>
+    </ul>
+  </div>
+
+  <div class="archive-bar">
+    <button id="archive-toggle" class="archive-toggle" onclick="toggleArchive()">
+      <span class="dot"></span><span id="archive-toggle-label">🗄 アーカイブを含める：OFF</span>
+    </button>
+    <span class="archive-hint">※ OFF のときは投稿から <b>30 日以内</b> の因子のみ表示</span>
+  </div>
 
   <div class="panel">
     <div class="basic-row">
@@ -69,15 +289,15 @@
       </label>
     </div>
 
-    <div class="cond-group">
+    <div class="cond-group cond-blue">
       <h3>青因子 <button class="add-btn" onclick="addBlue()">+ 追加</button></h3>
       <div id="blue-list" class="cond-list"></div>
     </div>
-    <div class="cond-group">
+    <div class="cond-group cond-red">
       <h3>赤因子 <button class="add-btn" onclick="addRed()">+ 追加</button></h3>
       <div id="red-list" class="cond-list"></div>
     </div>
-    <div class="cond-group">
+    <div class="cond-group cond-green">
       <h3>緑因子 <button class="add-btn" onclick="addGreen()">+ 追加</button></h3>
       <div id="green-list" class="cond-list"></div>
     </div>
@@ -103,6 +323,22 @@ var SCOPE_OPTIONS = [{v:"all",t:"全体"},{v:"self",t:"親のみ"},{v:"parents",
 
 // スプレから取得した選択肢（getFilterOptions の結果）
 var OPTIONS = { characters: [], submitters: [], green_names: [], white_names: [], purposes: [] };
+
+// アーカイブ（投稿から 30 日超）を含めるか。デフォルト OFF。
+var INCLUDE_ARCHIVE = false;
+function toggleArchive() {
+  INCLUDE_ARCHIVE = !INCLUDE_ARCHIVE;
+  var btn = document.getElementById("archive-toggle");
+  var label = document.getElementById("archive-toggle-label");
+  if (INCLUDE_ARCHIVE) {
+    btn.classList.add("on");
+    label.textContent = "🗄 アーカイブを含める：ON（すべての因子）";
+  } else {
+    btn.classList.remove("on");
+    label.textContent = "🗄 アーカイブを含める：OFF（30 日以内）";
+  }
+  runSearch();
+}
 
 function createSelect(options, selected) {
   var sel = document.createElement("select");
@@ -224,6 +460,7 @@ function runSearch() {
     green: collectConds("green-list"),
     white: collectConds("white-list"),
     limit: Number(document.getElementById("f-limit").value),
+    include_archive: INCLUDE_ARCHIVE,
   };
   document.getElementById("meta").textContent = "検索中...";
   google.script.run
@@ -250,6 +487,31 @@ function driveToThumb(url) {
   if (!m) m = url.match(/\/file\/d\/([a-zA-Z0-9_\-]+)/);
   if (m) return "https://drive.google.com/thumbnail?id=" + m[1] + "&sz=w400";
   return url;
+}
+// トレーナーID をクリックでクリップボードにコピー
+function copyTrainerId(el) {
+  var id = el.dataset.trainerId || el.textContent.trim();
+  var done = function() {
+    var orig = el.textContent;
+    el.classList.add("copied");
+    el.textContent = "✓ コピー済み";
+    setTimeout(function() {
+      el.classList.remove("copied");
+      el.textContent = orig;
+    }, 1300);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(id).then(done, function() { done(); });
+  } else {
+    // フォールバック: 旧 API
+    var ta = document.createElement("textarea");
+    ta.value = id;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    done();
+  }
 }
 
 function renderUmaCell(uma, cls) {
@@ -285,23 +547,43 @@ function renderResult(res) {
     return;
   }
   var html = '<table class="result"><thead><tr>'
-    + '<th>連絡先・因子画像</th><th>親</th><th>祖1</th><th>祖2</th>'
+    + '<th>因子No</th><th>トレーナーID・連絡先</th><th>親</th><th>祖1</th><th>祖2</th>'
     + '</tr></thead><tbody>';
   res.submissions.forEach(function(sub) {
     var when = String(sub.submitted_at || "").substring(0, 19).replace("T", " ");
+    var trainerHtml = sub.trainer_id
+      ? '<div class="trainer-id" data-trainer-id="' + escapeHtml(sub.trainer_id)
+        + '" onclick="copyTrainerId(this)" title="クリックでコピー">🆔 '
+        + escapeHtml(sub.trainer_id) + '</div>'
+      : "";
+    var contactHtml = sub.submitter_id
+      ? '<div class="contact">📇 ' + escapeHtml(sub.submitter_id) + '</div>'
+      : "";
     var thumb = "";
     if (sub.image_url) {
       thumb = '<a href="' + escapeHtml(sub.image_url) + '" target="_blank" rel="noopener">'
         + '<img class="thumb" src="' + escapeHtml(driveToThumb(sub.image_url)) + '" alt="factor image" referrerpolicy="no-referrer">'
         + '</a>';
     }
+    var purposeHtml = "";
+    if (sub.purpose) {
+      var pc = "purpose-other";
+      if (sub.purpose.indexOf("対人") >= 0) pc = "purpose-pvp";
+      else if (sub.purpose.indexOf("査定") >= 0) pc = "purpose-eval";
+      else if (sub.purpose.indexOf("競技場") >= 0) pc = "purpose-arena";
+      purposeHtml = '<div><span class="purpose-tag ' + pc + '">🎯 ' + escapeHtml(sub.purpose) + '</span></div>';
+    }
+    var noHtml = sub.factor_no
+      ? '<span class="no-badge" style="cursor:pointer" title="この因子のバグを報告する" onclick="openBugModal({factor_no:' + Number(sub.factor_no) + '})">#' + Number(sub.factor_no) + '</span>'
+      : '<span style="color:#999">—</span>';
     html += '<tr>';
-    var purposeHtml = sub.purpose ? '<div style="font-weight:600;color:#1956b3">' + escapeHtml(sub.purpose) + '</div>' : "";
+    html += '<td class="factor-no-col">' + noHtml + '</td>';
     html += '<td class="meta-col">'
-      + thumb
       + purposeHtml
-      + '<div>' + escapeHtml(sub.submitter_id) + '</div>'
-      + '<div>' + escapeHtml(when) + '</div>'
+      + trainerHtml
+      + contactHtml
+      + thumb
+      + '<div style="color:#888;font-size:10px;margin-top:2px">' + escapeHtml(when) + '</div>'
       + '</td>';
     html += renderUmaCell(sub.main, "uma-main");
     html += renderUmaCell(sub.parent1, "uma-parent1");
@@ -310,6 +592,54 @@ function renderResult(res) {
   });
   html += '</tbody></table>';
   host.innerHTML = html;
+}
+
+// ------ バグ報告モーダル ------
+function openBugModal(preset) {
+  preset = preset || {};
+  document.getElementById("bug-factor-no").value = preset.factor_no != null ? String(preset.factor_no) : "";
+  document.getElementById("bug-role").value = preset.target_role || "";
+  document.getElementById("bug-field").value = preset.wrong_field || "";
+  document.getElementById("bug-wrong").value = preset.wrong_value || "";
+  document.getElementById("bug-correct").value = preset.correct_value || "";
+  var msg = document.getElementById("bug-msg");
+  msg.textContent = ""; msg.className = "msg";
+  document.getElementById("bug-modal").classList.add("open");
+}
+function closeBugModal() {
+  document.getElementById("bug-modal").classList.remove("open");
+}
+function submitBug() {
+  var msg = document.getElementById("bug-msg");
+  var params = {
+    factor_no: document.getElementById("bug-factor-no").value,
+    target_role: document.getElementById("bug-role").value,
+    wrong_field: document.getElementById("bug-field").value,
+    wrong_value: document.getElementById("bug-wrong").value,
+    correct_value: document.getElementById("bug-correct").value,
+  };
+  if (!params.factor_no.trim()) {
+    msg.textContent = "因子No は必須です"; msg.className = "msg err";
+    return;
+  }
+  if (!/^\d+$/.test(params.factor_no.trim())) {
+    msg.textContent = "因子No は数字で入力してください"; msg.className = "msg err";
+    return;
+  }
+  msg.textContent = "送信中..."; msg.className = "msg";
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.ok) {
+        msg.textContent = "送信しました！ありがとうございます 🐎"; msg.className = "msg ok";
+        setTimeout(closeBugModal, 1300);
+      } else {
+        msg.textContent = "エラー: " + (res && res.error ? res.error : "不明"); msg.className = "msg err";
+      }
+    })
+    .withFailureHandler(function(err) {
+      msg.textContent = "通信エラー: " + err.message; msg.className = "msg err";
+    })
+    .reportBug(params);
 }
 
 // 起動時：プルダウン選択肢を取得 → 検索を自動実行
