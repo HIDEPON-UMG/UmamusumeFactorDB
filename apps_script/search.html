@@ -157,6 +157,33 @@
       border: 1px solid #e7d58a; border-radius: 4px; line-height: 1.4;
       word-break: break-word;
     }
+    /* コメント未記入用（淡色） */
+    table.result td.meta-col .comment.empty {
+      color: #999; background: #f5f5f5; border-color: #e0e0e0; font-style: italic;
+    }
+    /* バグ報告サマリ */
+    table.result td.meta-col .bug-reports {
+      display: block; margin-top: 4px; margin-bottom: 4px;
+      padding: 5px 8px; border-radius: 4px;
+      background: #fff3f3; border: 1px solid #edbfbf;
+      font-size: 10.5px; line-height: 1.45; color: #333;
+    }
+    table.result td.meta-col .bug-reports-title {
+      font-weight: 700; color: #b53a3a; margin-bottom: 3px; font-size: 11px;
+    }
+    table.result td.meta-col .bug-item {
+      margin: 3px 0; padding-left: 2px; border-left: 2px solid transparent;
+    }
+    table.result td.meta-col .bug-item .bug-status { font-weight: 700; white-space: nowrap; }
+    table.result td.meta-col .bug-item .bug-diff { color: #555; margin-left: 1em; font-size: 10px; }
+    table.result td.meta-col .bug-item.bug-pending      .bug-status { color: #a66800; }
+    table.result td.meta-col .bug-item.bug-applied      .bug-status { color: #1f7a2e; }
+    table.result td.meta-col .bug-item.bug-invalid      .bug-status { color: #b53a3a; }
+    table.result td.meta-col .bug-item.bug-needs_review .bug-status { color: #1956b3; }
+    table.result td.meta-col .bug-item.bug-pending      { border-left-color: #e6b548; }
+    table.result td.meta-col .bug-item.bug-applied      { border-left-color: #22c55e; }
+    table.result td.meta-col .bug-item.bug-invalid      { border-left-color: #e63946; }
+    table.result td.meta-col .bug-item.bug-needs_review { border-left-color: #2d7dff; }
     /* 目的・用途 / 利用脚質 のタグ行（横並び） */
     table.result td.meta-col .purpose-row {
       display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px;
@@ -343,9 +370,9 @@
         <input id="bug-factor-no" inputmode="numeric" placeholder="例: 42（検索結果の左端の番号）">
       </label>
       <div class="row">
-        <label>対象ロール
+        <label>親・祖1・祖2 <span style="color:#d05151">*</span>
           <select id="bug-role">
-            <option value="">（任意）</option>
+            <option value="">（選択）</option>
             <option value="main">親</option>
             <option value="parent1">祖1</option>
             <option value="parent2">祖2</option>
@@ -367,12 +394,22 @@
           </select>
         </label>
       </div>
+      <!-- 白因子スロット選択（wrong_field が white_* のときだけ表示） -->
+      <label id="bug-white-target-row" style="display:none">
+        対象の白因子 <span style="color:#d05151">*</span>
+        <select id="bug-white-target" onmousedown="onWhiteTargetOpen(event)" onfocus="onWhiteTargetOpen(event)">
+          <option value="">（該当因子Noと親・祖1・祖2 を先に入力してください）</option>
+        </select>
+        <span id="bug-white-target-hint" style="font-size:10px;color:#888;display:block;margin-top:2px">
+          クリックすると、その因子に登録されている白因子スキル一覧が表示されます
+        </span>
+      </label>
       <div class="row">
         <label>現在の値（誤）
-          <input id="bug-wrong" placeholder="例: 長距離">
+          <input id="bug-wrong" placeholder="例: 長距離 / 2（★数なら数字）">
         </label>
         <label>正しい値
-          <input id="bug-correct" placeholder="例: 中距離">
+          <input id="bug-correct" placeholder="例: 中距離 / 3（★数なら数字）">
         </label>
       </div>
       <div class="actions">
@@ -653,6 +690,47 @@ function copyTrainerId(el) {
   }
 }
 
+// バグ報告サマリを UI 表記に変換して HTML 化する
+var BUG_STATUS_LABEL = {
+  "pending":      {emoji: "🕐", text: "確認待ち",     cls: "bug-pending"},
+  "applied":      {emoji: "✅", text: "修正済み",     cls: "bug-applied"},
+  "invalid":      {emoji: "⚠️", text: "不整合（保留）", cls: "bug-invalid"},
+  "needs_review": {emoji: "👀", text: "運営確認中",   cls: "bug-needs_review"}
+};
+var BUG_ROLE_LABEL = {"main":"親","parent1":"祖1","parent2":"祖2"};
+var BUG_FIELD_LABEL = {
+  "character":"親ウマ娘",
+  "blue_type":"青因子 タイプ","blue_star":"青因子 ★",
+  "red_type":"赤因子 タイプ","red_star":"赤因子 ★",
+  "green_name":"緑因子 名前","green_star":"緑因子 ★",
+  "white_name":"白因子（スキル名）","white_star":"白因子 ★",
+  "other":"その他"
+};
+function buildBugReportsHtml(bugs) {
+  if (!bugs || !bugs.length) return "";
+  var items = bugs.map(function(b) {
+    var st = BUG_STATUS_LABEL[b.status] || {emoji:"❓", text: (b.status || "不明"), cls:"bug-other"};
+    var role = BUG_ROLE_LABEL[b.target_role] || b.target_role || "？";
+    var field = BUG_FIELD_LABEL[b.wrong_field] || b.wrong_field || "？";
+    var targetName = b.white_target_name ? "「" + escapeHtml(b.white_target_name) + "」の " : "";
+    var diff = "";
+    if (b.wrong_value || b.correct_value) {
+      var w = b.wrong_value ? escapeHtml(b.wrong_value) : "—";
+      var c = b.correct_value ? escapeHtml(b.correct_value) : "—";
+      diff = '<div class="bug-diff">' + w + " → " + c + '</div>';
+    }
+    return '<div class="bug-item ' + st.cls + '">'
+      + '<span class="bug-status">' + st.emoji + " " + escapeHtml(st.text) + '</span> '
+      + escapeHtml(role) + "・" + targetName + escapeHtml(field)
+      + diff
+      + '</div>';
+  }).join("");
+  return '<div class="bug-reports">'
+    + '<div class="bug-reports-title">🐛 バグ報告 ' + bugs.length + ' 件</div>'
+    + items
+    + '</div>';
+}
+
 function renderUmaCell(uma, cls) {
   if (!uma) return '<td class="uma-col ' + cls + '" style="opacity:.4">（データなし）</td>';
   var parts = [];
@@ -698,9 +776,11 @@ function renderResult(res) {
     var contactHtml = sub.submitter_id
       ? '<div class="contact">📇 ' + escapeHtml(sub.submitter_id) + '</div>'
       : "";
-    var commentHtml = sub.comment
-      ? '<div class="comment">💬 ' + escapeHtml(sub.comment) + '</div>'
-      : "";
+    // コメント：未記入時は「※コメントなし」を淡色で常時表示
+    var commentText = sub.comment || "※コメントなし";
+    var commentCls = (!sub.comment || sub.comment === "※コメントなし") ? "comment empty" : "comment";
+    var commentHtml = '<div class="' + commentCls + '">💬 ' + escapeHtml(commentText) + '</div>';
+    var bugReportsHtml = buildBugReportsHtml(sub.bug_reports);
     var thumb = "";
     if (sub.image_url) {
       thumb = '<a href="' + escapeHtml(sub.image_url) + '" target="_blank" rel="noopener">'
@@ -735,6 +815,7 @@ function renderResult(res) {
       + trainerHtml
       + contactHtml
       + commentHtml
+      + bugReportsHtml
       + thumb
       + '<div style="color:#888;font-size:10px;margin-top:2px">' + escapeHtml(when) + '</div>'
       + '</td>';
@@ -748,6 +829,9 @@ function renderResult(res) {
 }
 
 // ------ バグ報告モーダル ------
+// 白因子スロット一覧のキャッシュ： "factorNo:role" → [{name,star}, ...]
+var WHITE_SLOTS_CACHE = {};
+
 function openBugModal(preset) {
   preset = preset || {};
   document.getElementById("bug-factor-no").value = preset.factor_no != null ? String(preset.factor_no) : "";
@@ -757,7 +841,88 @@ function openBugModal(preset) {
   document.getElementById("bug-correct").value = preset.correct_value || "";
   var msg = document.getElementById("bug-msg");
   msg.textContent = ""; msg.className = "msg";
+  // 白因子プルダウンの初期化
+  _resetWhiteTargetSelect();
+  _updateWhiteTargetRowVisibility();
   document.getElementById("bug-modal").classList.add("open");
+}
+
+function _resetWhiteTargetSelect() {
+  var sel = document.getElementById("bug-white-target");
+  sel.innerHTML = '<option value="">（該当因子Noと親・祖1・祖2 を先に入力してください）</option>';
+  sel.dataset.loadedKey = "";
+  sel.value = "";
+}
+function _updateWhiteTargetRowVisibility() {
+  var field = document.getElementById("bug-field").value;
+  var row = document.getElementById("bug-white-target-row");
+  var show = (field === "white_name" || field === "white_star");
+  row.style.display = show ? "" : "none";
+  if (!show) _resetWhiteTargetSelect();
+}
+// 白因子スロット一覧を「開いたとき」に遅延取得
+function onWhiteTargetOpen(ev) {
+  var factorNo = (document.getElementById("bug-factor-no").value || "").trim();
+  var role = document.getElementById("bug-role").value;
+  var sel = document.getElementById("bug-white-target");
+  // 前提入力チェック
+  if (!/^\d+$/.test(factorNo) || !role) {
+    if (ev) { ev.preventDefault(); sel.blur(); }
+    alert("該当因子Noと親・祖1・祖2 を選択してください");
+    return;
+  }
+  var key = factorNo + ":" + role;
+  // 既にロード済み
+  if (sel.dataset.loadedKey === key) return;
+  // ロード開始
+  sel.innerHTML = '<option value="">読み込み中...</option>';
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || !res.ok) {
+        sel.innerHTML = '<option value="">エラー: ' + ((res && res.error) || "不明") + '</option>';
+        return;
+      }
+      WHITE_SLOTS_CACHE[key] = res.whites || [];
+      sel.innerHTML = '';
+      if (!res.whites || res.whites.length === 0) {
+        sel.innerHTML = '<option value="">（該当する白因子がありません）</option>';
+        return;
+      }
+      var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "（選択）";
+      sel.appendChild(o0);
+      res.whites.forEach(function(w) {
+        var o = document.createElement("option");
+        o.value = w.name;
+        o.textContent = w.name + "  ★" + w.star;
+        o.dataset.star = w.star;
+        sel.appendChild(o);
+      });
+      sel.dataset.loadedKey = key;
+    })
+    .withFailureHandler(function(err) {
+      sel.innerHTML = '<option value="">通信エラー: ' + err.message + '</option>';
+    })
+    .getWhiteFactorsForTarget(Number(factorNo), role);
+}
+// factor_no / role を変更したらキャッシュキーが変わるのでリセット
+function _onBugKeyInputChange() {
+  var sel = document.getElementById("bug-white-target");
+  var factorNo = (document.getElementById("bug-factor-no").value || "").trim();
+  var role = document.getElementById("bug-role").value;
+  var key = factorNo + ":" + role;
+  if (sel.dataset.loadedKey && sel.dataset.loadedKey !== key) {
+    _resetWhiteTargetSelect();
+  }
+}
+// 白因子選択時、現在値を wrong にプリセットすると便利
+function _onWhiteTargetChanged() {
+  var sel = document.getElementById("bug-white-target");
+  var opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) return;
+  var field = document.getElementById("bug-field").value;
+  var wrongIn = document.getElementById("bug-wrong");
+  if (field === "white_name" && !wrongIn.value) wrongIn.value = opt.value;
+  if (field === "white_star" && !wrongIn.value && opt.dataset.star) wrongIn.value = opt.dataset.star;
 }
 function closeBugModal() {
   document.getElementById("bug-modal").classList.remove("open");
@@ -768,6 +933,7 @@ function submitBug() {
     factor_no: document.getElementById("bug-factor-no").value,
     target_role: document.getElementById("bug-role").value,
     wrong_field: document.getElementById("bug-field").value,
+    white_target_name: document.getElementById("bug-white-target").value,
     wrong_value: document.getElementById("bug-wrong").value,
     correct_value: document.getElementById("bug-correct").value,
   };
@@ -777,6 +943,15 @@ function submitBug() {
   }
   if (!/^\d+$/.test(params.factor_no.trim())) {
     msg.textContent = "因子No は数字で入力してください"; msg.className = "msg err";
+    return;
+  }
+  if (!params.target_role.trim()) {
+    msg.textContent = "親・祖1・祖2 を選択してください"; msg.className = "msg err";
+    return;
+  }
+  if ((params.wrong_field === "white_name" || params.wrong_field === "white_star")
+      && !params.white_target_name.trim()) {
+    msg.textContent = "対象の白因子を選択してください"; msg.className = "msg err";
     return;
   }
   msg.textContent = "送信中..."; msg.className = "msg";
@@ -831,6 +1006,16 @@ window.addEventListener("DOMContentLoaded", function() {
   loadOptions();
   var cInput = document.getElementById("f-comment");
   if (cInput) cInput.addEventListener("keydown", function(e) { if (e.key === "Enter") runSearch(); });
+
+  // バグ報告モーダル：白因子プルダウン関連のイベント
+  var bugField = document.getElementById("bug-field");
+  if (bugField) bugField.addEventListener("change", _updateWhiteTargetRowVisibility);
+  var bugFactorNo = document.getElementById("bug-factor-no");
+  if (bugFactorNo) bugFactorNo.addEventListener("input", _onBugKeyInputChange);
+  var bugRole = document.getElementById("bug-role");
+  if (bugRole) bugRole.addEventListener("change", _onBugKeyInputChange);
+  var bugWhite = document.getElementById("bug-white-target");
+  if (bugWhite) bugWhite.addEventListener("change", _onWhiteTargetChanged);
 });
 </script>
 </body>

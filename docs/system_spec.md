@@ -18,6 +18,10 @@
 | **画像匿名化ツール** | スプレッドシートメニュー `UMG因子DB → 🙈 投稿画像ファイル名を一括匿名化` / `🔒 フォーム設定を安全化` で個人情報の残留を除去 |
 | **Discord 再通知** | `UMG因子DB → 📣 Discord に再通知` で `factor_no` を指定して過去投稿を Webhook に再送 |
 | **列ズレ修復** | `UMG因子DB → 🔧 列ズレ行を修復` で factor_no 導入直後の移行期に発生した 1 列シフトを補正 |
+| **失敗投稿の再処理** | `UMG因子DB → ♻ 失敗した投稿を再処理` で Form 応答の `status=error:*` を拾い Cloud Run へ再リクエスト（6 分制限のため 1 回あたり最大 3 件 / 4 分で中断） |
+| **検索結果にバグ報告サマリ** | meta 列コメント欄の下に `🐛 バグ報告 N 件` を UI 表記で表示（🕐確認待ち / ✅修正済み / ⚠️不整合 / 👀運営確認中） |
+| **白因子スロット指定** | バグ報告モーダルで `wrong_field = white_name / white_star` のときに「対象の白因子」プルダウンが出現（因子No + 親・祖1・祖2 が揃った時点で遅延ロード） |
+| **コメント空値フォールバック** | フォームでコメント未記入の投稿は検索結果上で淡色の `※コメントなし` を常時表示 |
 | **Discord 通知** | 目的・用途（対人/査定/競技場）別に Webhook でキタサンブラック口調メッセージ投稿（表示名は Webhook 設定「おしらせキタちゃん」） |
 
 ## 3. システム構成
@@ -226,7 +230,7 @@ Google Form が自動作成。列の例：
 | ファイル | 件数 | 用途 |
 |---|---|---|
 | `config/recognizer.json` | - | 因子ボックス座標定義（umacapture 由来） |
-| `config/unique_skill_to_character.json` | 249 | 固有スキル名 → `[衣装名]キャラ名` 逆引き |
+| `config/unique_skill_to_character.json` | 250 | 固有スキル名 → `[衣装名]キャラ名` 逆引き |
 | `models/modules/*/prediction.onnx` | 複数 | 因子/ランク/character の ONNX モデル |
 | `models/modules/factor_info.json` | 813 | 因子マスタ（青/赤/緑/白タグ） |
 | `/models/easyocr/` | - | EasyOCR 日本語+英語モデル（事前 DL） |
@@ -321,7 +325,7 @@ UmamusumeFactorDB/
   - `white_star`・`other` は自動化対象外（`needs_review`）。`bug_reports` で内容を確認し、`factors_normalized` を手動編集してから `status` を `applied` に書き換える。
   - 現在値が `wrong_value` と既に違う場合は `invalid`。別のバグ報告や手動修正と重複している可能性が高いので、`reviewer_note` を見て判断。
 - **Discord 画像表示不可**：Drive Blob 取得に失敗、または画像サイズが Discord 制限（通常 8MB / ブースト時 50MB）を超えた場合に表示されない。Apps Script ログで `blob fetch failed:` や webhook status 4xx/413 を確認。
-- **タイムアウト**：Cloud Run は 300 秒制限。コールドスタート約 30〜60 秒 + 解析 30〜60 秒の合計で収まる想定。
+- **タイムアウト**：Cloud Run は **600 秒** 設定（`timeoutSeconds`）。`containerConcurrency: 4` に緩和済み。コールドスタート約 30〜60 秒 + 解析 30〜60 秒の合計でも十分収まる想定。504 が頻発するようなら `min-instances: 1` の追加も検討（常時ウォームでコールドスタートを解消、月 $1〜2）。
 - **検索 UI の既定レンジ**：アーカイブトグル OFF のとき投稿から 30 日以内のみ表示。古い因子を参照したい場合はトグル ON に切替（再検索が自動で走る）。
 - **モバイルレイアウト**：フィルタ行は 640px 以下で 1 列縦並びに切り替え、検索結果テーブルは親/祖1/祖2 を色ラベル付きでカード型に変換する。画像サムネイルは PC で max-height 486px（0.9×）、モバイルで 288px に抑え、目的・用途タグと利用脚質タグの横並びと 💬 コメント表示のためのスペースを確保。
 

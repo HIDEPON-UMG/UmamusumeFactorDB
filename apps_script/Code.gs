@@ -338,6 +338,43 @@ function _buildSubmissionCommentMap() {
   return _buildSubmissionMap(/コメント|comment/i);
 }
 
+/** bug_reports シートを factor_no 単位でグルーピングして返す。 */
+function _buildBugReportsByFactorNo() {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(BUG_TAB_NAME);
+    if (!sheet) return {};
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return {};
+    var values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var idx = {};
+    for (var i = 0; i < header.length; i++) idx[header[i]] = i;
+    if (idx["factor_no"] === undefined) return {};
+    var result = {};
+    for (var r = 1; r < values.length; r++) {
+      var fn = Number(values[r][idx["factor_no"]] || 0);
+      if (!fn) continue;
+      if (!result[fn]) result[fn] = [];
+      result[fn].push({
+        reported_at: String(values[r][idx["reported_at"]] || ""),
+        target_role: String(values[r][idx["target_role"]] || ""),
+        wrong_field: String(values[r][idx["wrong_field"]] || ""),
+        white_target_name: idx["white_target_name"] !== undefined ? String(values[r][idx["white_target_name"]] || "") : "",
+        wrong_value: String(values[r][idx["wrong_value"]] || ""),
+        correct_value: String(values[r][idx["correct_value"]] || ""),
+        status: String(values[r][idx["status"]] || ""),
+        applied_at: String(values[r][idx["applied_at"]] || "")
+      });
+    }
+    return result;
+  } catch (err) {
+    Logger.log("_buildBugReportsByFactorNo error: " + err);
+    return {};
+  }
+}
+
 /**
  * 検索クエリを受けて submission_id 単位で集約した結果を返す。
  *
@@ -519,7 +556,8 @@ function searchFactors(filters) {
       // 結果に purpose / legs / comment を付与
       sub.purpose = purposeMap[sub.submission_id] || "";
       sub.legs = legsMap[sub.submission_id] || "";
-      sub.comment = commentMap[sub.submission_id] || "";
+      // コメント未記入時は「※コメントなし」でフォールバック
+      sub.comment = commentMap[sub.submission_id] || "※コメントなし";
       out.push(sub);
       if (out.length >= limit) break;
     }
@@ -530,13 +568,75 @@ function searchFactors(filters) {
 
     var imgMap = _buildSubmissionImageMap();
     var trainerIdMap = _buildSubmissionTrainerIdMap();
+    var bugsByNo = _buildBugReportsByFactorNo();
     for (var oi = 0; oi < out.length; oi++) {
       out[oi].image_url = imgMap[out[oi].submission_id] || "";
       out[oi].trainer_id = trainerIdMap[out[oi].submission_id] || "";
+      var fn = Number(out[oi].factor_no || 0);
+      if (fn && bugsByNo[fn]) out[oi].bug_reports = bugsByNo[fn];
     }
 
     return {ok: true, total: out.length, submissions: out};
   } catch (err) {
+    return {ok: false, error: String(err)};
+  }
+}
+
+// =============================================================================
+// 白因子のスロット一覧を特定 factor_no + role に対して返す
+// =============================================================================
+// バグ報告モーダルで「どの白因子か」プルダウンを開いたときに呼ばれる。
+// factor_no + role が揃っていることを前提に、該当 1 行から白因子スロットを抽出する。
+// 返り値: { ok, whites: [{ name, star }...] }
+
+function getWhiteFactorsForTarget(factorNo, targetRole) {
+  try {
+    factorNo = Number(factorNo);
+    if (!factorNo) return {ok: false, error: "factor_no が不正"};
+    if (["main", "parent1", "parent2"].indexOf(targetRole) < 0) {
+      return {ok: false, error: "role は main / parent1 / parent2 のいずれか"};
+    }
+
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName(SEARCH_TAB_NAME);
+    if (!sheet) return {ok: false, error: "factors_normalized が見つかりません"};
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return {ok: true, whites: []};
+    var values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var colIdx = {};
+    for (var i = 0; i < header.length; i++) colIdx[header[i]] = i;
+
+    if (colIdx["factor_no"] === undefined || colIdx["role"] === undefined) {
+      return {ok: false, error: "列構成が不正（factor_no / role が無い）"};
+    }
+
+    var targetRow = null;
+    for (var r = 1; r < values.length; r++) {
+      if (Number(values[r][colIdx["factor_no"]] || 0) === factorNo
+          && String(values[r][colIdx["role"]] || "") === targetRole) {
+        targetRow = values[r];
+        break;
+      }
+    }
+    if (!targetRow) {
+      return {ok: false, error: "factor_no=" + factorNo + " / role=" + targetRole + " の行が見つかりません"};
+    }
+
+    var whites = [];
+    for (var s = 1; s <= SEARCH_MAX_SLOTS; s++) {
+      var keyN = "factor_" + (s < 10 ? "0" + s : s) + "_name";
+      var keyS = "factor_" + (s < 10 ? "0" + s : s) + "_star";
+      if (colIdx[keyN] === undefined) break;
+      var nm = String(targetRow[colIdx[keyN]] || "").trim();
+      if (!nm) continue;
+      var st = Number(targetRow[colIdx[keyS]] || 0);
+      whites.push({name: nm, star: st});
+    }
+    return {ok: true, whites: whites};
+  } catch (err) {
+    Logger.log("getWhiteFactorsForTarget error: " + err);
     return {ok: false, error: String(err)};
   }
 }
@@ -557,6 +657,7 @@ var BUG_TAB_NAME = "bug_reports";
 //   reviewer_note    → 運営側メモ
 var BUG_COLUMNS = [
   "reported_at", "factor_no", "target_role", "wrong_field",
+  "white_target_name",
   "wrong_value", "correct_value",
   "status", "applied_at", "reviewer_note"
 ];
@@ -579,6 +680,12 @@ function reportBug(params) {
     if (!/^\d+$/.test(factorNo)) {
       return {ok: false, error: "因子No は数字で入力してください"};
     }
+    if (!role) {
+      return {ok: false, error: "親・祖1・祖2 のいずれかを選択してください"};
+    }
+    if (["main", "parent1", "parent2"].indexOf(role) < 0) {
+      return {ok: false, error: "role は main / parent1 / parent2 のいずれか"};
+    }
     if (!wrongField && !wrong && !correct) {
       return {ok: false, error: "修正内容（項目・現在の値・正しい値）のいずれかは必要です"};
     }
@@ -594,18 +701,35 @@ function reportBug(params) {
       sheet.appendRow(BUG_COLUMNS);
       sheet.setFrozenRows(1);
     }
+
+    // 既存シートに欠損列があれば追加（スキーマ進化対応）
+    var curHeader = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+    for (var ci = 0; ci < BUG_COLUMNS.length; ci++) {
+      if (curHeader.indexOf(BUG_COLUMNS[ci]) < 0) {
+        var newColPos = sheet.getLastColumn() + 1;
+        sheet.getRange(1, newColPos).setValue(BUG_COLUMNS[ci]);
+        curHeader.push(BUG_COLUMNS[ci]);
+      }
+    }
+
+    // ヘッダー順に合わせて値を並べる
+    var headerNow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
     var now = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyy-MM-dd HH:mm:ss");
-    sheet.appendRow([
-      now,
-      Number(factorNo),
-      role,
-      wrongField,
-      wrong,
-      correct,
-      "pending",
-      "",
-      ""
-    ]);
+    var whiteTarget = String(params.white_target_name || "").trim();
+    var fields = {
+      "reported_at": now,
+      "factor_no": Number(factorNo),
+      "target_role": role,
+      "wrong_field": wrongField,
+      "white_target_name": whiteTarget,
+      "wrong_value": wrong,
+      "correct_value": correct,
+      "status": "pending",
+      "applied_at": "",
+      "reviewer_note": ""
+    };
+    var row = headerNow.map(function(h) { return fields.hasOwnProperty(h) ? fields[h] : ""; });
+    sheet.appendRow(row);
     return {ok: true};
   } catch (err) {
     return {ok: false, error: String(err)};
@@ -656,6 +780,7 @@ function applyBugReports(options) {
         return {ok: false, error: "bug_reports に列 '" + need[n] + "' が無い。新規報告を 1 件送ると再生成されます"};
       }
     }
+    // white_target_name は後から追加した列なので、無ければ undefined のまま扱う
 
     var factLast = factSheet.getLastRow();
     var factCols = factSheet.getLastColumn();
@@ -682,6 +807,8 @@ function applyBugReports(options) {
       var field = String(br[bIdx["wrong_field"]] || "").trim();
       var wrong = String(br[bIdx["wrong_value"]] || "").trim();
       var correct = String(br[bIdx["correct_value"]] || "").trim();
+      var whiteTargetName = (bIdx["white_target_name"] !== undefined)
+        ? String(br[bIdx["white_target_name"]] || "").trim() : "";
 
       if (!factorNo) {
         bugUpdates.push({row: r + 1, status: "invalid", note: "factor_no が空"});
@@ -805,7 +932,46 @@ function applyBugReports(options) {
         continue;
       }
 
-      // --- 自動適用できない（white_star / other / 不明フィールド） ---
+      // --- 白因子の★数（white_target_name で対象スロットを特定） ---
+      if (field === "white_star") {
+        if (!whiteTargetName) {
+          bugUpdates.push({row: r + 1, status: "needs_review", note: "white_target_name 未指定のため特定不能（白因子 ★）"});
+          results.needs_review += 1; continue;
+        }
+        var newStar = Number(correct);
+        if (isNaN(newStar)) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "correct_value が数値でない: '" + correct + "'"});
+          results.invalid += 1; continue;
+        }
+        var hitStar = null;
+        for (var csi = 0; csi < candidates.length; csi++) {
+          var frs = candidates[csi];
+          for (var ss = 1; ss <= SEARCH_MAX_SLOTS; ss++) {
+            var ksN = "factor_" + (ss < 10 ? "0" + ss : ss) + "_name";
+            var ksS = "factor_" + (ss < 10 ? "0" + ss : ss) + "_star";
+            if (fIdx[ksN] === undefined) break;
+            if (String(factValues[frs][fIdx[ksN]] || "") === whiteTargetName) {
+              hitStar = {row: frs, col: fIdx[ksS], name: whiteTargetName, oldStar: Number(factValues[frs][fIdx[ksS]] || 0), slotKey: ksS};
+              break;
+            }
+          }
+          if (hitStar) break;
+        }
+        if (!hitStar) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "対象スキル '" + whiteTargetName + "' が factor_no=" + factorNo + " の因子に見つからず"});
+          results.invalid += 1; continue;
+        }
+        if (wrong && String(hitStar.oldStar) !== wrong) {
+          bugUpdates.push({row: r + 1, status: "invalid", note: "現在★" + hitStar.oldStar + " が wrong_value '" + wrong + "' と不一致"});
+          results.invalid += 1; continue;
+        }
+        factUpdates.push({row: hitStar.row + 1, col: hitStar.col + 1, value: newStar});
+        bugUpdates.push({row: r + 1, status: "applied", note: "white_star (" + hitStar.slotKey + ") '" + hitStar.name + "': ★" + hitStar.oldStar + " → ★" + newStar});
+        results.applied += 1;
+        continue;
+      }
+
+      // --- 自動適用できない（other / 不明フィールド） ---
       bugUpdates.push({row: r + 1, status: "needs_review", note: "field='" + field + "' は手動対応が必要"});
       results.needs_review += 1;
     }
@@ -871,6 +1037,7 @@ function onOpen(e) {
       .addItem("🙈 投稿画像ファイル名を一括匿名化", "_menuRenameFormUploads")
       .addItem("🔒 フォーム設定を安全化（投稿者に回答非公開）", "_menuSecureFormSettings")
       .addSeparator()
+      .addItem("♻ 失敗した投稿を再処理（504 等の救済）", "_menuRetryFailedSubmissions")
       .addItem("📣 Discord に再通知（factor_no 指定）", "_menuResendDiscord")
       .addItem("🔧 列ズレ行を修復（factor_no 導入時の移行用）", "_menuRepairShiftedRows")
       .addToUi();
@@ -1589,14 +1756,9 @@ function onFormSubmit(e) {
       submission_id: submissionId,
     };
 
-    var response = UrlFetchApp.fetch(cloudRunUrl, {
-      method: "post",
-      contentType: "application/json",
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true,
-    });
-    var code = response.getResponseCode();
-    var body = response.getContentText();
+    var cr = _callCloudRunWithRetry(cloudRunUrl, payload, 2);
+    var code = cr.code;
+    var body = cr.body;
     Logger.log("Cloud Run response: " + code + " " + body.substring(0, 500));
 
     _updateResponseRow(e, submissionId, code === 200 ? "processed" : "error:" + code);
@@ -1608,6 +1770,190 @@ function onFormSubmit(e) {
   } catch (err) {
     Logger.log("onFormSubmit error: " + err);
   }
+}
+
+// =============================================================================
+// Cloud Run 呼び出しラッパ（指数バックオフ再試行）
+// =============================================================================
+// 504 / 502 / 503 はコールドスタート・一時的なゲートウェイタイムアウトで発生
+// しやすいので、短い間隔で再試行する。それ以外（認証エラー等）は即リターン。
+
+function _callCloudRunWithRetry(url, payload, maxRetries) {
+  maxRetries = maxRetries == null ? 2 : maxRetries;
+  var lastCode = 0, lastBody = "";
+  for (var attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      var res = UrlFetchApp.fetch(url, {
+        method: "post",
+        contentType: "application/json",
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+      lastCode = res.getResponseCode();
+      lastBody = res.getContentText();
+      if (lastCode === 200) {
+        if (attempt > 0) Logger.log("[CLOUDRUN-RETRY] attempt " + attempt + " succeeded");
+        return {code: lastCode, body: lastBody};
+      }
+      // 一時エラーのみ再試行
+      if (lastCode === 504 || lastCode === 502 || lastCode === 503) {
+        Logger.log("[CLOUDRUN-RETRY] attempt " + attempt + " got " + lastCode + ", will retry");
+        if (attempt < maxRetries) {
+          // 2s, 5s, 10s の待機
+          Utilities.sleep([2000, 5000, 10000][Math.min(attempt, 2)]);
+          continue;
+        }
+      }
+      // それ以外のエラーは即返却
+      return {code: lastCode, body: lastBody};
+    } catch (err) {
+      Logger.log("[CLOUDRUN-RETRY] attempt " + attempt + " threw: " + err);
+      lastBody = String(err);
+      if (attempt < maxRetries) {
+        Utilities.sleep([2000, 5000, 10000][Math.min(attempt, 2)]);
+        continue;
+      }
+      lastCode = 0;
+    }
+  }
+  return {code: lastCode, body: lastBody};
+}
+
+// =============================================================================
+// 失敗した投稿の再処理
+// =============================================================================
+// Form 応答シートの status 列が "error:*" の行を拾い、Cloud Run を再呼び出しする。
+// 504 / 502 / 503 / 0 のタイムアウト系や、ONNX 不安定時のリカバリ用。
+
+function retryFailedSubmissions(options) {
+  options = options || {};
+  var onlyCodes = options.codes || [504, 502, 503, 0];
+  var maxBatch = Number(options.max_batch || 3);         // 1 回あたり最大 3 件（6 分制限対策）
+  var timeBudgetMs = Number(options.time_budget_ms || 4 * 60 * 1000);  // 4 分で中断
+  var startMs = Date.now();
+  try {
+    var props = PropertiesService.getScriptProperties();
+    var cloudRunUrl = props.getProperty("CLOUD_RUN_URL");
+    var cloudRunSecret = props.getProperty("CLOUD_RUN_SECRET");
+    if (!cloudRunUrl || !cloudRunSecret) {
+      return {ok: false, error: "CLOUD_RUN_URL / CLOUD_RUN_SECRET が未設定です"};
+    }
+
+    var sheet = _getFormResponsesSheet();
+    if (!sheet) return {ok: false, error: "Form 応答シートが見つかりません"};
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return {ok: true, processed: 0};
+    var values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var idxMap = {};
+    for (var i = 0; i < header.length; i++) idxMap[header[i]] = i;
+
+    var imageIdx = -1, submitterIdx = -1, statusIdx = idxMap["status"], subIdx = idxMap["submission_id"];
+    for (var j = 0; j < header.length; j++) {
+      if (imageIdx < 0 && /画像|image|ファイル|スクリーンショット/i.test(header[j])) imageIdx = j;
+      if (submitterIdx < 0 && /連絡先|Discord|ディスコード|Xハンドル|X ハンドル|Submitter/i.test(header[j])) submitterIdx = j;
+    }
+    if (statusIdx === undefined || subIdx === undefined) {
+      return {ok: false, error: "status / submission_id 列が Form 応答シートに無い"};
+    }
+
+    var processed = 0, succeeded = 0, failed = 0, remaining = 0, stoppedEarly = false;
+    var details = [];
+
+    for (var r = 1; r < values.length; r++) {
+      var status = String(values[r][statusIdx] || "").trim();
+      if (!/^error:/.test(status)) continue;
+      var code = Number(status.replace("error:", "")) || 0;
+      if (onlyCodes.indexOf(code) < 0) continue;
+
+      // バッチ上限 / 時間切れチェック（処理前）
+      if (processed >= maxBatch) { remaining += 1; continue; }
+      if (Date.now() - startMs > timeBudgetMs) { stoppedEarly = true; remaining += 1; continue; }
+
+      processed += 1;
+      var submissionId = String(values[r][subIdx] || "").trim() || Utilities.getUuid();
+      var imageCell = imageIdx >= 0 ? String(values[r][imageIdx] || "") : "";
+      var imageUrl = imageCell.split(",")[0].trim();
+      var fileId = _extractDriveFileId(imageUrl);
+      var submitterId = submitterIdx >= 0 ? String(values[r][submitterIdx] || "").trim() || "(anonymous)" : "(anonymous)";
+      if (!fileId) {
+        details.push("row " + (r + 1) + ": Drive file ID を解決できず");
+        failed += 1;
+        continue;
+      }
+      try {
+        var blob = DriveApp.getFileById(fileId).getBlob();
+        var b64 = Utilities.base64Encode(blob.getBytes());
+        var payload = {
+          secret: cloudRunSecret,
+          submitter_id: submitterId,
+          image_base64: b64,
+          submission_id: submissionId
+        };
+        // ※ 内部リトライは 0。外側（メニュー連打）で再実行してもらう方針。
+        //   これで 1 件あたり最長 ~300 秒（Cloud Run 側タイムアウト）に収まる。
+        var cr = _callCloudRunWithRetry(cloudRunUrl, payload, 0);
+        var newStatus = cr.code === 200 ? "processed (retried)" : "error:" + cr.code;
+        if (!String(values[r][subIdx] || "").trim()) {
+          sheet.getRange(r + 1, subIdx + 1).setValue(submissionId);
+        }
+        sheet.getRange(r + 1, statusIdx + 1).setValue(newStatus);
+        if (cr.code === 200) {
+          succeeded += 1;
+          details.push("row " + (r + 1) + ": OK [" + submissionId.substring(0, 8) + "]");
+          try {
+            var nv = {};
+            for (var k = 0; k < header.length; k++) {
+              nv[header[k]] = [String(values[r][k] || "")];
+            }
+            _notifyDiscordIfNeeded(submissionId, fileId, nv);
+          } catch (notifyErr) {
+            Logger.log("retry notify err: " + notifyErr);
+          }
+        } else {
+          failed += 1;
+          details.push("row " + (r + 1) + ": NG code=" + cr.code);
+        }
+      } catch (err) {
+        failed += 1;
+        details.push("row " + (r + 1) + ": 例外 " + err);
+      }
+      Utilities.sleep(500);
+    }
+    Logger.log("retryFailedSubmissions: processed=" + processed + " ok=" + succeeded + " ng=" + failed + " remaining=" + remaining);
+    return {ok: true, processed: processed, succeeded: succeeded, failed: failed, remaining: remaining, stopped_early: stoppedEarly, details: details};
+  } catch (err) {
+    Logger.log("retryFailedSubmissions error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+function _menuRetryFailedSubmissions() {
+  var ui = SpreadsheetApp.getUi();
+  var confirm = ui.alert(
+    "失敗した投稿を再処理",
+    "Form 応答シートの status が 'error:504 / 502 / 503 / 0' の行を拾って Cloud Run へ再リクエストします。\n\n"
+    + "Apps Script の 6 分実行制限の都合で、1 回の実行では最大 3 件まで処理します。\n"
+    + "残件があれば alert 内容にしたがって再度メニューを実行してください。\n\n"
+    + "実行してよろしいですか？",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (confirm !== ui.Button.OK) return;
+  var res = retryFailedSubmissions();
+  if (!res.ok) {
+    ui.alert("再処理エラー", res.error, ui.ButtonSet.OK);
+    return;
+  }
+  var lines = [
+    "処理: " + res.processed + " 件（成功 " + res.succeeded + " / 失敗 " + res.failed + "）",
+    "残件: " + res.remaining + " 件" + (res.stopped_early ? "（時間切れで中断）" : "")
+  ];
+  if (res.remaining > 0) {
+    lines.push("", "▶ 残件がある場合は、もう一度メニューから再処理を実行してください。");
+  }
+  if (res.details && res.details.length) lines.push("", "【詳細】", res.details.slice(0, 10).join("\n"));
+  ui.alert("失敗投稿の再処理", lines.join("\n"), ui.ButtonSet.OK);
 }
 
 function _pickFirst(namedValues, keys) {
