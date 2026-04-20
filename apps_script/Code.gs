@@ -1346,8 +1346,7 @@ var KITASAN_MESSAGES = {
 // AI 誤認識の注意喚起（embed のタイトル直下、因子サマリの前に挿入する短文）。
 // OCR 精度が安定したら空文字に差し替えるだけで無効化可能。
 var KITASAN_OCR_DISCLAIMER =
-  "> ※ 因子情報はAIの自動読み取りなので、たまに誤認識があるんですッ。" +
-  "気になる因子は原本スクショもご確認を。誤認識は 🐛 バグ報告で教えてくださいねッ！🐎";
+  "> ※ AI 自動読み取りのため誤認識もあります💦 間違いを見つけたら検索サイトからバグ報告してくださいねッ！🐎";
 
 function _kitasanMessage(purposeKey) {
   var arr = KITASAN_MESSAGES[purposeKey];
@@ -1393,9 +1392,8 @@ function _buildFactorSummaryText(rows, colIdx) {
       whites.push(nm + "★" + st);
     }
     if (whites.length) {
-      var shown = whites.slice(0, 8).join(" / ");
-      if (whites.length > 8) shown += " …他" + (whites.length - 8) + "件";
-      lines.push("⚪ " + shown);
+      // 列挙は長くなるので件数のみ表示（詳細は検索サイトで確認してもらう）
+      lines.push("⚪ 白因子 " + whites.length + " 個");
     }
     lines.push("");
   });
@@ -1421,8 +1419,8 @@ function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl,
     });
   }
   fields.push({
-    name: "📢 皆さんも因子を投稿してくださいねッ！",
-    value: "あなたの一枚が誰かの勝負を支えるかもしれませんッ！わっしょーい！🐎✨\n▶ [投稿フォームはこちら](" + FORM_URL + ")",
+    name: "📢 あなたの因子も募集中！",
+    value: "▶ [投稿フォームはこちら](" + FORM_URL + ")  わっしょーい！🐎✨",
     inline: false
   });
   // タイトル直下に注意書きを挟み、続く因子情報との間に空行を入れて可読性を確保する。
