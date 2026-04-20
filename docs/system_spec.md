@@ -15,6 +15,7 @@
 | **アーカイブ** | デフォルトは直近 30 日以内のみ表示。トグル ON で全期間を対象に拡張 |
 | **バグ報告** | 検索画面から誤認識を報告 → `bug_reports` シートに蓄積 |
 | **バグ自動反映ワーカ** | 時限トリガ（1 時間毎）または手動メニューで `bug_reports` を走査し、`factors_normalized` を自動補正 |
+| **画像匿名化ツール** | スプレッドシートメニュー `UMG因子DB → 🙈 投稿画像ファイル名を一括匿名化` / `🔒 フォーム設定を安全化` で個人情報の残留を除去 |
 | **Discord 通知** | 目的・用途（対人/査定/競技場）別に Webhook でキタサンブラック口調メッセージ投稿（表示名は Webhook 設定「おしらせキタちゃん」） |
 
 ## 3. システム構成
@@ -238,7 +239,9 @@ Google Form が自動作成。列の例：
 
 | 項目 | 対策 |
 |---|---|
-| 画像ファイル名の個人情報 | Apps Script 側で `factor_yyyyMMdd_HHmmss.ext` に自動匿名リネーム |
+| 画像ファイル名の個人情報 | 3 重防御：(1) `onFormSubmit` で Drive ファイル名を `factor_yyyyMMdd_HHmmss.ext` に即時リネーム＋成功/失敗ログ、(2) Discord 送信直前に `imageBlob.setName()` で再度上書き、(3) 過去投稿を一括匿名化する `renameAllFormUploads()` をメニューから実行可能 |
+| フォーム結果の露出 | `secureFormSettings()` で `setPublishingSummary(false)` / `setAllowResponseEdits(false)` を適用し、投稿者が他人のアップロード画像名・トレーナーID を閲覧不可にする |
+| OAuth スコープ | `appsscript.json` に `drive` / `spreadsheets` / `forms` / `script.external_request` / `script.scriptapp` / `script.container.ui` を明示。最小権限推定での `drive.file` に落とされないようにし、`DriveApp.File.setName` を確実に許可 |
 | clickjacking | `HtmlOutput` の `XFrameOptionsMode` をデフォルトに（ALLOWALL 解除） |
 | webhook 認証 | Apps Script ↔ Cloud Run 間は `SHARED_SECRET` で認証 |
 | シークレット管理 | Cloud Run は Secret Manager、Apps Script はスクリプトプロパティ |
@@ -292,6 +295,9 @@ UmamusumeFactorDB/
   - Cloud Run 側コード変更 → `gcloud run deploy factor-processor --source .`
   - Apps Script コード変更 → `apps_script/` で `clasp push -f && clasp deploy -i <DEPLOYMENT_ID> -d "<説明>"`。既存 Deployment ID を再利用することで **Web App URL を維持** しつつ新バージョンを差し替えられる。
 - **バグ報告自動反映の有効化（初回のみ）**：対象スプレッドシートを開き、メニュー `UMG因子DB → ⏰ 1 時間ごとの自動反映トリガを設置`。以後 `applyBugReports` が時限実行される。停止は `⛔ 自動反映トリガを削除`、即時適用は `🛠 バグ報告を適用（今すぐ）`、影響確認だけしたい場合は `🧪 ドライラン`。
+- **過去画像の一括匿名化（初回のみ）**：既存の投稿画像が `combine_XXXX - トレーナー◯◯.png` のような投稿者名入りファイル名になっている場合、メニュー `UMG因子DB → 🙈 投稿画像ファイル名を一括匿名化` で応答シート全件を `factor_yyyyMMdd_HHmmss.ext` に置換可能。
+- **フォーム結果の非公開化（初回のみ）**：メニュー `UMG因子DB → 🔒 フォーム設定を安全化` を 1 回クリックすると、投稿完了ページの「結果の概要を表示」リンクと回答編集リンクが恒久的に無効化される。
+- **OAuth 再承認**：`appsscript.json` のスコープを変更した直後は GAS 側で再承認ダイアログが必要。任意の関数を Apps Script エディタから 1 回実行して「許可」すれば以後のトリガも自動で新スコープを使用する。
 - **バグ反映が `needs_review` / `invalid` で止まる典型ケース**：
   - `white_star`・`other` は自動化対象外（`needs_review`）。`bug_reports` で内容を確認し、`factors_normalized` を手動編集してから `status` を `applied` に書き換える。
   - 現在値が `wrong_value` と既に違う場合は `invalid`。別のバグ報告や手動修正と重複している可能性が高いので、`reviewer_note` を見て判断。

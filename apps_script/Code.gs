@@ -813,6 +813,9 @@ function onOpen(e) {
       .addSeparator()
       .addItem("⏰ 1 時間ごとの自動反映トリガを設置", "setupBugReportTrigger")
       .addItem("⛔ 自動反映トリガを削除", "removeBugReportTrigger")
+      .addSeparator()
+      .addItem("🙈 投稿画像ファイル名を一括匿名化", "_menuRenameFormUploads")
+      .addItem("🔒 フォーム設定を安全化（投稿者に回答非公開）", "_menuSecureFormSettings")
       .addToUi();
   } catch (err) {
     Logger.log("onOpen menu failed: " + err);
@@ -833,6 +836,146 @@ function _menuApplyBugReportsDry() {
     ? "【ドライラン・実書込みなし】\n対象 " + res.processed + " 件 / 適用可 " + res.applied + " / 要確認 " + res.needs_review + " / 不整合 " + res.invalid
     : "エラー: " + res.error;
   SpreadsheetApp.getUi().alert("バグ報告 ドライラン", msg, SpreadsheetApp.getUi().ButtonSet.OK);
+}
+
+// =============================================================================
+// 投稿画像ファイル名の一括匿名化
+// =============================================================================
+// Google Form は画像アップロード時に「<アップロード者の元ファイル名> - <投稿者アカウント名>.ext」
+// という命名で Drive に保存する。onFormSubmit 側でリネームしているが、過去投稿や
+// リネーム失敗のケースを救済するために、応答シートから辿って一括でリネームできるようにする。
+
+function renameAllFormUploads() {
+  try {
+    var sheet = _getFormResponsesSheet();
+    if (!sheet) return {ok: false, error: "Form 応答シートが見つかりません"};
+    var lastRow = sheet.getLastRow();
+    var lastCol = sheet.getLastColumn();
+    if (lastRow < 2) return {ok: true, renamed: 0, skipped: 0, errors: 0};
+    var values = sheet.getRange(1, 1, lastRow, lastCol).getValues();
+    var header = values[0].map(String);
+    var imgIdx = -1;
+    var tsIdx = 0;  // タイムスタンプは通常 1 列目
+    for (var j = 0; j < header.length; j++) {
+      if (imgIdx < 0 && /画像|image|ファイル|スクリーンショット/i.test(header[j])) imgIdx = j;
+      if (/タイムスタンプ|timestamp/i.test(header[j])) tsIdx = j;
+    }
+    if (imgIdx < 0) return {ok: false, error: "画像列が見つかりません"};
+
+    var renamed = 0, skipped = 0, errors = 0;
+    var errorSamples = [];
+    var ANON_RE = /^factor_\d{8}_\d{6}(?:_\d+)?\.[a-z]+$/i;
+    var EXT_RE = /\.(png|jpe?g|gif|webp|heic|bmp)$/i;
+
+    for (var r = 1; r < values.length; r++) {
+      var cell = String(values[r][imgIdx] || "").trim();
+      if (!cell) continue;
+      var urls = cell.split(",");
+      var tsVal = values[r][tsIdx];
+      var d;
+      if (tsVal instanceof Date) d = tsVal;
+      else if (tsVal) d = new Date(tsVal);
+      else d = new Date();
+      var stamp = Utilities.formatDate(d, "Asia/Tokyo", "yyyyMMdd_HHmmss");
+
+      for (var u = 0; u < urls.length; u++) {
+        var url = urls[u].trim();
+        if (!url) continue;
+        var fileId = _extractDriveFileId(url);
+        if (!fileId) continue;
+        try {
+          var file = DriveApp.getFileById(fileId);
+          var origName = file.getName();
+          if (ANON_RE.test(origName)) { skipped += 1; continue; }
+          var extMatch = origName.match(EXT_RE);
+          var ext = extMatch ? extMatch[0].toLowerCase() : ".png";
+          var suffix = (u > 0) ? ("_" + (u + 1)) : "";
+          var newName = "factor_" + stamp + suffix + ext;
+          file.setName(newName);
+          renamed += 1;
+        } catch (fileErr) {
+          errors += 1;
+          if (errorSamples.length < 5) errorSamples.push(String(fileErr));
+        }
+      }
+    }
+    Logger.log("renameAllFormUploads: renamed=" + renamed + " skipped=" + skipped + " errors=" + errors);
+    return {ok: true, renamed: renamed, skipped: skipped, errors: errors, error_samples: errorSamples};
+  } catch (err) {
+    Logger.log("renameAllFormUploads error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+function _menuRenameFormUploads() {
+  var ui = SpreadsheetApp.getUi();
+  var confirm = ui.alert(
+    "投稿画像の一括匿名化",
+    "応答シートから辿れる全ての投稿画像の Drive ファイル名を\n『factor_yyyyMMdd_HHmmss.ext』形式に置き換えます。\n\n実行してよろしいですか？",
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (confirm !== ui.Button.OK) return;
+  var res = renameAllFormUploads();
+  var msg = res.ok
+    ? "リネーム: " + res.renamed + " / スキップ: " + res.skipped + " / 失敗: " + res.errors +
+      (res.error_samples && res.error_samples.length ? "\n\n失敗例:\n- " + res.error_samples.join("\n- ") : "")
+    : "エラー: " + res.error;
+  ui.alert("投稿画像の一括匿名化", msg, ui.ButtonSet.OK);
+}
+
+// =============================================================================
+// フォーム設定の安全化（投稿者に回答状況を非公開）
+// =============================================================================
+// Google Form の既定では「結果の概要を見る」リンクが投稿後ページに出ることがあり、
+// 他の投稿者のアップロード画像名（= 投稿者のアカウント名を含む場合がある）やトレーナーID
+// 等が見えてしまう。setPublishingSummary(false) でこの挙動を止める。
+
+function secureFormSettings() {
+  try {
+    var sheet = _getFormResponsesSheet();
+    if (!sheet) return {ok: false, error: "Form 応答シートが見つかりません"};
+    var formUrl = sheet.getFormUrl && sheet.getFormUrl();
+    if (!formUrl) {
+      // getFormUrl は「応答先」に設定されたシートでないと null。
+      // SpreadsheetApp 側で取得を試みる。
+      formUrl = SpreadsheetApp.getActiveSpreadsheet().getFormUrl && SpreadsheetApp.getActiveSpreadsheet().getFormUrl();
+    }
+    if (!formUrl) return {ok: false, error: "リンク済みフォームが見つかりません"};
+    var form = FormApp.openByUrl(formUrl);
+
+    // 結果の概要を投稿者に非公開（最重要）
+    form.setPublishingSummary(false);
+    // 投稿後に自分の回答を編集できるリンクも無効化
+    form.setAllowResponseEdits(false);
+    // 進捗バー表示（UX 向上、任意）
+    form.setProgressBar(true);
+
+    return {
+      ok: true,
+      publishing_summary: form.isPublishingSummary(),
+      allow_response_edits: form.canEditResponse(),
+      form_title: form.getTitle()
+    };
+  } catch (err) {
+    Logger.log("secureFormSettings error: " + err);
+    return {ok: false, error: String(err)};
+  }
+}
+
+function _menuSecureFormSettings() {
+  var res = secureFormSettings();
+  var ui = SpreadsheetApp.getUi();
+  if (!res.ok) {
+    ui.alert("フォーム設定の安全化", "エラー: " + res.error, ui.ButtonSet.OK);
+    return;
+  }
+  ui.alert(
+    "フォーム設定の安全化",
+    "フォーム『" + res.form_title + "』の設定を更新しました。\n\n"
+    + "・結果の概要を投稿者に公開：" + (res.publishing_summary ? "ON" : "OFF") + "\n"
+    + "・投稿者による回答編集：" + (res.allow_response_edits ? "許可" : "禁止"),
+    ui.ButtonSet.OK
+  );
 }
 
 // =============================================================================
@@ -956,7 +1099,11 @@ function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl)
   if (imageBlob) {
     // multipart/form-data：payload_json + files[0]
     // embed.image を attachment 参照に差し替える
-    var filename = imageBlob.getName() || "factor.png";
+    // 念のため：投稿者名を含みうる元ファイル名を常に匿名化した名前で上書きする
+    //（UrlFetchApp は blob.getName() をそのまま multipart filename として送信するため）
+    var safeFilename = "factor_" + Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd_HHmmss") + ".png";
+    try { imageBlob.setName(safeFilename); } catch (setNameErr) { /* 失敗しても続行 */ }
+    var filename = imageBlob.getName() || safeFilename;
     embed.image = {url: "attachment://" + filename};
     options = {
       method: "post",
@@ -1067,14 +1214,24 @@ function onFormSubmit(e) {
     // Form アップロードファイルはデフォルトで「回答者のアカウント名」を含むファイル名になる。
     // 個人情報漏洩を避けるため、投稿日時ベースの匿名名にリネームする。
     var file = DriveApp.getFileById(fileId);
+    var origName = "";
     try {
-      var origName = file.getName();
+      origName = file.getName();
       var extMatch = origName.match(/\.(png|jpe?g|gif|webp|heic|bmp)$/i);
       var ext = extMatch ? extMatch[0].toLowerCase() : ".png";
       var stamp = Utilities.formatDate(new Date(), "Asia/Tokyo", "yyyyMMdd_HHmmss");
-      file.setName("factor_" + stamp + ext);
+      var safeName = "factor_" + stamp + ext;
+      file.setName(safeName);
+      // 念のため反映確認
+      var afterName = file.getName();
+      if (afterName !== safeName) {
+        Logger.log("[RENAME] setName 後の名前が期待値と異なる origName='" + origName + "' after='" + afterName + "' want='" + safeName + "'");
+      } else {
+        Logger.log("[RENAME] OK '" + origName + "' → '" + safeName + "'");
+      }
     } catch (renameErr) {
-      Logger.log("rename skipped: " + renameErr);
+      // 無言で失敗させると投稿者名が Drive / Discord に残ってしまうため、明示的に目立たせる
+      Logger.log("[RENAME-ERROR] 失敗: origName='" + origName + "' err=" + renameErr);
     }
     var blob = file.getBlob();
     var b64 = Utilities.base64Encode(blob.getBytes());
