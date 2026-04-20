@@ -141,8 +141,8 @@
       display: inline-block; padding: 2px 8px; border-radius: 999px;
       background: #fff; border: 1px solid #b9c7ee; color: #1f3b8c;
     }
-    table.result td.meta-col { width: 160px; font-size: 11px; color: #555; }
-    table.result td.meta-col .thumb { display: block; width: 100%; max-height: 540px; object-fit: contain; margin-top: 4px; border: 1px solid #e0e3e8; border-radius: 3px; background: #f7f8fa; }
+    table.result td.meta-col { width: 170px; font-size: 11px; color: #555; }
+    table.result td.meta-col .thumb { display: block; width: 100%; max-height: 486px; object-fit: contain; margin-top: 4px; border: 1px solid #e0e3e8; border-radius: 3px; background: #f7f8fa; }
     table.result td.meta-col .trainer-id {
       display: inline-block; cursor: pointer; color: #1956b3; font-weight: 600;
       font-size: 12px; padding: 2px 6px; border: 1px solid #c8d7ee; border-radius: 4px;
@@ -151,16 +151,36 @@
     table.result td.meta-col .trainer-id:hover { background: #d8e5ff; text-decoration: underline; }
     table.result td.meta-col .trainer-id.copied { background: #d3f5d6; color: #1f7a2e; border-color: #1f7a2e; }
     table.result td.meta-col .contact { margin-bottom: 4px; color: #333; }
+    table.result td.meta-col .comment {
+      display: block; margin-bottom: 4px; padding: 4px 8px;
+      font-size: 11px; color: #4b3a00; background: #fff8d9;
+      border: 1px solid #e7d58a; border-radius: 4px; line-height: 1.4;
+      word-break: break-word;
+    }
+    /* 目的・用途 / 利用脚質 のタグ行（横並び） */
+    table.result td.meta-col .purpose-row {
+      display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px;
+    }
     table.result td.meta-col .purpose-tag {
       display: inline-block; padding: 3px 10px; border-radius: 999px;
       font-size: 11px; font-weight: 700; letter-spacing: .05em;
-      margin-bottom: 6px; color: #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,.15); white-space: nowrap;
+      color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.15); white-space: nowrap;
     }
     table.result td.meta-col .purpose-pvp { background: linear-gradient(135deg, #e63946 0%, #b5202d 100%); }
     table.result td.meta-col .purpose-eval { background: linear-gradient(135deg, #2d7dff 0%, #1856c3 100%); }
     table.result td.meta-col .purpose-arena { background: linear-gradient(135deg, #22c55e 0%, #15803d 100%); }
     table.result td.meta-col .purpose-other { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); }
+    /* 利用脚質タグ（淡色） */
+    table.result td.meta-col .legs-tag {
+      display: inline-block; padding: 3px 10px; border-radius: 999px;
+      font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      border: 1px solid transparent; white-space: nowrap;
+    }
+    table.result td.meta-col .legs-nige    { background: #fde8e8; color: #b53a3a; border-color: #f6c8c8; }
+    table.result td.meta-col .legs-senko   { background: #ffeecc; color: #a86a00; border-color: #f5d68a; }
+    table.result td.meta-col .legs-sashi   { background: #dfeeff; color: #1956b3; border-color: #bcd6f4; }
+    table.result td.meta-col .legs-oikomi  { background: #eee0ff; color: #6a2da0; border-color: #d2bcf0; }
+    table.result td.meta-col .legs-hanyo   { background: #e6efe6; color: #3f6b3f; border-color: #c2d5c2; }
     table.result td.uma-col { width: 26%; }
     table.result td.uma-col .chara-name { font-weight: 600; font-size: 12px; margin-bottom: 3px; }
     td.uma-main { background: #fffbe6; }
@@ -221,12 +241,13 @@
       .archive-bar { flex-wrap: wrap; padding: 6px 10px; }
       .archive-bar .archive-hint { margin-left: 0; flex-basis: 100%; font-size: 10px; }
 
-      /* 検索パネル */
+      /* 検索パネル：モバイルは 1 行 1 項目で縦並び（はみ出し防止） */
       .panel { padding: 8px 10px; }
       .basic-row {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 6px;
+        grid-template-columns: 1fr; gap: 6px;
       }
-      .basic-row input, .basic-row select { font-size: 14px; padding: 5px 6px; }
+      .basic-row label { font-size: 12px; }
+      .basic-row input, .basic-row select { font-size: 14px; padding: 7px 8px; }
 
       /* 因子条件 */
       .cond-group { padding: 6px 0; }
@@ -267,9 +288,11 @@
 
       /* メタ列（トレーナーID・画像など） */
       table.result td.meta-col { width: auto !important; font-size: 12px; }
-      table.result td.meta-col .thumb { max-height: 320px; }
+      table.result td.meta-col .thumb { max-height: 288px; }
       table.result td.meta-col .trainer-id { font-size: 13px; padding: 4px 10px; }
-      table.result td.meta-col .purpose-tag { font-size: 11px; padding: 3px 10px; }
+      table.result td.meta-col .purpose-tag,
+      table.result td.meta-col .legs-tag { font-size: 11px; padding: 3px 10px; }
+      table.result td.meta-col .comment { font-size: 11px; padding: 4px 8px; }
 
       /* 親・祖セル：ラベルを付けて視認性アップ */
       table.result td.uma-col { width: auto !important; position: relative; }
@@ -297,7 +320,7 @@
     @media (max-width: 380px) {
       .site-header h1 { font-size: 19px; }
       .site-header .bug-btn { padding: 5px 10px; font-size: 11px; }
-      .basic-row { grid-template-columns: 1fr 1fr; }
+      /* basic-row は 640px 以下で既に 1 列なので上書き不要 */
     }
   </style>
 </head>
@@ -365,7 +388,7 @@
     <h3>📖 使い方</h3>
     <ul>
       <li><b>検索範囲</b>：デフォルトは <b>直近 30 日以内</b> の投稿のみ表示します。古い因子も見たいときは下の <span class="kbd">🗄 アーカイブを含める</span> を ON にしてください。</li>
-      <li><b>絞り込み</b>：<span class="kbd">親ウマ娘 / 連絡先 / 目的・用途</span> で単一フィルタ、<span class="kbd">青 / 赤 / 緑 / 白</span> 因子は「+ 追加」で複数条件を <b>AND</b> で重ねられます。各条件の <span class="kbd">✓</span> で有効/無効を一時切替可能です。</li>
+      <li><b>絞り込み</b>：<span class="kbd">親ウマ娘 / 連絡先 / 目的・用途 / 利用脚質</span> で単一フィルタ、<span class="kbd">コメント</span> は部分一致、<span class="kbd">青 / 赤 / 緑 / 白</span> 因子は「+ 追加」で複数条件を <b>AND</b> で重ねられます。各条件の <span class="kbd">✓</span> で有効/無効を一時切替可能です。</li>
       <li><b>因子No</b>：検索結果の左端 <span class="kbd">#番号</span> は投稿単位の通番です。クリックすると下記のバグ報告モーダルに自動入力されます。</li>
       <li><b>トレーナーID</b>：カードのトレーナーID をクリックでコピー。友達申請や挨拶にそのままどうぞ。</li>
       <li><b>AI の誤認識を見つけたら</b>：<span class="hot-red">右上の 🐛 バグ報告</span> か結果の <span class="kbd">#番号</span> クリックから <b>該当因子No・項目・現在値・正しい値</b> を送ってください。運営が定期的に反映します。</li>
@@ -389,6 +412,12 @@
       </label>
       <label>目的・用途
         <select id="f-purpose"><option value="">すべて</option></select>
+      </label>
+      <label>利用脚質
+        <select id="f-legs"><option value="">すべて</option></select>
+      </label>
+      <label>コメント（部分一致）
+        <input id="f-comment" type="text" placeholder="例: 対人向け">
       </label>
       <label>上限件数（submission 単位）
         <select id="f-limit"><option>50</option><option selected>200</option><option>500</option><option>1000</option></select>
@@ -548,6 +577,8 @@ function resetFilters() {
   document.getElementById("f-char").value = "";
   document.getElementById("f-submitter").value = "";
   document.getElementById("f-purpose").value = "";
+  document.getElementById("f-legs").value = "";
+  document.getElementById("f-comment").value = "";
   document.getElementById("f-limit").value = "200";
   ["blue-list","red-list","green-list","white-list"].forEach(function(id) {
     document.getElementById(id).innerHTML = "";
@@ -561,6 +592,8 @@ function runSearch() {
     character: document.getElementById("f-char").value,
     submitter_id: document.getElementById("f-submitter").value,
     purpose: document.getElementById("f-purpose").value,
+    legs: document.getElementById("f-legs").value,
+    comment: document.getElementById("f-comment").value,
     blue: collectConds("blue-list"),
     red: collectConds("red-list"),
     green: collectConds("green-list"),
@@ -653,7 +686,7 @@ function renderResult(res) {
     return;
   }
   var html = '<table class="result"><thead><tr>'
-    + '<th>因子No</th><th>トレーナーID・連絡先</th><th>親</th><th>祖1</th><th>祖2</th>'
+    + '<th>因子No</th><th>トレーナーID・連絡先・用途</th><th>親</th><th>祖1</th><th>祖2</th>'
     + '</tr></thead><tbody>';
   res.submissions.forEach(function(sub) {
     var when = String(sub.submitted_at || "").substring(0, 19).replace("T", " ");
@@ -665,20 +698,33 @@ function renderResult(res) {
     var contactHtml = sub.submitter_id
       ? '<div class="contact">📇 ' + escapeHtml(sub.submitter_id) + '</div>'
       : "";
+    var commentHtml = sub.comment
+      ? '<div class="comment">💬 ' + escapeHtml(sub.comment) + '</div>'
+      : "";
     var thumb = "";
     if (sub.image_url) {
       thumb = '<a href="' + escapeHtml(sub.image_url) + '" target="_blank" rel="noopener">'
         + '<img class="thumb" src="' + escapeHtml(driveToThumb(sub.image_url)) + '" alt="factor image" referrerpolicy="no-referrer">'
         + '</a>';
     }
-    var purposeHtml = "";
+    // 目的・用途 と 利用脚質 を横並び
+    var purposeTag = "";
     if (sub.purpose) {
       var pc = "purpose-other";
       if (sub.purpose.indexOf("対人") >= 0) pc = "purpose-pvp";
       else if (sub.purpose.indexOf("査定") >= 0) pc = "purpose-eval";
       else if (sub.purpose.indexOf("競技場") >= 0) pc = "purpose-arena";
-      purposeHtml = '<div><span class="purpose-tag ' + pc + '">🎯 ' + escapeHtml(sub.purpose) + '</span></div>';
+      purposeTag = '<span class="purpose-tag ' + pc + '">🎯 ' + escapeHtml(sub.purpose) + '</span>';
     }
+    var legsTag = "";
+    if (sub.legs) {
+      var LEGS_CLASS = {"逃げ":"legs-nige","先行":"legs-senko","差し":"legs-sashi","追込":"legs-oikomi","汎用":"legs-hanyo"};
+      var lc = LEGS_CLASS[sub.legs] || "legs-hanyo";
+      legsTag = '<span class="legs-tag ' + lc + '">🏇 ' + escapeHtml(sub.legs) + '</span>';
+    }
+    var purposeHtml = (purposeTag || legsTag)
+      ? '<div class="purpose-row">' + purposeTag + legsTag + '</div>'
+      : "";
     var noHtml = sub.factor_no
       ? '<span class="no-badge" style="cursor:pointer" title="この因子のバグを報告する" onclick="openBugModal({factor_no:' + Number(sub.factor_no) + '})">#' + Number(sub.factor_no) + '</span>'
       : '<span style="color:#999">—</span>';
@@ -688,6 +734,7 @@ function renderResult(res) {
       + purposeHtml
       + trainerHtml
       + contactHtml
+      + commentHtml
       + thumb
       + '<div style="color:#888;font-size:10px;margin-top:2px">' + escapeHtml(when) + '</div>'
       + '</td>';
@@ -766,6 +813,10 @@ function loadOptions() {
         (opt.purposes || []).forEach(function(v) {
           var o = document.createElement("option"); o.value = v; o.textContent = v; fPur.appendChild(o);
         });
+        var fLegs = document.getElementById("f-legs");
+        (opt.legs || []).forEach(function(v) {
+          var o = document.createElement("option"); o.value = v; o.textContent = v; fLegs.appendChild(o);
+        });
       }
       runSearch();
     })
@@ -776,7 +827,11 @@ function loadOptions() {
     .getFilterOptions();
 }
 
-window.addEventListener("DOMContentLoaded", loadOptions);
+window.addEventListener("DOMContentLoaded", function() {
+  loadOptions();
+  var cInput = document.getElementById("f-comment");
+  if (cInput) cInput.addEventListener("keydown", function(e) { if (e.key === "Enter") runSearch(); });
+});
 </script>
 </body>
 </html>

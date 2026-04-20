@@ -244,17 +244,20 @@ function getFilterOptions() {
     function sortedKeys(obj) {
       return Object.keys(obj).sort(function(a, b) { return a.localeCompare(b, "ja"); });
     }
-    // 目的・用途は Form 応答タブから収集（factors_normalized には無い列のため）
+    // 目的・用途 / 利用脚質 は Form 応答タブから収集（factors_normalized には無い列のため）
     var purposeSet = {};
     var purposeMap = _buildSubmissionPurposeMap();
     for (var psid in purposeMap) purposeSet[purposeMap[psid]] = 1;
+    // 利用脚質は 5 択なので固定順で返す（選択肢が Form に存在するかで絞り込む必要はない）
+    var legsAll = ["逃げ", "先行", "差し", "追込", "汎用"];
     return {
       ok: true,
       characters: sortedKeys(charSet),
       submitters: sortedKeys(subSet),
       green_names: sortedKeys(greenSet),
       white_names: sortedKeys(whiteSet),
-      purposes: sortedKeys(purposeSet)
+      purposes: sortedKeys(purposeSet),
+      legs: legsAll
     };
   } catch (err) {
     return {ok: false, error: String(err)};
@@ -325,6 +328,14 @@ function _buildSubmissionPurposeMap() {
 
 function _buildSubmissionTrainerIdMap() {
   return _buildSubmissionMap(/トレーナーID|trainer/i);
+}
+
+function _buildSubmissionLegsMap() {
+  return _buildSubmissionMap(/利用脚質|脚質|legs/i);
+}
+
+function _buildSubmissionCommentMap() {
+  return _buildSubmissionMap(/コメント|comment/i);
 }
 
 /**
@@ -405,6 +416,8 @@ function searchFactors(filters) {
     var charExact = String(filters.character || "").trim();
     var submitterExact = String(filters.submitter_id || "").trim();
     var purposeExact = String(filters.purpose || "").trim();
+    var legsExact = String(filters.legs || "").trim();
+    var commentPartial = String(filters.comment || "").trim().toLowerCase();
     var blue = Array.isArray(filters.blue) ? filters.blue : [];
     var red = Array.isArray(filters.red) ? filters.red : [];
     var green = Array.isArray(filters.green) ? filters.green : [];
@@ -419,8 +432,10 @@ function searchFactors(filters) {
       cutoffMs = _d.getTime();
     }
 
-    // purpose フィルタを使う場合のみマップを事前取得
-    var purposeMap = (purposeExact || true) ? _buildSubmissionPurposeMap() : {};
+    // purpose / legs / comment は常に引いて結果に付与する（フィルタ有無に関わらず UI で表示）
+    var purposeMap = _buildSubmissionPurposeMap();
+    var legsMap = _buildSubmissionLegsMap();
+    var commentMap = _buildSubmissionCommentMap();
 
     function targetsFor(sub, scope) {
       if (scope === "self") return [sub.main].filter(Boolean);
@@ -486,6 +501,13 @@ function searchFactors(filters) {
       if (purposeExact) {
         if (String(purposeMap[sub.submission_id] || "") !== purposeExact) continue;
       }
+      if (legsExact) {
+        if (String(legsMap[sub.submission_id] || "") !== legsExact) continue;
+      }
+      if (commentPartial) {
+        var cc = String(commentMap[sub.submission_id] || "").toLowerCase();
+        if (cc.indexOf(commentPartial) < 0) continue;
+      }
 
       var ok = true;
       for (var bi = 0; bi < blue.length && ok; bi++) if (!matchBlue(sub, blue[bi])) ok = false;
@@ -494,8 +516,10 @@ function searchFactors(filters) {
       for (var wi = 0; wi < white.length && ok; wi++) if (!matchWhite(sub, white[wi])) ok = false;
       if (!ok) continue;
 
-      // 結果に purpose を付与
+      // 結果に purpose / legs / comment を付与
       sub.purpose = purposeMap[sub.submission_id] || "";
+      sub.legs = legsMap[sub.submission_id] || "";
+      sub.comment = commentMap[sub.submission_id] || "";
       out.push(sub);
       if (out.length >= limit) break;
     }
@@ -1212,8 +1236,16 @@ function _buildFactorSummaryText(rows, colIdx) {
 }
 
 /** Discord Webhook に multipart で画像を直接添付して POST。 */
-function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl, trainerId) {
+function _postDiscordWebhook(webhookUrl, content, imageBlob, summary, searchUrl, trainerId, contact) {
   var fields = [];
+  if (contact) {
+    // 連絡先は表示のみ（コピー用途なし、コードブロックにしない）
+    fields.push({
+      name: "📇 連絡先",
+      value: String(contact),
+      inline: false
+    });
+  }
   if (trainerId) {
     fields.push({
       name: "🆔 トレーナーID",
@@ -1319,11 +1351,12 @@ function resendDiscordByFactorNo(factorNo) {
     var fIdx = {};
     for (var j = 0; j < fheader.length; j++) fIdx[fheader[j]] = j;
 
-    var purposeIdx = -1, imageIdx = -1, trainerIdx = -1, tsIdx = 0, sidFormIdx = -1;
+    var purposeIdx = -1, imageIdx = -1, trainerIdx = -1, tsIdx = 0, sidFormIdx = -1, contactIdx = -1;
     for (var jj = 0; jj < fheader.length; jj++) {
       if (purposeIdx < 0 && /目的|用途|purpose/i.test(fheader[jj])) purposeIdx = jj;
       if (imageIdx < 0 && /画像|image|ファイル|スクリーンショット/i.test(fheader[jj])) imageIdx = jj;
       if (trainerIdx < 0 && /トレーナーID|trainer/i.test(fheader[jj])) trainerIdx = jj;
+      if (contactIdx < 0 && /連絡先|Discord|ディスコード|Xハンドル|X ハンドル|Submitter/i.test(fheader[jj])) contactIdx = jj;
       if (/タイムスタンプ|timestamp/i.test(fheader[jj])) tsIdx = jj;
       if (fheader[jj] === "submission_id") sidFormIdx = jj;
     }
@@ -1385,6 +1418,7 @@ function resendDiscordByFactorNo(factorNo) {
     var purpose = purposeIdx >= 0 ? String(bestRow[purposeIdx] || "").trim() : "";
     var imageUrl = imageIdx >= 0 ? String(bestRow[imageIdx] || "").split(",")[0].trim() : "";
     var trainerId = trainerIdx >= 0 ? String(bestRow[trainerIdx] || "").trim() : "";
+    var contact = contactIdx >= 0 ? String(bestRow[contactIdx] || "").trim() : "";
 
     var matched = _pickWebhookForPurpose(purpose);
     if (!matched) return {ok: false, error: "purpose='" + purpose + "' に対応する Webhook がありません"};
@@ -1397,8 +1431,8 @@ function resendDiscordByFactorNo(factorNo) {
 
     var summary = _buildFactorSummaryText(rows, colIdx);
     var msg = _kitasanMessage(matched.key);
-    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId);
-    return {ok: true, factor_no: factorNo, purpose: purpose, trainer_id: trainerId, match: matchStrategy};
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId, contact);
+    return {ok: true, factor_no: factorNo, purpose: purpose, trainer_id: trainerId, contact: contact, match: matchStrategy};
   } catch (err) {
     Logger.log("resendDiscordByFactorNo error: " + err);
     return {ok: false, error: String(err)};
@@ -1468,13 +1502,17 @@ function _notifyDiscordIfNeeded(submissionId, fileId, namedValues) {
       }
     }
 
-    // トレーナーID を Form 応答から拾う（見つからなければ通知側は省略）
+    // トレーナーID / 連絡先 を Form 応答から拾う（見つからなければ通知側は省略）
     var trainerId = _pickFirst(namedValues, [
       "トレーナーID", "トレーナー ID", "トレーナＩＤ", "trainer id", "trainer"
     ]) || "";
+    var contact = _pickFirst(namedValues, [
+      "連絡先", "Discord", "ディスコード",
+      "投稿者Xハンドル", "X ハンドル", "Xハンドル", "Submitter"
+    ]) || "";
 
     var msg = _kitasanMessage(matched.key);
-    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId);
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId, contact);
   } catch (err) {
     Logger.log("_notifyDiscordIfNeeded error: " + err);
   }
