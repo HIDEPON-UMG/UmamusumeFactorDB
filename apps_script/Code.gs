@@ -1300,20 +1300,40 @@ function _menuSecureFormSettings() {
 // 3. Discord Webhook 通知
 // =============================================================================
 
-var DISCORD_WEBHOOKS = {
-  "対人": "***REDACTED_DISCORD_WEBHOOK***",
-  "査定": "***REDACTED_DISCORD_WEBHOOK***",
-  "競技場": "***REDACTED_DISCORD_WEBHOOK***"
-};
+/**
+ * Discord Webhook URL は ScriptProperties で管理（Git リポジトリへの漏洩防止）。
+ * Apps Script エディタ → プロジェクトの設定 → スクリプト プロパティ で以下を設定：
+ *   DISCORD_WEBHOOK_TAIJIN   : 対人チャンネルの Webhook URL
+ *   DISCORD_WEBHOOK_SATEI    : 査定チャンネルの Webhook URL
+ *   DISCORD_WEBHOOK_KYOGIJO  : 競技場チャンネルの Webhook URL
+ */
+function _getDiscordWebhooks() {
+  var props = PropertiesService.getScriptProperties();
+  return {
+    "対人":   props.getProperty("DISCORD_WEBHOOK_TAIJIN")   || "",
+    "査定":   props.getProperty("DISCORD_WEBHOOK_SATEI")    || "",
+    "競技場": props.getProperty("DISCORD_WEBHOOK_KYOGIJO")  || ""
+  };
+}
 
-var SEARCH_UI_URL = "https://script.google.com/macros/s/***REDACTED_APPS_SCRIPT_ID***/exec?ui=search";
+/**
+ * 検索 UI の URL も ScriptProperties で管理。
+ * キー: SEARCH_UI_URL （例: "https://script.google.com/macros/s/.../exec?ui=search"）
+ */
+function _getSearchUiUrl() {
+  return PropertiesService.getScriptProperties().getProperty("SEARCH_UI_URL") || "";
+}
+
 var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeubzORDqJSksgsDV6v-715_Py3_2FoHIuQ6V2CvORVoY22Hg/viewform";
 
 function _pickWebhookForPurpose(purpose) {
   if (!purpose) return null;
-  var keys = Object.keys(DISCORD_WEBHOOKS);
+  var webhooks = _getDiscordWebhooks();
+  var keys = Object.keys(webhooks);
   for (var i = 0; i < keys.length; i++) {
-    if (purpose.indexOf(keys[i]) >= 0) return {key: keys[i], url: DISCORD_WEBHOOKS[keys[i]]};
+    if (purpose.indexOf(keys[i]) >= 0 && webhooks[keys[i]]) {
+      return {key: keys[i], url: webhooks[keys[i]]};
+    }
   }
   return null;
 }
@@ -1596,7 +1616,7 @@ function resendDiscordByFactorNo(factorNo) {
 
     var summary = _buildFactorSummaryText(rows, colIdx);
     var msg = _kitasanMessage(matched.key);
-    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId, contact);
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, _getSearchUiUrl(), trainerId, contact);
     return {ok: true, factor_no: factorNo, purpose: purpose, trainer_id: trainerId, contact: contact, match: matchStrategy};
   } catch (err) {
     Logger.log("resendDiscordByFactorNo error: " + err);
@@ -1677,7 +1697,7 @@ function _notifyDiscordIfNeeded(submissionId, fileId, namedValues) {
     ]) || "";
 
     var msg = _kitasanMessage(matched.key);
-    _postDiscordWebhook(matched.url, msg, imageBlob, summary, SEARCH_UI_URL, trainerId, contact);
+    _postDiscordWebhook(matched.url, msg, imageBlob, summary, _getSearchUiUrl(), trainerId, contact);
   } catch (err) {
     Logger.log("_notifyDiscordIfNeeded error: " + err);
   }
