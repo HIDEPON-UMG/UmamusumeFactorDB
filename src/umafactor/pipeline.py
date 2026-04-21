@@ -308,6 +308,12 @@ def analyze_image(
         slot_kind: str
         white_idx = 0
         # is_blue_slot / is_red_slot は ONNX 推論ブロックで位置ベース補正込みに算出済み。
+        # 緑は重複検出（左端アイコン偽陽性）が出やすいので gold_star_count>0 の
+        # 候補を優先し、gold_star_count==0 の緑 box は skill へ回す（後続の真緑 box
+        # に green スロットの採用機会を残すため）。
+        green_ok = box.color == "green" and not uma.green_name and (
+            box.gold_star_count is None or box.gold_star_count > 0
+        )
         if is_blue_slot and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
             uma.blue_type = top_name
             uma.blue_star = star
@@ -316,7 +322,7 @@ def analyze_image(
             uma.red_type = top_name
             uma.red_star = star
             slot_kind = "red"
-        elif box.color == "green" and not uma.green_name:
+        elif green_ok:
             uma.green_name = top_name
             uma.green_star = star
             slot_kind = "green"
