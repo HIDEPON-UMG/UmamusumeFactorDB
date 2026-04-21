@@ -492,15 +492,49 @@ def _build_boxes_for_row(
         color = detect_factor_color(box_bgr)
         text_img = cv2.resize(box_bgr, (168, 16), interpolation=cv2.INTER_AREA)
 
-        if col_stars:
-            # ★クラスタの bbox をタイトに切り出して 52x16 へリサイズ
-            rx0 = max(0, min(s[0] for s in col_stars) - 2)
-            rx1 = min(img.shape[1], max(s[0] + s[2] for s in col_stars) + 2)
-            ry0 = max(0, min(s[1] for s in col_stars) - 2)
-            ry1 = min(img.shape[0], max(s[1] + s[3] for s in col_stars) + 2)
+        # 緑因子タイルは左端の黄色アイコン（固有スキル UI 装飾）が金★マスクに
+        # 偽陽性として引っかかるため、bbox の右 60% に位置する★のみを採用する。
+        # （青/赤タイルは左端アイコンが青/赤系で金★マスクに引っかからないので除外不要）
+        effective_stars = col_stars
+        if color == "green" and col_stars:
+            x_threshold = xa_c + int((xb_c - xa_c) * 0.4)
+            effective_stars = [
+                s for s in col_stars if (s[0] + s[2] // 2) >= x_threshold
+            ]
+
+        if effective_stars:
+            if color == "green":
+                # 緑因子タイル（固有スキル）の★は、白因子と違って「テキスト直後配置」で
+                # x 位置が可変。layout 比率固定だと ★3スロット外の緑背景だけを切り出す
+                # ケースが発生する。effective_stars（右 60% フィルタで黄色●アイコンを
+                # 除外済み）の実位置を採用。★1個行で幅が狭すぎるときは ★3スロット分
+                # （~50px）を確保するよう左側へ拡張する。
+                sr_x0 = min(s[0] for s in effective_stars)
+                sr_x1 = max(s[0] + s[2] for s in effective_stars)
+                star_width = sr_x1 - sr_x0
+                MIN_RANK_W = 50
+                if star_width < MIN_RANK_W:
+                    sr_x0 = max(xa_c, sr_x1 - MIN_RANK_W)
+                rx0 = max(0, sr_x0 - 2)
+                rx1 = min(img.shape[1], sr_x1 + 2)
+                # y は同じ行の右列★基準（偽陽性が少なく信頼できる）
+                if right_stars:
+                    right_y = int(np.mean([s[1] + s[3] // 2 for s in right_stars]))
+                    ry0 = max(0, right_y - 8)
+                    ry1 = min(img.shape[0], right_y + 8)
+                else:
+                    ry0 = y_top + 11
+                    ry1 = min(img.shape[0], y_top + 27)
+            else:
+                # 青/赤/白は★クラスタの bbox をタイトに切り出して 52x16 へリサイズ
+                rx0 = max(0, min(s[0] for s in effective_stars) - 2)
+                rx1 = min(img.shape[1], max(s[0] + s[2] for s in effective_stars) + 2)
+                ry0 = max(0, min(s[1] for s in effective_stars) - 2)
+                ry1 = min(img.shape[0], max(s[1] + s[3] for s in effective_stars) + 2)
             rank_bbox: tuple[int, int, int, int] | None = (rx0, ry0, rx1, ry1)
         else:
-            # ★未検出（全て空★）: bbox 右端の layout 比率から rank 領域を推定
+            # ★未検出（全て空★、または緑因子で右 60% に★無し）:
+            # bbox 右端の layout 比率から rank 領域を推定
             rel_x0 = 0.6786  # = FactorLayout.rank_x0_in_box_rel
             box_w = xb_c - xa_c
             rx0 = xa_c + int(round(box_w * rel_x0))
