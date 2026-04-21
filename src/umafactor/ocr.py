@@ -89,6 +89,24 @@ class FactorOCR:
         raw = "".join(parts)
         return _normalize_ocr_text(raw)
 
+    def recognize_red(self, img_bgr: np.ndarray) -> str:
+        """赤因子（距離/脚質/バ場）専用の OCR。候補文字を allowlist で絞って
+        「2」「]」等のゴミ出力を排除する。候補文字集合は RED_FACTOR_TYPES に
+        含まれる「短中長距離芝ダート逃先差追込マイル」の総計 12 文字。
+        """
+        if img_bgr is None or img_bgr.size == 0:
+            return ""
+        reader = _get_reader()
+        big = _preprocess_for_ocr(img_bgr, upscale=3)
+        # RED_FACTOR_TYPES = ["逃げ","先行","差し","追込","短距離","マイル","中距離","長距離","芝","ダート"]
+        # 構成文字をユニーク化
+        allowlist = "短中長距離芝ダートマイル逃げ先行差し追込"
+        parts = reader.readtext(big, detail=0, allowlist=allowlist)
+        if not parts:
+            return ""
+        raw = "".join(parts)
+        return _normalize_ocr_text(raw)
+
     def match_to_factor(
         self, raw_text: str, top_k: int = 5, min_score: float = 50.0
     ) -> list[tuple[str, float]]:

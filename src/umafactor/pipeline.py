@@ -282,7 +282,11 @@ def analyze_image(
             )
 
         # OCR 候補（display_crop を使う。テキスト全域が入っているため）
-        ocr_raw = ocr.recognize(display_crop)
+        # 赤スロットは allowlist 付き OCR でゴミ文字を抑制（'2', ']' 等の雑音排除）
+        if is_red_slot:
+            ocr_raw = ocr.recognize_red(display_crop)
+        else:
+            ocr_raw = ocr.recognize(display_crop)
         if box.color == "green":
             # 緑は固有スキル辞書 249 件に絞ってマッチ（英字混じりの誤マッチを抑制）
             ocr_candidates = ocr.match_to_green_factor(ocr_raw, top_k=5)
