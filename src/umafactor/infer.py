@@ -311,3 +311,56 @@ def get_predictor(model_name: str) -> OnnxPredictor:
             confidence_output="card_confidence",
         )
     raise KeyError(f"Unknown model: {model_name}")
+
+
+# ---------------------------------------------------------------------------
+# ★スロット分類器（CNN 2 クラス: empty / gold）
+# ---------------------------------------------------------------------------
+# 既存 OnnxPredictor は labels.json を参照するため、labels.json を編集しない
+# 軽量モデルは独立経路で扱う。入力は NHWC uint8 BGR (N, 28, 28, 3)、
+# 出力は index (int64) と confidence (float) で共通化してある。
+
+STAR_CLASS_NAMES = ["empty", "gold"]
+STAR_SLOT_SIZE = 28
+
+
+@lru_cache(maxsize=1)
+def _get_star_session() -> ort.InferenceSession:
+    path = model_path("star_classifier")
+    return ort.InferenceSession(str(path), providers=["CPUExecutionProvider"])
+
+
+def _prep_star_slot(img_bgr: np.ndarray) -> np.ndarray:
+    import cv2
+
+    h, w = img_bgr.shape[:2]
+    if (h, w) != (STAR_SLOT_SIZE, STAR_SLOT_SIZE):
+        img_bgr = cv2.resize(
+            img_bgr, (STAR_SLOT_SIZE, STAR_SLOT_SIZE), interpolation=cv2.INTER_AREA
+        )
+    return img_bgr.astype(np.uint8)
+
+
+def predict_star(slot_img_bgr: np.ndarray) -> tuple[str, float]:
+    """★スロット画像 (BGR) を『gold』『empty』に分類する。
+
+    任意サイズの入力を受け取り、内部で 28x28 にリサイズして CNN 推論する。
+    """
+    session = _get_star_session()
+    batch = _prep_star_slot(slot_img_bgr)[None, ...]
+    outs = session.run(["index", "confidence"], {"images": batch})
+    idx = int(outs[0][0])
+    conf = float(outs[1][0])
+    return STAR_CLASS_NAMES[idx], conf
+
+
+def predict_stars_batch(slot_imgs: list[np.ndarray]) -> list[tuple[str, float]]:
+    """複数の★スロット画像をまとめて推論する。"""
+    if not slot_imgs:
+        return []
+    session = _get_star_session()
+    batch = np.stack([_prep_star_slot(img) for img in slot_imgs], axis=0)
+    outs = session.run(["index", "confidence"], {"images": batch})
+    idxs = outs[0].tolist()
+    confs = outs[1].tolist()
+    return [(STAR_CLASS_NAMES[int(i)], float(c)) for i, c in zip(idxs, confs)]

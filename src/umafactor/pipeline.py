@@ -244,12 +244,19 @@ def analyze_image(
         text_crop_norm = norm_img[y0:y1, x0:x1]
         display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
 
-        # 色チップ検出が弱い合成画像で box.color が "white" に落ちても、
+        # 色チップ検出が弱い合成画像で box.color が "white" / 逆の青赤 に落ちても、
         # 青/赤因子が常に row 0 の左/右列に並ぶゲーム UI 構造を使って位置で補正する。
-        # これを ONNX/OCR 推論の「カテゴリ限定」段階から適用することで、
-        # 認識自体がカテゴリ外の白因子名にならないようにする。
-        is_blue_slot = box.color == "blue" or (box.row_index == 0 and box.col_index == 0)
-        is_red_slot = box.color == "red" or (box.row_index == 0 and box.col_index == 1)
+        # row 0 は位置で絶対確定（col=0 → 青、col=1 → 赤）し、color 判定は無視する。
+        # これで「row 0 col 1 が青と誤判定され blue slot に先取りされる」事故を防ぐ。
+        if box.row_index == 0 and box.col_index == 0:
+            is_blue_slot = True
+            is_red_slot = False
+        elif box.row_index == 0 and box.col_index == 1:
+            is_blue_slot = False
+            is_red_slot = True
+        else:
+            is_blue_slot = box.color == "blue"
+            is_red_slot = box.color == "red"
 
         # ONNX 候補
         if is_blue_slot:
@@ -303,6 +310,17 @@ def analyze_image(
                 star = int(rpred.label)
             except ValueError:
                 star = 0
+            # row 0 の青/赤スロット（col 0/1 とも因子が必ず存在する UI 構造）で
+            # rank モデルが低信頼度で★0 を返す場合は、HSV 検出漏れとみなし
+            # 最低★1 を保証する。★2+ を★1 として過少記録するリスクはあるが、
+            # ★0 誤認（因子未記録）よりは許容できる。
+            if (
+                star == 0
+                and box.row_index == 0
+                and box.col_index in (0, 1)
+                and rpred.confidence < 0.6
+            ):
+                star = 1
 
         uma = umas[box.uma_index]
         slot_kind: str

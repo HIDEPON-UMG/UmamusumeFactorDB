@@ -73,8 +73,11 @@ Cloud Run /process (FastAPI)
   │ ├─ ③ 画像クロップ（cropper.py）
   │ │     - 3 体のウマ娘セクションを左端低彩度帯から検出
   │ │     - 各因子ボックスは ★検出駆動で bbox を画像内容から動的算出（★が取れない場合は layout 比率の legacy 経路にフォールバック）
+  │ │     - ★数は HSV マスクで候補を抽出した後、★スロット CNN 分類器（28×28 2 クラス: gold/empty）で再判定
+  │ │     - CNN gold 候補に「左詰め＋等間隔ピッチ 14-22px」の空間配置フィルタを適用（ENABLE_GOLD_LAYOUT_FILTER）
   │ ├─ ④ ONNX 因子推論（infer.py）
-  │ │     - 赤/青因子は近傍摂動でアンサンブル、★数 (rank) も軽量摂動で投票
+  │ │     - 赤/青因子は近傍摂動でアンサンブル、★数は CNN 分類器の gold 判定数を優先（取りこぼし時のみ rank モデル fallback）
+  │ │     - row 0 は col 0 → 青、col 1 → 赤 を位置絶対化（色チップ誤判定に頑健）、rank fallback で★0＆低信頼度なら★1 保証
   │ ├─ ⑤ EasyOCR 補完（ocr.py）
   │ ├─ ⑥ 固有スキル → ウマ娘 逆引き（unique_skill_to_character.json）
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST

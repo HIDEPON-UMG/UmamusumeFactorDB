@@ -95,6 +95,14 @@ TILE_RIGHT_PERCENTILE = 90
 MIN_DETECTED_ROWS = 3
 # タイル左端推定に使う★のサンプル数（少なすぎるとノイズに弱い）
 MIN_STARS_PER_COLUMN = 3
+# 金★の空間配置フィルタ（左詰め + 等間隔）
+# 金★は UI 上で左端から等間隔で並ぶため、隣接金★の中心 x ピッチが
+# この範囲内の連続群のみ有効な★スロットとみなす。
+# TILE_WIDTH=175 に★3 個が並ぶと理論ピッチ ~18 px、±4 px の許容。
+STAR_PITCH_MIN = 14
+STAR_PITCH_MAX = 22
+# Step 4 の空間配置フィルタをオン/オフするフラグ（問題発生時の即 rollback 用）
+ENABLE_GOLD_LAYOUT_FILTER = True
 
 FactorColor = Literal["blue", "red", "green", "white"]
 
@@ -114,6 +122,9 @@ class FactorBox:
     # ★検出駆動で数え上げた金★の個数。rank モデル推論の代替（より高精度な実測値）。
     # None の場合（legacy 経路など）は pipeline 側で rank モデル推論にフォールバック。
     gold_star_count: int | None = None
+    # CNN 分類で空★と判定された個数。★全空の緑因子（gold=0 かつ empty>=2）を
+    # skill に流さず緑スロットに残す判定に使う。
+    empty_star_count: int | None = None
 
 
 @dataclass
@@ -608,8 +619,48 @@ def _build_boxes_for_row(
             continue
         rank_img = cv2.resize(rank_raw, (52, 16), interpolation=cv2.INTER_AREA)
 
-        # 金★の数が★数そのもの（右 60% フィルタ適用済み、上限 3）
-        gold_count = min(len(eff_gold), 3) if eff_gold else 0
+        # CNN 分類器で ★スロットを金/空 再判定してから金★数を数える。
+        # HSV だけでは拾えない暗め金★や、偽陽性の緑●/白UI要素を吸収できる。
+        # eff_gold + eff_empty は右60%フィルタ適用済みなので、緑タイル左端の
+        # 黄色●は元から候補に含まれない。
+        star_candidates = eff_gold + eff_empty
+        if star_candidates:
+            slot_imgs: list[np.ndarray] = []
+            for (sx, sy, sw, sh) in star_candidates:
+                scx, scy = sx + sw // 2, sy + sh // 2
+                shalf = max(sw, sh) // 2 + 4
+                ssx0 = max(0, scx - shalf)
+                ssx1 = min(img.shape[1], scx + shalf)
+                ssy0 = max(0, scy - shalf)
+                ssy1 = min(img.shape[0], scy + shalf)
+                slot_imgs.append(img[ssy0:ssy1, ssx0:ssx1])
+            from .infer import predict_stars_batch  # 循環 import 回避のため関数内で
+
+            classifications = predict_stars_batch(slot_imgs)
+            # CNN で gold 判定された候補の (x_center, bbox) を保持
+            gold_cand = [
+                (star_candidates[i][0] + star_candidates[i][2] // 2, star_candidates[i])
+                for i, (label, _) in enumerate(classifications)
+                if label == "gold"
+            ]
+            if ENABLE_GOLD_LAYOUT_FILTER and len(gold_cand) >= 2:
+                # 左詰め + 等間隔ピッチで偽陽性を除外
+                gold_cand.sort(key=lambda t: t[0])
+                kept = [gold_cand[0]]
+                for prev, cur in zip(gold_cand, gold_cand[1:]):
+                    pitch = cur[0] - prev[0]
+                    if STAR_PITCH_MIN <= pitch <= STAR_PITCH_MAX:
+                        kept.append(cur)
+                    else:
+                        break  # 連続性が切れたら以降は偽陽性扱い
+                gold_cand = kept
+            gold_count = min(len(gold_cand), 3)
+            empty_count = min(
+                sum(1 for (label, _) in classifications if label == "empty"), 3
+            )
+        else:
+            gold_count = 0
+            empty_count = 0
 
         boxes.append(
             FactorBox(
@@ -622,6 +673,7 @@ def _build_boxes_for_row(
                 bbox=(xa_c, y_top, xb_c, y_bot),
                 rank_bbox=rank_bbox,
                 gold_star_count=gold_count,
+                empty_star_count=empty_count,
             )
         )
     return boxes
