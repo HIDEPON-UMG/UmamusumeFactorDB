@@ -291,11 +291,18 @@ def analyze_image(
         merged, sources = _merge_candidates(onnx_candidates, ocr_candidates, limit=8)
         top_name = merged[0][0] if merged else ""
 
-        rpred = rank_pred.predict_with_perturbation(rank_crop_orig, PERTURBATIONS_RANK)
-        try:
-            star = int(rpred.label)
-        except ValueError:
-            star = 0
+        # ★数は金★の実数カウントを最優先（rank モデルより高精度な実測値）。
+        # ただし金★検出の HSV 閾値次第で暗めの金★を取りこぼすケースがあり、
+        # gold_star_count==0 だと実際は★1以上あるのに★0と誤認する可能性がある。
+        # そのため gold_star_count が 0 の場合は rank モデル推論にフォールバックする。
+        if box.gold_star_count is not None and box.gold_star_count > 0:
+            star = box.gold_star_count
+        else:
+            rpred = rank_pred.predict_with_perturbation(rank_crop_orig, PERTURBATIONS_RANK)
+            try:
+                star = int(rpred.label)
+            except ValueError:
+                star = 0
 
         uma = umas[box.uma_index]
         slot_kind: str

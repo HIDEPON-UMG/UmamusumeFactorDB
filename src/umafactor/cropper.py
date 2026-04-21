@@ -99,6 +99,9 @@ class FactorBox:
     # ★検出が効いた新経路で、実★クラスタの正規化座標 (x0, y0, x1, y1) を保持する。
     # None の場合（legacy 経路）は pipeline 側で layout.rank_x0_in_box_rel から計算。
     rank_bbox: tuple[int, int, int, int] | None = None
+    # ★検出駆動で数え上げた金★の個数。rank モデル推論の代替（より高精度な実測値）。
+    # None の場合（legacy 経路など）は pipeline 側で rank モデル推論にフォールバック。
+    gold_star_count: int | None = None
 
 
 @dataclass
@@ -545,6 +548,9 @@ def _build_boxes_for_row(
             continue
         rank_img = cv2.resize(rank_raw, (52, 16), interpolation=cv2.INTER_AREA)
 
+        # 金★の数を記録（偽陽性フィルタ済みの effective_stars の個数、上限 3）
+        gold_count = min(len(effective_stars), 3) if effective_stars else 0
+
         boxes.append(
             FactorBox(
                 uma_index=uma_idx,
@@ -555,6 +561,7 @@ def _build_boxes_for_row(
                 rank_img=rank_img,
                 bbox=(xa_c, y_top, xb_c, y_bot),
                 rank_bbox=rank_bbox,
+                gold_star_count=gold_count,
             )
         )
     return boxes
