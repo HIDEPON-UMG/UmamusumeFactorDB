@@ -185,7 +185,7 @@
 ## 6. 参考：診断スクリプトの使い方
 
 ```bash
-cd c:/Users/hidek/OneDrive/ドキュメント/ProjectFolders/UmamusumeFactorDB
+cd c:/Users/{UserName}/OneDrive/ドキュメント/ProjectFolders/UmamusumeFactorDB
 
 # 現状の認識精度
 PYTHONIOENCODING=utf-8 .venv/Scripts/python scripts/evaluate_labels.py \
