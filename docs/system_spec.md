@@ -79,6 +79,10 @@ Cloud Run /process (FastAPI)
   │ │     - 赤/青因子は近傍摂動でアンサンブル、★数は CNN 分類器の gold 判定数を優先（取りこぼし時のみ rank モデル fallback）
   │ │     - row 0 は col 0 → 青、col 1 → 赤 を位置絶対化（色チップ誤判定に頑健）、rank fallback で★0＆低信頼度なら★1 保証
   │ ├─ ⑤ EasyOCR 補完（ocr.py）
+  │ │     - 青/緑/白は通常の EasyOCR で生テキスト抽出 → rapidfuzz で辞書マッチ
+  │ │     - **赤スロット**（距離/脚質/バ場）は allowlist 付き OCR (`recognize_red`)
+  │ │       で候補文字を「短中長距離芝ダートマイル逃げ先行差し追込」に限定し、
+  │ │       ゴミ文字の混入を排除
   │ ├─ ⑥ 固有スキル → ウマ娘 逆引き（unique_skill_to_character.json）
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST
   ▼
@@ -238,7 +242,10 @@ Google Form が自動作成。列の例：
 |---|---|---|
 | `config/recognizer.json` | - | 因子ボックス座標定義（umacapture 由来） |
 | `config/unique_skill_to_character.json` | 250 | 固有スキル名 → `[衣装名]キャラ名` 逆引き |
-| `models/modules/*/prediction.onnx` | 複数 | 因子/ランク/character の ONNX モデル |
+| `models/modules/factor/prediction.onnx` | - | 因子名 ONNX（813 クラス） |
+| `models/modules/factor_rank/prediction.onnx` | - | ★ランク ONNX（★0-3）。★検出駆動で取りこぼし時のみ fallback |
+| `models/modules/character/prediction.onnx` | - | ウマ娘肖像 ONNX |
+| `models/modules/star_classifier/prediction.onnx` | - | ★スロット CNN 分類器（28×28 2 クラス gold/empty、軽量 100K params） |
 | `models/modules/factor_info.json` | 813 | 因子マスタ（青/赤/緑/白タグ） |
 | `/models/easyocr/` | - | EasyOCR 日本語+英語モデル（事前 DL） |
 
@@ -296,7 +303,20 @@ UmamusumeFactorDB/
 ├── models/
 │   └── modules/             # ONNX モデル + labels.json
 ├── scripts/
-│   └── fetch_unique_skills.py  # UmaTools から 固有→カード対応を生成
+│   ├── fetch_unique_skills.py          # UmaTools から 固有→カード対応を生成
+│   ├── batch_recognize.py              # tests/fixtures/*.png を一括推論 → recognition_results.json
+│   ├── evaluate_labels.py              # labels.csv × 推論結果で精度評価（前後比較対応）
+│   ├── build_star_dataset.py           # ★スロット CNN の学習データ自動生成（HSV 検出 + パディング 28×28）
+│   ├── label_review_server.py          # ★ラベル手動修正の FastAPI Web UI（localhost:8765）
+│   ├── review_star_labels.py           # 自動ラベルと CNN 予測が食い違うサンプルを抽出
+│   ├── rebuild_star_labels.py          # gold/ empty/ フォルダ構成から labels.csv を再生成
+│   ├── train_star_classifier.py        # PyTorch 軽量 CNN 学習 + ONNX エクスポート
+│   ├── diagnose_star_errors.py         # ★誤認行の HSV/CNN 内部状態を可視化
+│   ├── diagnose_red_zero.py            # ★0 誤認の box 配置を追跡
+│   ├── diagnose_green_regression.py    # 緑因子悪化時の box 内容追跡
+│   ├── diagnose_name_errors.py         # 因子名誤認の色別内訳ダンプ
+│   ├── diagnose_red_candidates.py      # 赤因子 ONNX/OCR 候補スコアダンプ
+│   └── generate_architecture_pptx.py   # docs/system_architecture.pptx を生成
 ├── server/
 │   ├── main.py              # Cloud Run FastAPI
 │   ├── requirements.txt
@@ -332,7 +352,7 @@ UmamusumeFactorDB/
   - `white_star`・`other` は自動化対象外（`needs_review`）。`bug_reports` で内容を確認し、`factors_normalized` を手動編集してから `status` を `applied` に書き換える。
   - 現在値が `wrong_value` と既に違う場合は `invalid`。別のバグ報告や手動修正と重複している可能性が高いので、`reviewer_note` を見て判断。
 - **Discord 画像表示不可**：Drive Blob 取得に失敗、または画像サイズが Discord 制限（通常 8MB / ブースト時 50MB）を超えた場合に表示されない。Apps Script ログで `blob fetch failed:` や webhook status 4xx/413 を確認。
-- **タイムアウト**：Cloud Run は **600 秒** 設定（`timeoutSeconds`）。`containerConcurrency: 4` に緩和済み。コールドスタート約 30〜60 秒 + 解析 30〜60 秒の合計でも十分収まる想定。504 が頻発するようなら `min-instances: 1` の追加も検討（常時ウォームでコールドスタートを解消、月 $1〜2）。
+- **タイムアウト**：Cloud Run は **300 秒** 設定（`--timeout=300s`）。`concurrency=1`（推論がメモリ/CPU を占有するため）。CNN 分類器の追加で推論回数が増え、コールドスタート込みで 1 リクエスト 150 秒前後、warm でも 100 秒前後を要する。504 が頻発するなら `min-instances: 1` の追加（常時ウォームでコールドスタートを解消、月 $1〜2）か、pipeline.py 側の推論経路最適化を検討。
 - **検索 UI の既定レンジ**：アーカイブトグル OFF のとき投稿から 30 日以内のみ表示。古い因子を参照したい場合はトグル ON に切替（再検索が自動で走る）。
 - **モバイルレイアウト**：フィルタ行は 640px 以下で 1 列縦並びに切り替え、検索結果テーブルは親/祖1/祖2 を色ラベル付きでカード型に変換する。画像サムネイルは PC で max-height 486px（0.9×）、モバイルで 288px に抑え、目的・用途タグと利用脚質タグの横並びと 💬 コメント表示のためのスペースを確保。
 

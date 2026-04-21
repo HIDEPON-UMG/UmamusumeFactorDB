@@ -211,7 +211,7 @@ def build_dataflow_slide(prs: Presentation):
         ("③ onFormSubmit 発火", "Apps Script が応答行を読み、Drive ファイル ID 抽出", COLOR_GAS),
         ("④ 画像匿名リネーム", "factor_yyyyMMdd_HHmmss.ext 形式で setName", COLOR_DRIVE),
         ("⑤ Cloud Run 呼び出し", "POST /process に画像 base64 + secret を送信", COLOR_CLOUDRUN),
-        ("⑥ ONNX + OCR 解析", "因子ボックス検出 → 青/赤/緑/白 + ★数 + character 逆引き", COLOR_CLOUDRUN),
+        ("⑥ ONNX + OCR 解析", "★検出駆動 bbox + CNN 分類器(gold/empty) + 赤 allowlist OCR + character 逆引き", COLOR_CLOUDRUN),
         ("⑦ Cloud Run → webhook", "Apps Script doPost に 3 行の解析結果を POST", COLOR_CLOUDRUN),
         ("⑧ factors_normalized 書き込み", "submission_id 共通で main/parent1/parent2 の 3 行追加", COLOR_SHEET),
         ("⑨ 応答タブに status 書き戻し", "submission_id + processed を応答行へ", COLOR_SHEET),
@@ -289,7 +289,7 @@ def build_security_slide(prs: Presentation):
         ("🛠 モデル更新", "scripts/fetch_unique_skills.py で UmaTools から固有スキル対応表を再生成", COLOR_GAS),
         ("🛠 Cloud Run 再デプロイ", "gcloud run deploy factor-processor --source . （新コード反映時）", COLOR_CLOUDRUN),
         ("🛠 Apps Script 再デプロイ", "コード保存後に『デプロイを管理 → 新バージョン』で反映", COLOR_GAS),
-        ("⚠ タイムアウト", "Cloud Run 300 秒制限。コールドスタート 30〜60s + 解析 30〜60s を想定", COLOR_DRIVE),
+        ("⚠ タイムアウト", "Cloud Run 300 秒制限。CNN 追加でコールドスタート込み 150s / warm 100s 前後", COLOR_DRIVE),
         ("⚠ 個人情報", "連絡先（Discord 名）は検索画面で全閲覧者に見える仕様。投稿時の任意入力を推奨", COLOR_DRIVE),
     ]
     x = Inches(0.5)
