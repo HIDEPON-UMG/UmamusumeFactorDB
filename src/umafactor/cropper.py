@@ -503,21 +503,21 @@ def _build_boxes_for_row(
             ]
 
         if effective_stars:
+            # rank モデルは「★3スロット全体の金色面積比」でランクを判定するため、
+            # 金★のみの狭い crop だと画像がほぼ金色一色になり ★3 と誤判定しやすい。
+            # 空★（未点灯★）を取り込むよう、★3 スロット相当の幅を右側に確保する。
+            # （金★は左→右の順で点灯、残りは右側の空★なので、右拡張で自然に空★を含む）
+            sr_x0 = min(s[0] for s in effective_stars)
+            sr_x1 = max(s[0] + s[2] for s in effective_stars)
+            MIN_RANK_W = 50  # ★3 スロット ~15px × 3 + 間隔 ≒ 50px
+            if sr_x1 - sr_x0 < MIN_RANK_W:
+                sr_x1 = min(xb_c, sr_x0 + MIN_RANK_W)
+            rx0 = max(0, sr_x0 - 2)
+            rx1 = min(img.shape[1], sr_x1 + 2)
+
             if color == "green":
-                # 緑因子タイル（固有スキル）の★は、白因子と違って「テキスト直後配置」で
-                # x 位置が可変。layout 比率固定だと ★3スロット外の緑背景だけを切り出す
-                # ケースが発生する。effective_stars（右 60% フィルタで黄色●アイコンを
-                # 除外済み）の実位置を採用。★1個行で幅が狭すぎるときは ★3スロット分
-                # （~50px）を確保するよう左側へ拡張する。
-                sr_x0 = min(s[0] for s in effective_stars)
-                sr_x1 = max(s[0] + s[2] for s in effective_stars)
-                star_width = sr_x1 - sr_x0
-                MIN_RANK_W = 50
-                if star_width < MIN_RANK_W:
-                    sr_x0 = max(xa_c, sr_x1 - MIN_RANK_W)
-                rx0 = max(0, sr_x0 - 2)
-                rx1 = min(img.shape[1], sr_x1 + 2)
-                # y は同じ行の右列★基準（偽陽性が少なく信頼できる）
+                # 緑タイルは左端黄色●アイコンで★行の y が上にずれがち。同じ行の
+                # 右列★（偽陽性が少なく信頼できる）の中心 y から rank y を再計算。
                 if right_stars:
                     right_y = int(np.mean([s[1] + s[3] // 2 for s in right_stars]))
                     ry0 = max(0, right_y - 8)
@@ -526,9 +526,6 @@ def _build_boxes_for_row(
                     ry0 = y_top + 11
                     ry1 = min(img.shape[0], y_top + 27)
             else:
-                # 青/赤/白は★クラスタの bbox をタイトに切り出して 52x16 へリサイズ
-                rx0 = max(0, min(s[0] for s in effective_stars) - 2)
-                rx1 = min(img.shape[1], max(s[0] + s[2] for s in effective_stars) + 2)
                 ry0 = max(0, min(s[1] for s in effective_stars) - 2)
                 ry1 = min(img.shape[0], max(s[1] + s[3] for s in effective_stars) + 2)
             rank_bbox: tuple[int, int, int, int] | None = (rx0, ry0, rx1, ry1)
