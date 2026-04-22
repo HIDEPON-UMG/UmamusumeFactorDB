@@ -239,6 +239,33 @@ def analyze_image(
         pred = char_pred.predict(icon)
         umas[section.uma_index].character = pred.label
 
+    # Pass 0: 各 uma の緑 box 候補について OCR top1 conf と最大 gold_star_count を
+    # 別々に事前計算する。従来の「gold_star_count>0 の先着 box を採用」だと、
+    # ★全空の行（row=1 col=0、実はテキストが正解）が skip されて row=2 の
+    # 別 box（OCR は空や雑音）が採用される事故が多発していた。
+    # 診断（scripts/diagnose_green_fragments.py）で 1432 parent1/parent2、
+    # 2331 main、sample_oguricap main など 4 件で OCR top1 に正解が出ているのに
+    # この問題で誤認になっていることを確認済み。
+    # 因子名は「OCR top1 conf 最大の box」、★は「同 uma 内の緑 box の最大
+    # gold_star_count」と別軸で採用することで、rank fallback が誤★を返す問題も回避。
+    best_green_box: dict[int, FactorBox] = {}
+    best_green_score: dict[int, float] = {}
+    best_green_gold: dict[int, int] = {}
+    for box in boxes:
+        if box.color != "green":
+            continue
+        dc = _display_crop_from_original(img_orig, box.bbox, scale)
+        raw, frags = ocr.recognize_with_parts(dc)
+        cands = ocr.match_to_green_factor_multi(raw, frags, top_k=1)
+        top_conf = cands[0][1] if cands else 0.0
+        uidx = box.uma_index
+        if top_conf > best_green_score.get(uidx, 0.0):
+            best_green_score[uidx] = top_conf
+            best_green_box[uidx] = box
+        g = box.gold_star_count or 0
+        if g > best_green_gold.get(uidx, 0):
+            best_green_gold[uidx] = g
+
     for box in boxes:
         rank_crop_orig = _crop_rank_from_original(img_orig, box.bbox, scale, box.rank_bbox)
         x0, y0, x1, y1 = box.bbox
@@ -362,12 +389,23 @@ def analyze_image(
         slot_kind: str
         white_idx = 0
         # is_blue_slot / is_red_slot は ONNX 推論ブロックで位置ベース補正込みに算出済み。
-        # 緑は重複検出（左端アイコン偽陽性）が出やすいので gold_star_count>0 の
-        # 候補を優先し、gold_star_count==0 の緑 box は skill へ回す（後続の真緑 box
-        # に green スロットの採用機会を残すため）。
-        green_ok = box.color == "green" and not uma.green_name and (
-            box.gold_star_count is None or box.gold_star_count > 0
-        )
+        # 緑 box の採用戦略: Pass 0 で uma ごとの OCR top1 conf 最大 box を特定済み。
+        # (A) best_green_box[uma] が確定（OCR top1 conf >= 0.5）なら、その box のみ採用。
+        # (B) best_green_box が未確定（全 OCR 雑音）なら従来通り gold_star_count>0 優先。
+        # これで row=1 の★全空緑 box（OCR は正解を出している）が優先採用される。
+        uidx = box.uma_index
+        best_box = best_green_box.get(uidx)
+        best_conf = best_green_score.get(uidx, 0.0)
+        if best_box is not None and best_conf >= 0.5:
+            green_ok = (
+                box.color == "green"
+                and not uma.green_name
+                and box is best_box
+            )
+        else:
+            green_ok = box.color == "green" and not uma.green_name and (
+                box.gold_star_count is None or box.gold_star_count > 0
+            )
         if is_blue_slot and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
             uma.blue_type = top_name
             uma.blue_star = star
@@ -378,7 +416,28 @@ def analyze_image(
             slot_kind = "red"
         elif green_ok:
             uma.green_name = top_name
-            uma.green_star = star
+            # 緑の★数は、OCR-best box 自身の gold_star_count が 0 のことが多い
+            # （テキスト行と★行が別 row で検出される cropper の挙動）ため、
+            # 同 uma の緑 box のうち gold>0 かつ OCR-best の row_index に
+            # 最も近いものの★数を採用する。同 uma 内に偽陽性 box（別タイル）が
+            # あった場合でも、OCR-best 近傍の box が優先されやすい。
+            own_gold = box.gold_star_count or 0
+            if own_gold > 0:
+                uma.green_star = own_gold
+            else:
+                nearest_star = 0
+                best_dist = None
+                for b in boxes:
+                    if b.uma_index != uidx or b.color != "green":
+                        continue
+                    g = b.gold_star_count or 0
+                    if g <= 0:
+                        continue
+                    d = abs(b.row_index - box.row_index)
+                    if best_dist is None or d < best_dist:
+                        best_dist = d
+                        nearest_star = g
+                uma.green_star = nearest_star
             slot_kind = "green"
         else:
             uma.skills.append(FactorEntry(color=box.color, name=top_name, star=star))

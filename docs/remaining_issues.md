@@ -7,10 +7,10 @@
 | 指標 | 値 | メモ |
 |---|---|---|
 | ★精度 | **32/37 (86.5%)** | ベースライン 27/37 から +5 件 |
-| 因子名精度 | **20/37 = 54%**（誤認 17 件） | 従来 24 件から −7 件。Exp 1+7+4 で −1 件、Exp 3 で −3 件 |
+| 因子名精度 | **24/37 = 65%**（誤認 13 件） | 従来 24 件から −11 件。Exp 1+7+4 で −1 件、Exp 3 で −3 件、Exp 9 で −4 件 |
 | 悪化 | **0 件** | 現 28 件の正解は全て維持 |
 | Cloud Run リビジョン | `factor-processor-00015-29k` | commit `9131b0d` 反映済（Plan 1 以降は未デプロイ） |
-| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 / 青 display_crop pad_y=8 | — |
+| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 / 青 display_crop pad_y=8 / 緑 box 選択（OCR conf 最大 box = 名前、近傍 gold>0 box = ★） | — |
 
 ### 2026-04-22 Plan 1 の結果
 
@@ -28,6 +28,15 @@
 | Exp 7: `_merge_candidates` の緑専用 ocr_strong_threshold=0.5 | 赤/青/緑 +1〜3 件 | 緑 +1 件（CHERRY☆スクランブル 解消）。 OCR top1 が 0.7 未満でも先頭昇格する |
 | Exp 4: 断片経路の文字数比補正（len(frag)/len(name)） | 緑 +2〜3 件 | 単独の計測は未実施。Exp 1 の副作用（"Joy" → "Joyful Voyage!"）を抑制 |
 | Exp 3: 青 display_crop の pad_y_norm を 2 → 8 に拡大 | 赤/青 +2〜3 件 | 青 +3 件（賢さ/パワー誤認 → スピード/パワー/スタミナ正解）、悪化 0 件。赤は拡張すると「長距離→マイル」等の新規誤認が 2 件発生するため従来のまま維持 |
+| Exp 9: 緑 box 選択ロジック再設計（OCR conf 最大 box = 名前、近傍 gold>0 box = ★） | 緑 +4〜5 件 | 緑 +4 件（勝利ヘ至ル累積 / Joy to the World ×2 / 勝利の鼓動 が正解に）、悪化 0 件 |
+
+**Exp 9 の背景**:
+
+- 診断（scripts/diagnose_green_fragments.py）で「OCR top1 に正解が既にきている」ケースを発見
+- 従来「先着 + gold_star_count>0」方式では、★全空のテキスト行（OCR が正解を出している）が skip され、別の box（OCR 雑音）が採用されていた
+- 名前採用を「OCR top1 conf 最大の box」に切り替えるとこの 4 件が一気に解消
+- ただし単純置き換えでは ★全空 box 採用で rank fallback が ★2/3 誤答し★6 件悪化が発生
+- ★は「OCR-best 自身の gold、または OCR-best の row に最も近い gold>0 box の値」を採用する分離設計で★悪化もゼロに
 
 **Exp 3 の診断で判明した真因**（scripts/dump_red_crops.py で crop を目視）:
 
