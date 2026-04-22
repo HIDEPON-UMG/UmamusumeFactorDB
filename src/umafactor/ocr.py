@@ -112,15 +112,21 @@ class FactorOCR:
         """赤因子（距離/脚質/バ場）専用の OCR。候補文字を allowlist で絞って
         「2」「]」等のゴミ出力を排除する。候補文字集合は RED_FACTOR_TYPES に
         含まれる「短中長距離芝ダート逃先差追込マイル」の総計 12 文字。
+        EasyOCR の text_threshold と low_text を下げて、読みにくい文字も
+        検出するようにする（ゲームフォントで既定閾値だと文字が拾われない）。
         """
         if img_bgr is None or img_bgr.size == 0:
             return ""
         reader = _get_reader()
         big = _preprocess_for_ocr(img_bgr, upscale=3)
-        # RED_FACTOR_TYPES = ["逃げ","先行","差し","追込","短距離","マイル","中距離","長距離","芝","ダート"]
-        # 構成文字をユニーク化
         allowlist = "短中長距離芝ダートマイル逃げ先行差し追込"
-        parts = reader.readtext(big, detail=0, allowlist=allowlist)
+        parts = reader.readtext(
+            big,
+            detail=0,
+            allowlist=allowlist,
+            text_threshold=0.5,  # 既定 0.7
+            low_text=0.3,  # 既定 0.4
+        )
         if not parts:
             return ""
         raw = "".join(parts)
