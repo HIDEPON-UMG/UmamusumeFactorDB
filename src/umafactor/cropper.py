@@ -317,26 +317,41 @@ def _detect_factor_rows(
 
 
 def detect_factor_color(box_bgr: np.ndarray) -> FactorColor:
-    """因子ボックスの左端色チップから青/赤/緑/白を判定する。"""
+    """因子ボックスの左端色チップから青/赤/緑/白を判定する。
+
+    chip 幅 15% と 22% の両方でスコアを計算し、色ごとに最大値を採用する。
+    緑アイコンの位置/サイズが tile により異なり、
+    - 小さい緑アイコン（1558/1814 の緑因子 tile）は 22% 幅で拾える
+    - 大きい緑アイコン（2331 のレース名スキル等）は 15% 幅で濃く出る（広げると薄まる）
+    両方で max を取ることで両パターンを救う（Exp 13）。
+    """
     h, w = box_bgr.shape[:2]
-    chip = box_bgr[:, 0 : max(4, int(w * 0.15))]
-    hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
 
-    def ratio_in_range(lo, hi) -> float:
-        mask = cv2.inRange(hsv, np.array(lo, dtype=np.uint8), np.array(hi, dtype=np.uint8))
-        return float(mask.mean()) / 255.0
+    def score_chip(pct: float) -> dict[str, float]:
+        cw = max(4, int(w * pct))
+        chip = box_bgr[:, 0:cw]
+        hsv = cv2.cvtColor(chip, cv2.COLOR_BGR2HSV)
 
-    scores = {
-        "blue": ratio_in_range(*FACTOR_COLOR_HSV_RANGES["blue"]),
-        "green": ratio_in_range(*FACTOR_COLOR_HSV_RANGES["green"]),
-        "red": ratio_in_range(*FACTOR_COLOR_HSV_RANGES["red"]),
-    }
+        def ratio(lo, hi):
+            mask = cv2.inRange(hsv, np.array(lo, dtype=np.uint8), np.array(hi, dtype=np.uint8))
+            return float(mask.mean()) / 255.0
+
+        return {
+            "blue": ratio(*FACTOR_COLOR_HSV_RANGES["blue"]),
+            "green": ratio(*FACTOR_COLOR_HSV_RANGES["green"]),
+            "red": ratio(*FACTOR_COLOR_HSV_RANGES["red"]),
+        }
+
+    s15 = score_chip(0.15)
+    s22 = score_chip(0.22)
+    scores = {k: max(s15[k], s22[k]) for k in s15}
     best = max(scores, key=scores.get)  # type: ignore[arg-type]
-    # 閾値 0.20: sample_oguricap 等で色チップが薄めに写る行を救済するため
-    # 0.25 から緩和。row 0 は位置絶対化で color を使わないため影響せず、
-    # row >= 1 で従来 "white" → 該当色に変わる行は skill → blue/red/green に
-    # 流れるが、is_*_slot は位置と color の両方を見るので誤昇格は起きにくい。
-    if scores[best] > 0.20:
+    # 閾値 0.18: 1558/1814 の緑 tile が chip 22% で green=0.191 を返すため、
+    # 0.20 から 0.18 に下げて拾えるようにする。row 0 は位置絶対化で color を
+    # 使わないため影響せず、row >= 1 で従来 "white" → 該当色に変わる行は
+    # skill → blue/red/green に流れるが、is_*_slot は位置と color の両方を
+    # 見るので誤昇格は起きにくい。
+    if scores[best] > 0.18:
         return best  # type: ignore[return-value]
     return "white"
 

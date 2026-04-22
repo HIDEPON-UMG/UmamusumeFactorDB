@@ -6,11 +6,11 @@
 
 | 指標 | 値 | メモ |
 |---|---|---|
-| ★精度 | **32/37 (86.5%)** | ベースライン 27/37 から +5 件 |
-| 因子名精度 | **27/37 = 73%**（誤認 10 件） | 従来 24 件から −14 件。Exp 1+7+4 で −1、Exp 3 で −3、Exp 9 で −4、Exp 10 で −2、Exp 11 で −1 |
+| ★精度 | **35/37 (94.6%)** | ベースライン 27/37 から +8 件 |
+| 因子名精度 | **32/37 = 86%**（誤認 5 件） | 従来 24 件から −19 件。Exp 13 で −5 件が大きく効いた |
 | 悪化 | **0 件** | 現 28 件の正解は全て維持 |
 | Cloud Run リビジョン | `factor-processor-00015-29k` | commit `9131b0d` 反映済（Plan 1 以降は未デプロイ） |
-| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 / 青 display_crop pad_y=8 / 緑 box 選択（OCR conf 最大 box = 名前、近傍 gold>0 box = ★） / 赤 display_crop y1+14（非対称 pad） / 赤 EasyOCR 閾値緩和（text_threshold=0.5, low_text=0.3） | — |
+| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.18 + chip 幅 15%/22% dual-score / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 / 青 display_crop pad_y=8 / 緑 box 選択（OCR conf 最大 box = 名前、近傍 gold>0 box = ★） / 赤 display_crop y1+14（非対称 pad） / 赤 EasyOCR 閾値緩和（text_threshold=0.5, low_text=0.3） | — |
 
 ### 2026-04-22 Plan 1 の結果
 
@@ -32,6 +32,14 @@
 | Exp 10: 赤 display_crop を y1+14 の非対称 pad に変更 | 赤 +1〜3 件 | 赤 +2 件（1432 main マイル / 1851 parent2 長距離 が正解に）、悪化 0 件 |
 | Exp 11: 赤 recognize_red の EasyOCR パラメータを緩和（text_threshold=0.5, low_text=0.3） | 赤 +1〜2 件 | 赤 +1 件（1755 main 中距離 が正解に）、悪化 0 件。複数 upscale の追加は悪化 1 件で却下 |
 | Exp 12: 緑 box 候補を col=0 限定（col=1 は白スロット位置の誤判定） + ★補填 Pass 2 | 緑名前のゴミ出力抑制 | 評価件数は変わらず（誤認 10 件維持）だが、「羅刹…」「精神一到…」連呼 5 件が `(empty)` に変化＝レビュアー体験改善。★は col=0/1 問わず集計で補填して悪化 0 を維持 |
+| Exp 13: `detect_factor_color` の chip 幅 15%/22% を両方計算し max スコア採用、閾値 0.20→0.18 | 緑 +5〜7 件 | **名前 +5 件**（1558 全 3 / 1814 main/parent1 が正解に）、**★ +3 件**（同画像の★も同時解消）、悪化 0 件 |
+
+**Exp 13 の診断（scripts/dump_all_boxes.py）で判明**:
+
+- 受領 1558/1814 の緑因子 tile は `chip=15%` では green=0.000 で判定漏れ、`chip=22%` で green=0.191 を返す
+- 一方 2331 main の row=2 col=1（レース名スキルの緑アイコン）は `chip=15%` で 0.252、`chip=22%` で 0.173 と、広げると薄まる
+- **両方の幅で計算し max を取る**ことで両パターンを同時救済
+- 単純に 22% 固定 + 閾値 0.18 にすると 2331 main の★が 2→0 悪化する事故が発生したため dual-score 設計に切り替え
 
 **Exp 12 の構造診断で判明した真因（scripts/dump_green_crops.py）**:
 
