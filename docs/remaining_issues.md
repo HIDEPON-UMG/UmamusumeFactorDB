@@ -7,10 +7,10 @@
 | 指標 | 値 | メモ |
 |---|---|---|
 | ★精度 | **32/37 (86.5%)** | ベースライン 27/37 から +5 件 |
-| 因子名精度 | **17/37 = 46%**（誤認 20 件） | 従来 24 件から −4 件。Exp 1+7+4 で −1 件 |
+| 因子名精度 | **20/37 = 54%**（誤認 17 件） | 従来 24 件から −7 件。Exp 1+7+4 で −1 件、Exp 3 で −3 件 |
 | 悪化 | **0 件** | 現 28 件の正解は全て維持 |
 | Cloud Run リビジョン | `factor-processor-00015-29k` | commit `9131b0d` 反映済（Plan 1 以降は未デプロイ） |
-| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 | — |
+| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 / 青 display_crop pad_y=8 | — |
 
 ### 2026-04-22 Plan 1 の結果
 
@@ -27,6 +27,13 @@
 | Exp 1: 緑 OCR readtext(detail=1) + 断片別辞書マッチ | 緑 +2〜4 件 | 単独では 0 件。Exp 7 と組み合わせ必須と判明 |
 | Exp 7: `_merge_candidates` の緑専用 ocr_strong_threshold=0.5 | 赤/青/緑 +1〜3 件 | 緑 +1 件（CHERRY☆スクランブル 解消）。 OCR top1 が 0.7 未満でも先頭昇格する |
 | Exp 4: 断片経路の文字数比補正（len(frag)/len(name)） | 緑 +2〜3 件 | 単独の計測は未実施。Exp 1 の副作用（"Joy" → "Joyful Voyage!"）を抑制 |
+| Exp 3: 青 display_crop の pad_y_norm を 2 → 8 に拡大 | 赤/青 +2〜3 件 | 青 +3 件（賢さ/パワー誤認 → スピード/パワー/スタミナ正解）、悪化 0 件。赤は拡張すると「長距離→マイル」等の新規誤認が 2 件発生するため従来のまま維持 |
+
+**Exp 3 の診断で判明した真因**（scripts/dump_red_crops.py で crop を目視）:
+
+- box.bbox は★中心基準で算出されており、縦 27px が因子名テキストの下端まで届かず、一部画像でテキストがフレーム外にはみ出す
+- 青の場合、文字数が多く（「スピード」「スタミナ」）拡張で OCR が allowlist で拾える → 改善に直結
+- 赤の場合、短い文字列（「マイル」「長距離」）で拡張すると上下の★や他の行が混入して OCR 誤読を起こす → rollback が必要だった
 
 **診断で判明した真因**（scripts/diagnose_green_fragments.py）:
 

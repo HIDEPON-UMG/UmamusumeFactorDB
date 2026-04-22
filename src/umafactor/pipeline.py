@@ -138,23 +138,24 @@ def _display_crop_from_original(
     img_orig: np.ndarray,
     bbox: tuple[int, int, int, int],
     scale: float,
+    pad_y_norm: int = 2,
 ) -> np.ndarray:
-    """レビュー UI 表示専用の広めクロップ。
+    """レビュー UI 表示 + 赤/青 OCR 用の広めクロップ。
 
     モデル入力領域（recognizer.json の left_rect / right_rect）は因子名テキストの
     左端が欠ける場合があるため、UI で確認しやすいよう左右と上下にパディングを追加する。
-    モデル推論には使わない（精度影響なし）。
+    ONNX 推論には使わないが、**OCR には display_crop を使っている**ので、
+    pad_y_norm を増やすと赤/青因子の allowlist OCR がテキストを拾える率が上がる。
     """
     inv = 1.0 / scale if scale != 0 else 1.0
     x0, y0, x1, y1 = bbox
-    # 正規化 540 基準で 左 +32px、右 +8px、上下 +2px の余白
+    # 正規化 540 基準で 左 +32px、右 +8px、上下は引数（既定 +2px）
     PAD_LEFT_NORM = 32
     PAD_RIGHT_NORM = 8
-    PAD_Y_NORM = 2
     ox0 = int(round((x0 - PAD_LEFT_NORM) * inv))
-    oy0 = int(round((y0 - PAD_Y_NORM) * inv))
+    oy0 = int(round((y0 - pad_y_norm) * inv))
     ox1 = int(round((x1 + PAD_RIGHT_NORM) * inv))
-    oy1 = int(round((y1 + PAD_Y_NORM) * inv))
+    oy1 = int(round((y1 + pad_y_norm) * inv))
     ox0 = max(0, ox0)
     oy0 = max(0, oy0)
     ox1 = min(img_orig.shape[1], ox1)
@@ -242,7 +243,6 @@ def analyze_image(
         rank_crop_orig = _crop_rank_from_original(img_orig, box.bbox, scale, box.rank_bbox)
         x0, y0, x1, y1 = box.bbox
         text_crop_norm = norm_img[y0:y1, x0:x1]
-        display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
 
         # 色チップ検出が弱い合成画像で box.color が "white" / 逆の青赤 に落ちても、
         # 青/赤因子が常に row 0 の左/右列に並ぶゲーム UI 構造を使って位置で補正する。
@@ -258,20 +258,34 @@ def analyze_image(
             is_blue_slot = box.color == "blue"
             is_red_slot = box.color == "red"
 
+        # 青スロットは box.bbox が★中心基準で算出されており、一部画像で因子名
+        # テキストが bbox 下端からはみ出して OCR 入力に映らない問題がある。
+        # display_crop の pad_y_norm を 8 に拡大することで「スピード」「スタミナ」等が
+        # OCR で拾えるようになり青 +3 件改善を確認。赤は拡張すると上下の★や他の
+        # 行が入って allowlist OCR が「長距離→マイル」等の誤読を起こすため従来のまま。
+        if is_blue_slot:
+            display_crop = _display_crop_from_original(
+                img_orig, box.bbox, scale, pad_y_norm=8
+            )
+        else:
+            display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
+        ext_bbox = box.bbox
+        ext_text_crop_norm = text_crop_norm
+
         # ONNX 候補
         if is_blue_slot:
             crops = [
-                _crop_from_original(img_orig, box.bbox, scale, dy, dx)
+                _crop_from_original(img_orig, ext_bbox, scale, dy, dx)
                 for dy, dx in PERTURBATIONS_BLUE
             ]
-            crops.append(text_crop_norm)
+            crops.append(ext_text_crop_norm)
             onnx_candidates = factor_pred.topk_in_category(crops, BLUE_FACTOR_TYPES, k=5)
         elif is_red_slot:
             crops = [
-                _crop_from_original(img_orig, box.bbox, scale, dy, dx)
+                _crop_from_original(img_orig, ext_bbox, scale, dy, dx)
                 for dy, dx in PERTURBATIONS_RED
             ]
-            crops.append(text_crop_norm)
+            crops.append(ext_text_crop_norm)
             onnx_candidates = factor_pred.topk_in_category(
                 crops, RED_FACTOR_TYPES, k=5, use_multi_interp=True
             )
