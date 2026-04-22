@@ -82,13 +82,34 @@ Cloud Run /process (FastAPI)
   │ │     - 緑/白は通常の EasyOCR で生テキスト抽出 → rapidfuzz で辞書マッチ
   │ │     - **赤スロット**（距離/脚質/バ場）は allowlist 付き OCR (`recognize_red`)
   │ │       で候補文字を「短中長距離芝ダートマイル逃げ先行差し追込」に限定し、
-  │ │       ゴミ文字の混入を排除
+  │ │       ゴミ文字の混入を排除（EasyOCR の text_threshold=0.5, low_text=0.3 で
+  │ │       ゲームフォントの読みにくい文字も拾う）
   │ │     - **青スロット**（ステータス 5 種）は allowlist 付き OCR (`recognize_blue`)
   │ │       で候補文字を「スピードタミナパワー根性賢さ」に限定
-  │ │     - 緑因子の rapidfuzz 重みは ratio 寄り（partial 0.4 / ratio 0.6）で、
-  │ │       部分一致だけで特定の長いスキル名にアンカー寄せされる傾向を抑制
-  │ │     - 色判定（detect_factor_color）は ratio_in_range > 0.20 で青/緑/赤を決定、
-  │ │       それ以外は white（色チップが薄い受領画像を救済）
+  │ │     - 青 display_crop は `pad_y_norm=8` で縦方向にテキスト領域を広げ、
+  │ │       allowlist OCR が「スピード」「スタミナ」等を拾える率を上げる
+  │ │     - 赤 display_crop は bbox の y1 のみ +14 に拡張する非対称 pad で、
+  │ │       ★中心基準 bbox でテキストが下にはみ出す画像でも OCR が届く
+  │ │     - 緑因子の rapidfuzz は `recognize_with_parts` で EasyOCR の
+  │ │       readtext 断片を連結テキストと並列で辞書マッチし、短断片に
+  │ │       長さ比補正を適用して「Joy」が「Joyful Voyage!」に短文マッチする
+  │ │       事故を抑制。重みは ratio 寄り（partial 0.4 / ratio 0.6）
+  │ │     - 緑専用の `_merge_candidates` マージ閾値は 0.5（他色は 0.7）で、
+  │ │       OCR top1 が中程度 conf でも ONNX の系統誤答に押し負けないようにする
+  │ │     - 色判定（detect_factor_color）は chip 幅 15% と 22% の両方で HSV
+  │ │       スコアを計算し色ごとに max 採用 / 閾値 > 0.18（小さい緑アイコンと
+  │ │       大きい緑アイコンの両方を救済）。row 0 は位置絶対化で color を
+  │ │       使わないため影響せず
+  │ ├─ ⑥ 緑 box 選択戦略（pipeline.py の Pass 0）
+  │ │     - 各 uma について緑 col=0 の box 候補を事前スキャン、OCR top1 conf が
+  │ │       最大の box を「因子名採用 box」として記録（col=1 の誤判定緑 box は
+  │ │       レース名スキル行なので除外）
+  │ │     - 因子名は上記 best box から、★数は採用 box 自身の gold か、
+  │ │       同 uma 内で gold>0 の緑 box のうち採用 box の row に最も近い box の
+  │ │       gold を採用（テキスト行と★行が別 row の cropper 挙動に対応）
+  │ │     - Pass 2 で uma.green_name が空かつ★0 の緑スロットに対し、col 問わず
+  │ │       同 uma の緑 box の max gold を補填（col=0 が検出されず col=1 にのみ
+  │ │       緑 box が存在する救済経路）
   │ ├─ ⑥ 固有スキル → ウマ娘 逆引き（unique_skill_to_character.json）
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST
   ▼

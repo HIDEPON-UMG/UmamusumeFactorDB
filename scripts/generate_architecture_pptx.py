@@ -211,7 +211,7 @@ def build_dataflow_slide(prs: Presentation):
         ("③ onFormSubmit 発火", "Apps Script が応答行を読み、Drive ファイル ID 抽出", COLOR_GAS),
         ("④ 画像匿名リネーム", "factor_yyyyMMdd_HHmmss.ext 形式で setName", COLOR_DRIVE),
         ("⑤ Cloud Run 呼び出し", "POST /process に画像 base64 + secret を送信", COLOR_CLOUDRUN),
-        ("⑥ ONNX + OCR 解析", "★検出駆動 bbox + CNN 分類器(gold/empty) + 赤 allowlist OCR + character 逆引き", COLOR_CLOUDRUN),
+        ("⑥ ONNX + OCR 解析", "★検出駆動 bbox + CNN 分類器(gold/empty) + 赤/青 allowlist OCR + chip dual-score 色判定 + 緑 box 選択戦略 + character 逆引き", COLOR_CLOUDRUN),
         ("⑦ Cloud Run → webhook", "Apps Script doPost に 3 行の解析結果を POST", COLOR_CLOUDRUN),
         ("⑧ factors_normalized 書き込み", "submission_id 共通で main/parent1/parent2 の 3 行追加", COLOR_SHEET),
         ("⑨ 応答タブに status 書き戻し", "submission_id + processed を応答行へ", COLOR_SHEET),
