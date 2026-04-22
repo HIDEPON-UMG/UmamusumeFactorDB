@@ -89,6 +89,25 @@ class FactorOCR:
         raw = "".join(parts)
         return _normalize_ocr_text(raw)
 
+    def recognize_with_parts(self, img_bgr: np.ndarray) -> tuple[str, list[str]]:
+        """画像から生テキストを抽出し、(連結テキスト, 断片リスト) を返す。
+
+        緑因子（固有スキル）用：1 つの長いスキル名が OCR で複数の断片に分かれる
+        ことが多く、連結しか使わないと「長い辞書エントリ」にアンカー寄せされる。
+        断片ごとに独立したクエリを作り、辞書マッチの多様性を高める。
+        """
+        if img_bgr is None or img_bgr.size == 0:
+            return "", []
+        reader = _get_reader()
+        big = _preprocess_for_ocr(img_bgr, upscale=3)
+        parts = reader.readtext(big, detail=0)
+        if not parts:
+            return "", []
+        combined = _normalize_ocr_text("".join(parts))
+        fragments = [_normalize_ocr_text(p) for p in parts]
+        fragments = [f for f in fragments if f]
+        return combined, fragments
+
     def recognize_red(self, img_bgr: np.ndarray) -> str:
         """赤因子（距離/脚質/バ場）専用の OCR。候補文字を allowlist で絞って
         「2」「]」等のゴミ出力を排除する。候補文字集合は RED_FACTOR_TYPES に
@@ -181,6 +200,54 @@ class FactorOCR:
             scored.append((name, final))
         scored.sort(key=lambda x: -x[1])
         return scored[:top_k]
+
+    def match_to_green_factor_multi(
+        self,
+        combined: str,
+        fragments: list[str],
+        top_k: int = 5,
+        min_score_combined: float = 40.0,
+        min_score_fragment: float = 60.0,
+        fragment_weight: float = 0.9,
+    ) -> list[tuple[str, float]]:
+        """連結テキスト＋断片テキスト複数で緑因子辞書に並列マッチし、統合する。
+
+        - combined: 全テキスト連結。従来の match_to_green_factor 相当のクエリ
+        - fragments: readtext の断片（1 スキル名が複数断片に分かれることが多い）
+        - min_score_fragment を高めに設定して、断片経路の誤マッチを抑える
+        - fragment_weight (<1.0) で断片由来スコアを軽く割り引き、連結一致を優先
+        - 断片経路は **文字数補正** を適用: 短い断片から長い辞書エントリへの
+          partial_ratio 高スコアを len 比で減点し、"Joy" が "Joyful Voyage!" に
+          短文マッチして正解 "Joy to the World" を逆転するような事故を防ぐ
+        - 同一候補は max スコア採用（断片と連結で別クエリになるため）
+        """
+        candidates: dict[str, float] = {}
+        # 連結クエリ（連結テキストは元々長さを持つので文字数補正なし）
+        for name, score in self.match_to_green_factor(
+            combined, top_k=top_k * 2, min_score=min_score_combined
+        ):
+            prev = candidates.get(name, 0.0)
+            if score > prev:
+                candidates[name] = score
+        # 断片クエリ（短すぎる断片はスキップ、min_score を高めに）
+        for frag in fragments:
+            if len(frag) < 3:
+                continue
+            for name, score in self.match_to_green_factor(
+                frag, top_k=top_k, min_score=min_score_fragment
+            ):
+                # 文字数補正: 断片長 / 候補名長 の比でスコアを減点
+                # frag="Joy"(3), name="Joyful Voyage!"(13) → 0.23 倍
+                # frag="Joy"(3), name="Joy to the World"(16) → 0.19 倍
+                # 連結経路で「Joy to the World」が top1 なら断片経路の減点後スコアでは
+                # 逆転されにくくなる
+                len_ratio = min(1.0, len(frag) / max(1, len(name)))
+                weighted = score * fragment_weight * len_ratio
+                prev = candidates.get(name, 0.0)
+                if weighted > prev:
+                    candidates[name] = weighted
+        merged = sorted(candidates.items(), key=lambda x: -x[1])
+        return merged[:top_k]
 
 
 @lru_cache(maxsize=1)

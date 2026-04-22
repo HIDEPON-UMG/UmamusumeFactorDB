@@ -7,10 +7,10 @@
 | 指標 | 値 | メモ |
 |---|---|---|
 | ★精度 | **32/37 (86.5%)** | ベースライン 27/37 から +5 件 |
-| 因子名精度 | **16/37 = 43%**（誤認 21 件） | 従来 24 件から −3 件。件数は 2026-04-21 から変化なし |
+| 因子名精度 | **17/37 = 46%**（誤認 20 件） | 従来 24 件から −4 件。Exp 1+7+4 で −1 件 |
 | 悪化 | **0 件** | 現 28 件の正解は全て維持 |
-| Cloud Run リビジョン | `factor-processor-00015-29k` | commit `9131b0d` 反映済（Plan 1 分は未デプロイ） |
-| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 | — |
+| Cloud Run リビジョン | `factor-processor-00015-29k` | commit `9131b0d` 反映済（Plan 1 以降は未デプロイ） |
+| 主要改修 | CNN 分類器導入 / row 0 位置絶対化 / rank fallback ガード / 赤 OCR allowlist / 青 OCR allowlist / 緑 rapidfuzz 重み調整 / 色判定閾値 0.20 / 緑断片 OCR + 緑専用マージ閾値 0.5 + 断片文字数補正 | — |
 
 ### 2026-04-22 Plan 1 の結果
 
@@ -20,7 +20,20 @@
 | F1: 青因子 OCR allowlist 実装 | 青 +1〜2 件 | 0 件（ONNX 側の系統誤認が優勢） |
 | G2: 緑 rapidfuzz 重み 0.6/0.4 → 0.4/0.6 | 緑 +2〜3 件 | 0 件（top1 の寄せ先パターンは変わったが件数不変） |
 
-F1 と G2 が件数を動かさなかった理由: 残り誤認は ONNX 摂動アンサンブル側が高確信度で誤答しているケースが大半。OCR 改善だけではマージ後スコアが逆転しない。Plan 2（ONNX 再訓練）が本命。
+### 2026-04-22 Plan 2（ONNX 温存実験群）の結果
+
+| 施策 | 期待 | 実測 |
+|---|---|---|
+| Exp 1: 緑 OCR readtext(detail=1) + 断片別辞書マッチ | 緑 +2〜4 件 | 単独では 0 件。Exp 7 と組み合わせ必須と判明 |
+| Exp 7: `_merge_candidates` の緑専用 ocr_strong_threshold=0.5 | 赤/青/緑 +1〜3 件 | 緑 +1 件（CHERRY☆スクランブル 解消）。 OCR top1 が 0.7 未満でも先頭昇格する |
+| Exp 4: 断片経路の文字数比補正（len(frag)/len(name)） | 緑 +2〜3 件 | 単独の計測は未実施。Exp 1 の副作用（"Joy" → "Joyful Voyage!"）を抑制 |
+
+**診断で判明した真因**（scripts/diagnose_green_fragments.py）:
+
+- 緑誤認 12 件のうち **OCR + rapidfuzz は既に正解を top1 に出している**ケースが 5 件（CHERRY☆スクランブル / Joy to the World ×2 / 勝利の鼓動 / 勝利ヘ至ル累積）
+- それらは `_merge_candidates` の `ocr_strong_threshold = 0.7` の壁に阻まれ、OCR top1 スコア 0.5-0.66 では ONNX 側に押し負けていた
+- Exp 7 で閾値を 0.5 に緩和したことで CHERRY☆スクランブル は解消
+- 残り 4 件（勝利ヘ至ル累積、Joy to the World ×2、勝利の鼓動）も OCR top1 は 0.57-0.73 で閾値クリアしているが、解消されていない。おそらく **複数の緑 box のうち誤った box が先に採用されている**（box 順序 or gold_star_count 優先順位の問題）
 
 ## 1. ★数認識の残課題（6 件）
 

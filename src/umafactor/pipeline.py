@@ -284,15 +284,23 @@ def analyze_image(
         # OCR 候補（display_crop を使う。テキスト全域が入っているため）
         # 赤/青スロットは allowlist 付き OCR でゴミ文字を抑制
         # （'2', ']' 等の雑音を除外し、候補を BLUE/RED_FACTOR_TYPES の構成文字に限定）
+        # 緑は断片分割 OCR で「連結+断片」並列マッチして長文アンカー寄せを抑制。
+        # row 0 位置絶対化で「色=緑だが青/赤スロット」のケースが出るため、
+        # 分岐は is_*_slot を最優先し、緑判定はその後で評価する。
+        ocr_fragments: list[str] = []
         if is_red_slot:
             ocr_raw = ocr.recognize_red(display_crop)
         elif is_blue_slot:
             ocr_raw = ocr.recognize_blue(display_crop)
+        elif box.color == "green":
+            ocr_raw, ocr_fragments = ocr.recognize_with_parts(display_crop)
         else:
             ocr_raw = ocr.recognize(display_crop)
-        if box.color == "green":
-            # 緑は固有スキル辞書 249 件に絞ってマッチ（英字混じりの誤マッチを抑制）
-            ocr_candidates = ocr.match_to_green_factor(ocr_raw, top_k=5)
+        if not is_red_slot and not is_blue_slot and box.color == "green":
+            # 緑は固有スキル辞書 249 件 + 断片並列マッチで誤マッチを抑制
+            ocr_candidates = ocr.match_to_green_factor_multi(
+                ocr_raw, ocr_fragments, top_k=5
+            )
         else:
             ocr_candidates = ocr.match_to_factor(ocr_raw, top_k=5)
         # 青/赤はカテゴリ外の候補を除外（位置ベース判定も含む）
@@ -301,8 +309,15 @@ def analyze_image(
         elif is_red_slot:
             ocr_candidates = [(n, s) for n, s in ocr_candidates if n in RED_FACTOR_TYPES]
 
-        # マージ
-        merged, sources = _merge_candidates(onnx_candidates, ocr_candidates, limit=8)
+        # マージ（緑スロットは OCR top1 が正解を出すケースでも全 813 辞書の ONNX top1 に
+        # 押し負けやすいため、ocr_strong_threshold を 0.5 に緩和して OCR を優先する）
+        merge_threshold = 0.5 if (not is_red_slot and not is_blue_slot and box.color == "green") else 0.7
+        merged, sources = _merge_candidates(
+            onnx_candidates,
+            ocr_candidates,
+            limit=8,
+            ocr_strong_threshold=merge_threshold,
+        )
         top_name = merged[0][0] if merged else ""
 
         # ★数は金★の実数カウントを最優先（rank モデルより高精度な実測値）。
