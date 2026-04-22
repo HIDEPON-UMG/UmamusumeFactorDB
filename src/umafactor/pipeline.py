@@ -288,11 +288,20 @@ def analyze_image(
         # 青スロットは box.bbox が★中心基準で算出されており、一部画像で因子名
         # テキストが bbox 下端からはみ出して OCR 入力に映らない問題がある。
         # display_crop の pad_y_norm を 8 に拡大することで「スピード」「スタミナ」等が
-        # OCR で拾えるようになり青 +3 件改善を確認。赤は拡張すると上下の★や他の
-        # 行が入って allowlist OCR が「長距離→マイル」等の誤読を起こすため従来のまま。
+        # OCR で拾えるようになり青 +3 件改善を確認。
+        # 赤は pad_y_norm 両方向拡張（Exp 3）で「長距離→マイル」悪化が発生したが、
+        # 真因は bbox が★中心基準で上にズレてテキストが下端にはみ出すこと。
+        # display_crop の元 bbox を y1 のみ +14 に拡張（y0 は維持）で、上の行を
+        # 含まずテキストだけを入れる非対称 pad に変更する。
         if is_blue_slot:
             display_crop = _display_crop_from_original(
                 img_orig, box.bbox, scale, pad_y_norm=8
+            )
+        elif is_red_slot:
+            img_h = norm_img.shape[0]
+            red_disp_bbox = (x0, y0, x1, min(img_h, y1 + 14))
+            display_crop = _display_crop_from_original(
+                img_orig, red_disp_bbox, scale, pad_y_norm=2
             )
         else:
             display_crop = _display_crop_from_original(img_orig, box.bbox, scale)
