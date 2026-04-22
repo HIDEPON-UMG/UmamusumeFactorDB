@@ -282,9 +282,12 @@ def analyze_image(
             )
 
         # OCR 候補（display_crop を使う。テキスト全域が入っているため）
-        # 赤スロットは allowlist 付き OCR でゴミ文字を抑制（'2', ']' 等の雑音排除）
+        # 赤/青スロットは allowlist 付き OCR でゴミ文字を抑制
+        # （'2', ']' 等の雑音を除外し、候補を BLUE/RED_FACTOR_TYPES の構成文字に限定）
         if is_red_slot:
             ocr_raw = ocr.recognize_red(display_crop)
+        elif is_blue_slot:
+            ocr_raw = ocr.recognize_blue(display_crop)
         else:
             ocr_raw = ocr.recognize(display_crop)
         if box.color == "green":

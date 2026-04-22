@@ -332,7 +332,11 @@ def detect_factor_color(box_bgr: np.ndarray) -> FactorColor:
         "red": ratio_in_range(*FACTOR_COLOR_HSV_RANGES["red"]),
     }
     best = max(scores, key=scores.get)  # type: ignore[arg-type]
-    if scores[best] > 0.25:
+    # 閾値 0.20: sample_oguricap 等で色チップが薄めに写る行を救済するため
+    # 0.25 から緩和。row 0 は位置絶対化で color を使わないため影響せず、
+    # row >= 1 で従来 "white" → 該当色に変わる行は skill → blue/red/green に
+    # 流れるが、is_*_slot は位置と color の両方を見るので誤昇格は起きにくい。
+    if scores[best] > 0.20:
         return best  # type: ignore[return-value]
     return "white"
 

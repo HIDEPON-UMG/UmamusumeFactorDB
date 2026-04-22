@@ -79,10 +79,16 @@ Cloud Run /process (FastAPI)
   │ │     - 赤/青因子は近傍摂動でアンサンブル、★数は CNN 分類器の gold 判定数を優先（取りこぼし時のみ rank モデル fallback）
   │ │     - row 0 は col 0 → 青、col 1 → 赤 を位置絶対化（色チップ誤判定に頑健）、rank fallback で★0＆低信頼度なら★1 保証
   │ ├─ ⑤ EasyOCR 補完（ocr.py）
-  │ │     - 青/緑/白は通常の EasyOCR で生テキスト抽出 → rapidfuzz で辞書マッチ
+  │ │     - 緑/白は通常の EasyOCR で生テキスト抽出 → rapidfuzz で辞書マッチ
   │ │     - **赤スロット**（距離/脚質/バ場）は allowlist 付き OCR (`recognize_red`)
   │ │       で候補文字を「短中長距離芝ダートマイル逃げ先行差し追込」に限定し、
   │ │       ゴミ文字の混入を排除
+  │ │     - **青スロット**（ステータス 5 種）は allowlist 付き OCR (`recognize_blue`)
+  │ │       で候補文字を「スピードタミナパワー根性賢さ」に限定
+  │ │     - 緑因子の rapidfuzz 重みは ratio 寄り（partial 0.4 / ratio 0.6）で、
+  │ │       部分一致だけで特定の長いスキル名にアンカー寄せされる傾向を抑制
+  │ │     - 色判定（detect_factor_color）は ratio_in_range > 0.20 で青/緑/赤を決定、
+  │ │       それ以外は white（色チップが薄い受領画像を救済）
   │ ├─ ⑥ 固有スキル → ウマ娘 逆引き（unique_skill_to_character.json）
   │ └─ ⑦ Apps Script webhook (doPost) に解析結果 POST
   ▼

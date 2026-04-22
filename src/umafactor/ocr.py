@@ -107,6 +107,23 @@ class FactorOCR:
         raw = "".join(parts)
         return _normalize_ocr_text(raw)
 
+    def recognize_blue(self, img_bgr: np.ndarray) -> str:
+        """青因子（ステータス5種）専用の OCR。allowlist で絞ってゴミ文字を抑制。
+        BLUE_FACTOR_TYPES = ["スピード","スタミナ","パワー","根性","賢さ"] の
+        構成文字をユニーク化して候補にする。
+        """
+        if img_bgr is None or img_bgr.size == 0:
+            return ""
+        reader = _get_reader()
+        big = _preprocess_for_ocr(img_bgr, upscale=3)
+        # ユニーク化: スピードタミナパワー根性賢さ
+        allowlist = "スピードタミナパワー根性賢さ"
+        parts = reader.readtext(big, detail=0, allowlist=allowlist)
+        if not parts:
+            return ""
+        raw = "".join(parts)
+        return _normalize_ocr_text(raw)
+
     def match_to_factor(
         self, raw_text: str, top_k: int = 5, min_score: float = 50.0
     ) -> list[tuple[str, float]]:
@@ -143,6 +160,8 @@ class FactorOCR:
 
         緑因子は英字混じりが多く全 813 辞書では誤マッチしやすいため、
         緑因子専用の辞書で別途引き直す。
+        重みは ratio 寄り（0.4/0.6）にして、部分一致だけで特定の長いスキル名に
+        アンカー寄せされる傾向を抑制する。
         """
         if not raw_text:
             return []
@@ -157,7 +176,8 @@ class FactorOCR:
             if pscore < min_score:
                 continue
             rscore = fuzz.ratio(raw_text, name)
-            final = (pscore * 0.6 + rscore * 0.4) / 100.0
+            # ratio 寄りの重み（0.4/0.6）: 全体の一致度を優先
+            final = (pscore * 0.4 + rscore * 0.6) / 100.0
             scored.append((name, final))
         scored.sort(key=lambda x: -x[1])
         return scored[:top_k]
