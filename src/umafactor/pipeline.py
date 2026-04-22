@@ -250,9 +250,21 @@ def analyze_image(
     # gold_star_count」と別軸で採用することで、rank fallback が誤★を返す問題も回避。
     best_green_box: dict[int, FactorBox] = {}
     best_green_score: dict[int, float] = {}
-    best_green_gold: dict[int, int] = {}
+    best_green_gold: dict[int, int] = {}  # 名前採用時の最大 gold（col=0 のみ）
+    any_green_gold: dict[int, int] = {}  # ★補填用の最大 gold（col 問わず）
     for box in boxes:
         if box.color != "green":
+            continue
+        g = box.gold_star_count or 0
+        if g > any_green_gold.get(box.uma_index, 0):
+            any_green_gold[box.uma_index] = g
+        # 緑因子は UI 仕様上 col=0（左側）のみ。col=1（右側＝白/スキル列）で
+        # detect_factor_color が緑誤判定するケース（受領 1558 parent1/parent2、
+        # 1814 main/parent1 等）があり、そこを採用するとレース名行の OCR 結果を
+        # 緑 name にしてしまう事故が発生する。col=1 は名前採用候補から除外。
+        # ただし★数は col=1 でも偽陽性タイルとして★が正しく取れていることが
+        # 多いため、any_green_gold で保持して後段 Pass 2 の★補填に使う。
+        if box.col_index != 0:
             continue
         dc = _display_crop_from_original(img_orig, box.bbox, scale)
         raw, frags = ocr.recognize_with_parts(dc)
@@ -412,8 +424,12 @@ def analyze_image(
                 and box is best_box
             )
         else:
-            green_ok = box.color == "green" and not uma.green_name and (
-                box.gold_star_count is None or box.gold_star_count > 0
+            # 緑 col=1 は白スロット位置の誤判定が多いため fallback でも除外
+            green_ok = (
+                box.color == "green"
+                and box.col_index == 0
+                and not uma.green_name
+                and (box.gold_star_count is None or box.gold_star_count > 0)
             )
         if is_blue_slot and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
             uma.blue_type = top_name
@@ -468,6 +484,16 @@ def analyze_image(
                 current_star=star,
             )
         )
+
+    # Pass 2: 緑 col=1 除外により uma.green_name が未採用だが、★は col=1 に
+    # 残っているケースがある（受領 1558 parent1/parent2 等）。name は空のまま
+    # ★だけ any_green_gold から補填する。評価時に name 誤認件数は変わらないが、
+    # ★は正解にできる＝★悪化を防げる。
+    for uma_idx, uma in enumerate(umas):
+        if not uma.green_name and uma.green_star == 0:
+            g = any_green_gold.get(uma_idx, 0)
+            if g > 0:
+                uma.green_star = g
 
     # 緑因子（固有スキル）から character を逆引き：
     # character は ONNX の画像分類だと衣装差などで誤判定しやすいが、
