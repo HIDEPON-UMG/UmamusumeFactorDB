@@ -21,6 +21,7 @@ from .infer import get_predictor
 from .ocr import get_ocr
 from .review import ReviewItem, ReviewQueue
 from .schema import FactorEntry, Submission, UmaFactors
+from .templates import match_green_name, match_green_star, match_star, match_templates
 
 
 BLUE_FACTOR_TYPES = ["スピード", "スタミナ", "パワー", "根性", "賢さ"]
@@ -229,6 +230,9 @@ def analyze_image(
     rank_pred = get_predictor("factor_rank")
     char_pred = get_predictor("character")
     ocr = get_ocr()
+    # 緑因子（固有スキル 249 件）の名前セット。非緑スロットの ONNX/OCR 候補から
+    # 除外するフィルタに使う。
+    green_name_set: set[str] = set(ocr._green_factor_names)
 
     umas = [UmaFactors(), UmaFactors(), UmaFactors()]
     review = ReviewQueue()
@@ -243,17 +247,24 @@ def analyze_image(
     # 別々に事前計算する。従来の「gold_star_count>0 の先着 box を採用」だと、
     # ★全空の行（row=1 col=0、実はテキストが正解）が skip されて row=2 の
     # 別 box（OCR は空や雑音）が採用される事故が多発していた。
-    # 診断（scripts/diagnose_green_fragments.py）で 1432 parent1/parent2、
-    # 2331 main、sample_oguricap main など 4 件で OCR top1 に正解が出ているのに
-    # この問題で誤認になっていることを確認済み。
     # 因子名は「OCR top1 conf 最大の box」、★は「同 uma 内の緑 box の最大
     # gold_star_count」と別軸で採用することで、rank fallback が誤★を返す問題も回避。
+    # 緑候補には UI 仕様上 row=1 col=0（青因子の下）の絶対位置 box も必ず含める。
+    # detect_factor_color が緑→white 等に誤判定しても、位置ベースで緑候補に入れる
+    # ことで「緑因子が白スキルに流入する」事故を防ぐ。
     best_green_box: dict[int, FactorBox] = {}
     best_green_score: dict[int, float] = {}
     best_green_gold: dict[int, int] = {}  # 名前採用時の最大 gold（col=0 のみ）
     any_green_gold: dict[int, int] = {}  # ★補填用の最大 gold（col 問わず）
     for box in boxes:
-        if box.color != "green":
+        # 緑候補: 色判定 green の box、または UI 仕様上の絶対位置（row=1 col=0）。
+        # 位置ベース候補を加えることで、色チップ検出が white 等に失敗しても
+        # 緑因子が拾える（ユーザー報告: 緑因子が白因子扱いで混入した）。
+        is_green_candidate = (
+            box.color == "green"
+            or (box.row_index == 1 and box.col_index == 0)
+        )
+        if not is_green_candidate:
             continue
         g = box.gold_star_count or 0
         if g > any_green_gold.get(box.uma_index, 0):
@@ -284,18 +295,46 @@ def analyze_image(
         text_crop_norm = norm_img[y0:y1, x0:x1]
 
         # 色チップ検出が弱い合成画像で box.color が "white" / 逆の青赤 に落ちても、
-        # 青/赤因子が常に row 0 の左/右列に並ぶゲーム UI 構造を使って位置で補正する。
-        # row 0 は位置で絶対確定（col=0 → 青、col=1 → 赤）し、color 判定は無視する。
-        # これで「row 0 col 1 が青と誤判定され blue slot に先取りされる」事故を防ぐ。
+        # 因子が常に決まった位置に並ぶゲーム UI 構造を使って位置で補正する。
+        #   row 0 col 0 → 青因子（左上）
+        #   row 0 col 1 → 赤因子（青の右）
+        #   row 1 col 0 → 緑因子（青の下）
+        # は必ず存在するため、この 3 セルは位置で絶対確定し color 判定は無視する。
+        # これで「緑因子が色判定 white に落ちて白スキル行に混入」「row 0 col 1 が
+        # 青と誤判定され blue slot に先取りされる」等の事故を防ぐ。
+        # row>=2 col=0 で色判定 green になる box（稀だが本物緑が cropper の
+        # 都合で row=2 側に検出される画像あり）は fallback で緑スロット候補に残す。
         if box.row_index == 0 and box.col_index == 0:
-            is_blue_slot = True
-            is_red_slot = False
+            is_blue_slot, is_red_slot, is_green_slot = True, False, False
         elif box.row_index == 0 and box.col_index == 1:
-            is_blue_slot = False
-            is_red_slot = True
+            is_blue_slot, is_red_slot, is_green_slot = False, True, False
+        elif box.row_index == 1 and box.col_index == 0:
+            is_blue_slot, is_red_slot, is_green_slot = False, False, True
         else:
             is_blue_slot = box.color == "blue"
             is_red_slot = box.color == "red"
+            # col=1 の色判定 green（レース名スキルの緑アイコン等）は除外。
+            is_green_slot = box.color == "green" and box.col_index == 0
+
+        # この box が本当に緑スロットとして採用される見込みがあるか。
+        # is_green_slot=True でも best_green_box に選ばれなかった box は結局
+        # skills 行きになるため、緑辞書（249 種の固有スキル）OCR 処理をすると
+        # skills に緑辞書マッチ名が紛れ込む（例: '白い稲妻、見せたるで！'）。
+        # 緑として採用される見込みがない box は通常 OCR ルートに流し、
+        # 緑辞書は緑スロットに限定する。uma.green_name の逐次状態で先着判定。
+        uidx_cur = box.uma_index
+        uma_cur_green_name = umas[uidx_cur].green_name
+        best_box_cur = best_green_box.get(uidx_cur)
+        best_conf_cur = best_green_score.get(uidx_cur, 0.0)
+        if is_green_slot and not uma_cur_green_name:
+            if best_box_cur is not None and best_conf_cur >= 0.5:
+                green_adoptable = box is best_box_cur
+            else:
+                green_adoptable = (
+                    box.gold_star_count is None or box.gold_star_count > 0
+                )
+        else:
+            green_adoptable = False
 
         # 青スロットは box.bbox が★中心基準で算出されており、一部画像で因子名
         # テキストが bbox 下端からはみ出して OCR 入力に映らない問題がある。
@@ -354,12 +393,14 @@ def analyze_image(
             ocr_raw = ocr.recognize_red(display_crop)
         elif is_blue_slot:
             ocr_raw = ocr.recognize_blue(display_crop)
-        elif box.color == "green":
+        elif green_adoptable:
             ocr_raw, ocr_fragments = ocr.recognize_with_parts(display_crop)
         else:
             ocr_raw = ocr.recognize(display_crop)
-        if not is_red_slot and not is_blue_slot and box.color == "green":
-            # 緑は固有スキル辞書 249 件 + 断片並列マッチで誤マッチを抑制
+        if green_adoptable:
+            # 緑は固有スキル辞書 249 件 + 断片並列マッチで誤マッチを抑制。
+            # 緑として採用される見込みがある box に限定することで、skills に
+            # 緑辞書マッチ名が混入する副作用を防ぐ。
             ocr_candidates = ocr.match_to_green_factor_multi(
                 ocr_raw, ocr_fragments, top_k=5
             )
@@ -370,16 +411,52 @@ def analyze_image(
             ocr_candidates = [(n, s) for n, s in ocr_candidates if n in BLUE_FACTOR_TYPES]
         elif is_red_slot:
             ocr_candidates = [(n, s) for n, s in ocr_candidates if n in RED_FACTOR_TYPES]
+        elif not green_adoptable:
+            # 白スキル/青赤誤流入などの非緑スロットでは、ONNX の top-k に緑因子
+            # （固有スキル 249 件）が混ざると skills に '恵福バルカローレ' のような
+            # 緑専用名が紛れ込む。緑辞書は緑スロットにのみ適用するため ONNX 側も
+            # 除外する。match_to_factor 側は辞書ロード時点で緑除外済み。
+            onnx_candidates = [(n, s) for n, s in onnx_candidates if n not in green_name_set]
+
+        # テンプレートマッチ候補。
+        # datasets/{red_blue_templates, green_name_templates}/ の正解 crop と
+        # display_crop を比較し、ピアソン相関最大のカテゴリを採用する。
+        # 低解像度で OCR/ONNX が失敗する画像でも「既知の正解形」に最も似ている
+        # カテゴリを選べる強力なシグナル。
+        template_candidates: list[tuple[str, float]] = []
+        if is_red_slot:
+            template_candidates = match_templates(display_crop, "red")[:5]
+        elif is_blue_slot:
+            template_candidates = match_templates(display_crop, "blue")[:5]
+        elif green_adoptable:
+            # 緑因子タイルの名前領域（左 85%）をテンプレと比較
+            _nx0, _ny0, _nx1, _ny1 = box.bbox
+            _name_x1 = _nx0 + int((_nx1 - _nx0) * 0.85)
+            _name_crop = _display_crop_from_original(
+                img_orig, (_nx0, _ny0, _name_x1, _ny1), scale, pad_y_norm=2
+            )
+            template_candidates = match_green_name(_name_crop)[:5]
 
         # マージ（緑スロットは OCR top1 が正解を出すケースでも全 813 辞書の ONNX top1 に
         # 押し負けやすいため、ocr_strong_threshold を 0.5 に緩和して OCR を優先する）
-        merge_threshold = 0.5 if (not is_red_slot and not is_blue_slot and box.color == "green") else 0.7
+        merge_threshold = 0.5 if green_adoptable else 0.7
         merged, sources = _merge_candidates(
             onnx_candidates,
             ocr_candidates,
             limit=8,
             ocr_strong_threshold=merge_threshold,
         )
+
+        # 赤/青/緑スロットでテンプレマッチ top1 が強い場合、最終 top_name として採用する。
+        # merged 側に top_name が存在しない場合もあるため、候補として追加する。
+        # 閾値: 赤/青(10/5 カテゴリ)は 0.90、緑名前(46 カテゴリ)はサンプル数が
+        # 偏るため 0.95 と厳しめに。
+        if template_candidates:
+            t_name, t_score = template_candidates[0]
+            t_threshold = 0.95 if green_adoptable else 0.90
+            if t_score >= t_threshold:
+                merged = [(t_name, t_score)] + [(n, s) for n, s in merged if n != t_name]
+                sources[t_name] = "template"
         top_name = merged[0][0] if merged else ""
 
         # ★数は金★の実数カウントを最優先（rank モデルより高精度な実測値）。
@@ -409,60 +486,81 @@ def analyze_image(
         uma = umas[box.uma_index]
         slot_kind: str
         white_idx = 0
-        # is_blue_slot / is_red_slot は ONNX 推論ブロックで位置ベース補正込みに算出済み。
-        # 緑 box の採用戦略: Pass 0 で uma ごとの OCR top1 conf 最大 box を特定済み。
-        # (A) best_green_box[uma] が確定（OCR top1 conf >= 0.5）なら、その box のみ採用。
-        # (B) best_green_box が未確定（全 OCR 雑音）なら従来通り gold_star_count>0 優先。
-        # これで row=1 の★全空緑 box（OCR は正解を出している）が優先採用される。
+        # 緑採用は OCR 分岐前に判定した green_adoptable と同一。
+        # （uma.green_name 空の条件は green_adoptable 内に含む）
         uidx = box.uma_index
-        best_box = best_green_box.get(uidx)
-        best_conf = best_green_score.get(uidx, 0.0)
-        if best_box is not None and best_conf >= 0.5:
-            green_ok = (
-                box.color == "green"
-                and not uma.green_name
-                and box is best_box
-            )
-        else:
-            # 緑 col=1 は白スロット位置の誤判定が多いため fallback でも除外
-            green_ok = (
-                box.color == "green"
-                and box.col_index == 0
-                and not uma.green_name
-                and (box.gold_star_count is None or box.gold_star_count > 0)
-            )
+        green_ok = green_adoptable
         if is_blue_slot and top_name in BLUE_FACTOR_TYPES and not uma.blue_type:
             uma.blue_type = top_name
-            uma.blue_star = star
+            # ★数はテンプレマッチで高確信の場合に上書き
+            _bx0, _by0, _bx1, _by1 = box.bbox
+            _b_right_x0 = _bx0 + int((_bx1 - _bx0) * 0.5)
+            _b_star_crop = _display_crop_from_original(
+                img_orig, (_b_right_x0, _by0, _bx1, _by1), scale, pad_y_norm=2
+            )
+            _b_star_matches = match_star(_b_star_crop, "blue")
+            if _b_star_matches and _b_star_matches[0][1] >= 0.92:
+                uma.blue_star = _b_star_matches[0][0]
+            else:
+                uma.blue_star = star
             slot_kind = "blue"
         elif is_red_slot and top_name in RED_FACTOR_TYPES and not uma.red_type:
             uma.red_type = top_name
-            uma.red_star = star
+            _rx0, _ry0, _rx1, _ry1 = box.bbox
+            _r_right_x0 = _rx0 + int((_rx1 - _rx0) * 0.5)
+            _r_star_crop = _display_crop_from_original(
+                img_orig, (_r_right_x0, _ry0, _rx1, _ry1), scale, pad_y_norm=2
+            )
+            _r_star_matches = match_star(_r_star_crop, "red")
+            if _r_star_matches and _r_star_matches[0][1] >= 0.92:
+                uma.red_star = _r_star_matches[0][0]
+            else:
+                uma.red_star = star
             slot_kind = "red"
         elif green_ok:
             uma.green_name = top_name
-            # 緑の★数は、OCR-best box 自身の gold_star_count が 0 のことが多い
-            # （テキスト行と★行が別 row で検出される cropper の挙動）ため、
-            # 同 uma の緑 box のうち gold>0 かつ OCR-best の row_index に
-            # 最も近いものの★数を採用する。同 uma 内に偽陽性 box（別タイル）が
-            # あった場合でも、OCR-best 近傍の box が優先されやすい。
-            own_gold = box.gold_star_count or 0
-            if own_gold > 0:
-                uma.green_star = own_gold
+            # 緑の★数決定の優先順位（上から採用）:
+            #  1. 緑★テンプレートマッチ（datasets/star_templates/green/）で
+            #     高確信（score >= 0.92）の結果があればそれを最優先。HSV 実測で
+            #     拾えない umamusume 系画像で唯一精度が出せる方式。
+            #  2. 自身の gold_star_count（HSV+CNN で実測）
+            #  3. 同 uma の緑色判定 box の最も近い gold（テキスト行/★行分裂救済）
+            #  4. 既に計算済みの rank モデル推論結果 star（HSV 失敗 fallback）
+            #  5. 緑因子は固有スキル＝必ず★>=1 なので最低★1 を保証
+            # テンプレは green_tile 右半分（★領域）を 64×16 にリサイズしたもの。
+            _gx0, _gy0, _gx1, _gy1 = box.bbox
+            _g_right_x0 = _gx0 + int((_gx1 - _gx0) * 0.5)
+            _g_star_crop = _display_crop_from_original(
+                img_orig, (_g_right_x0, _gy0, _gx1, _gy1), scale, pad_y_norm=2
+            )
+            _star_matches = match_green_star(_g_star_crop)
+            if _star_matches and _star_matches[0][1] >= 0.92:
+                uma.green_star = _star_matches[0][0]
             else:
-                nearest_star = 0
-                best_dist = None
-                for b in boxes:
-                    if b.uma_index != uidx or b.color != "green":
-                        continue
-                    g = b.gold_star_count or 0
-                    if g <= 0:
-                        continue
-                    d = abs(b.row_index - box.row_index)
-                    if best_dist is None or d < best_dist:
-                        best_dist = d
-                        nearest_star = g
-                uma.green_star = nearest_star
+                own_gold = box.gold_star_count or 0
+                if own_gold > 0:
+                    uma.green_star = own_gold
+                else:
+                    nearest_star = 0
+                    best_dist = None
+                    for b in boxes:
+                        if b.uma_index != uidx or b.color != "green":
+                            continue
+                        g = b.gold_star_count or 0
+                        if g <= 0:
+                            continue
+                        d = abs(b.row_index - box.row_index)
+                        if best_dist is None or d < best_dist:
+                            best_dist = d
+                            nearest_star = g
+                    if nearest_star > 0:
+                        uma.green_star = nearest_star
+                    elif star > 0:
+                        # rank モデル推論の結果（HSV 検出が弱い画像の fallback）
+                        uma.green_star = star
+                    else:
+                        # 緑因子は固有スキル、必ず★1 以上存在する。最低保証。
+                        uma.green_star = 1
             slot_kind = "green"
         else:
             uma.skills.append(FactorEntry(color=box.color, name=top_name, star=star))

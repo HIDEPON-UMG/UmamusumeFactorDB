@@ -10,3 +10,5 @@ rapidfuzz>=3.9
 # EasyOCR + PyTorch（CPU 版）。torch は事前に CPU ホイールを入れておく必要あり：
 #   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 easyocr>=1.7.2
+# テスト
+pytest>=8.0

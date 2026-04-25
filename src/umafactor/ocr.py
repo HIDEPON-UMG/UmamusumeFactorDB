@@ -76,6 +76,15 @@ class FactorOCR:
         self._factor_names: list[str] = list(load_labels()["factor.name"])
         # 緑因子（固有スキル）専用の辞書（249 件）— ファジーマッチの範囲を絞って精度を上げる
         self._green_factor_names: list[str] = green_factor_names()
+        # 緑因子を除いた辞書（青/赤/白スキル/継承因子の 564 件）。
+        # match_to_factor（非緑スロット）は 緑辞書 を候補に含めない。
+        # 白スキルに '白い稲妻、見せたるで！' のような緑固有スキル名が
+        # 紛れ込むのを防ぐため。緑スロットでは別途 match_to_green_factor(_multi)
+        # が 緑辞書 に限定したマッチを行う。
+        _green_set = set(self._green_factor_names)
+        self._non_green_factor_names: list[str] = [
+            n for n in self._factor_names if n not in _green_set
+        ]
 
     def recognize(self, img_bgr: np.ndarray) -> str:
         """画像から生テキストを抽出。複数領域の結合＋記号正規化を行う。"""
@@ -152,17 +161,21 @@ class FactorOCR:
     def match_to_factor(
         self, raw_text: str, top_k: int = 5, min_score: float = 50.0
     ) -> list[tuple[str, float]]:
-        """OCR 生テキストを 813 件因子辞書にファジーマッチ。
+        """OCR 生テキストを 「緑因子を除く」 因子辞書にファジーマッチ。
 
         戻り値: [(因子名, スコア 0.0-1.0)] を確信度降順で上位 top_k 件。
         min_score 未満のマッチは除外。
+
+        緑因子（固有スキル 249 件）は白スキル/青/赤スロットに紛れ込ませない
+        ため辞書から除外する。緑スロットでは別途 match_to_green_factor(_multi)
+        が 緑辞書 限定で呼ばれる。
         """
         if not raw_text:
             return []
         # rapidfuzz の partial_ratio を使うと「地固」から「地固め」を確実に拾える
         hits = fuzz_process.extract(
             raw_text,
-            self._factor_names,
+            self._non_green_factor_names,
             scorer=fuzz.partial_ratio,
             limit=top_k * 3,  # 後段で ratio を使って絞るので多めに取る
         )

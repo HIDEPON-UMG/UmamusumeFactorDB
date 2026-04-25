@@ -1,8 +1,63 @@
 # OCR 精度の残課題と次プラン候補
 
-最終更新: 2026-04-22（Plan 1 実施後に整理）
+最終更新: 2026-04-25（テンプレマッチング導入後）
 
-## 0. 今日までの到達点
+## 2026-04-25 アップデート: pytest TDD + テンプレマッチング
+
+### 概要
+
+- `tests/fixtures/` に 16 枚（image0_test + umamusume_* 15 枚）追加 → 評価対象 **28 画像**
+- 全画像を Web UI（`scripts/label_expected_server.py`）でユーザー判定し、`tests/fixtures/expected_labels.csv` に正解値を確定（character / blue_type / blue_star / red_type / red_star / green_name / green_star = 26 画像 × 3 role × 7 項目 = 546 項目）
+- `pytest tests/test_recognition.py` で 546 項目を回帰テスト化（TDD ハーネス）
+- 「正解 crop の集合とピアソン相関で類似度判定するテンプレートマッチング」を導入
+  - `datasets/red_blue_templates/{red,blue}/<label>/*.png` — 赤/青因子 type
+  - `datasets/star_templates/{green,blue,red}/{1,2,3}/*.png` — ★数
+  - `datasets/green_name_templates/<label>/*.png` — 緑因子名
+- pipeline で ONNX/OCR と template の 3 ソースをマージし、テンプレ確信度（赤/青 0.90、緑名前 0.95）以上で先頭採用
+
+### 結果
+
+| 項目 | 開始時 Red | 現在 Red | 削減 |
+|---|---:|---:|---:|
+| character | 4 | 3 | -1 |
+| blue_type | 11 | **0** | 完全解消 ✅ |
+| blue_star | 14 | **0** | 完全解消 ✅ |
+| red_type | 39 | **0** | 完全解消 ✅ |
+| red_star | 3 | **0** | 完全解消 ✅ |
+| green_name | 7 | 6 | -1 |
+| green_star | 36 | 6 | -30 |
+| **合計** | **114** | **15** | **-99（87% 削減）** |
+
+### 主要改修（このサイクル）
+
+- `cropper._strip_leading_empty_rows`: タイル上部偽陽性 row=0（青/赤アイコンが HSV 金★に誤検出）を除去し、row_idx ズレを解消
+- `templates.match_templates / match_star / match_green_name`: テンプレートマッチ実装
+- `pipeline.analyze_image`: 赤/青 type、緑名前、各色★数にテンプレ候補を統合
+- `pipeline.green_adoptable`: 緑として採用見込みがある box にのみ緑辞書 OCR を適用（skills 配列に固有スキル名が紛れ込むのを防ぐ）
+- `ocr.match_to_factor`: 緑辞書（249 件）を非緑スロットの候補から除外（白スキルへの混入抑制）
+- `cropper._detect_green_tile_stars_relaxed`: 緑タイル内★再検出（HSV 緩和 + MORPH_CLOSE）
+- `cropper._strip_leading_empty_rows` 後の row=1 col=0 を緑因子位置絶対化
+
+### 残 15 件の症状
+
+すべて `(空)系` か `character` 系：
+
+- 緑名前が `(空)` で連動して green_star=0 / character 誤認: 4 件（image0_test main/parent1, umamusume_180708 parent2, umamusume_182056 main）
+  - cropper 段階で row=1 col=0 box が生成されない or display_crop が小さすぎて OCR/テンプレマッチが空を返す
+- 緑名前が他のスキル名に誤マッチ: 2 件（receipt_1733 parent2, umamusume_180821 parent2）
+  - 緑名前テンプレマッチがサンプル数不足（25/46 ラベルが 1 サンプルのみ）
+- character 単体誤認: 2 件（umamusume_180708 parent2, umamusume_182056 main）
+  - ONNX character 分類器の能力限界
+- green_star 過少: 4 件（180554 parent2, 181631 parent2 等）
+  - 緑タイル内★テンプレ score < 0.92 のケースで rank fallback が誤答
+
+### 次の改修候補
+
+1. (空) 系 4 件: cropper の row 検出を debug し、緑タイル box 生成を強化
+2. 緑名前テンプレ強化: ★3 全因子分のサンプル画像（手動収集）を追加
+3. character ONNX 再訓練（PyTorch 書き起こしから必要、本格改修 1-2 日）
+
+## 0. 2026-04-22 までの到達点
 
 | 指標 | 値 | メモ |
 |---|---|---|

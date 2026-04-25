@@ -34,8 +34,14 @@ OUTPUT_PATH = FIXTURES_DIR / "colored_factors" / "recognition_results.json"
 
 
 def _collect_images() -> list[Path]:
-    """対象画像を相対パスのまま返す（receipt_* / combine_* / sample_*）。"""
-    patterns = ["receipt_*.png", "combine_*.png", "sample_*.png"]
+    """対象画像を相対パスのまま返す（receipt_* / combine_* / sample_* / umamusume_* / image0_*）。"""
+    patterns = [
+        "receipt_*.png",
+        "combine_*.png",
+        "sample_*.png",
+        "umamusume_*.png",
+        "image0_*.png",
+    ]
     paths: list[Path] = []
     for pat in patterns:
         paths.extend(FIXTURES_DIR.glob(pat))
