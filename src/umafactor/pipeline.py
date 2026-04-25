@@ -281,9 +281,21 @@ def analyze_image(
         raw, frags = ocr.recognize_with_parts(dc)
         cands = ocr.match_to_green_factor_multi(raw, frags, top_k=1)
         top_conf = cands[0][1] if cands else 0.0
+        # OCR が空 / 低スコアでも、テンプレマッチで box を比較できるよう
+        # 緑名前テンプレ top1 のスコアも加味する。同 uma 内に row=1 col=0 と
+        # row=2 col=0 の両方が color=green と判定されるケース（umamusume_182056 等）
+        # で、テンプレマッチが高スコアの方を best_green_box に選べる。
+        _gnx0, _gny0, _gnx1, _gny1 = box.bbox
+        _gn_x1 = _gnx0 + int((_gnx1 - _gnx0) * 0.85)
+        _gn_crop = _display_crop_from_original(
+            img_orig, (_gnx0, _gny0, _gn_x1, _gny1), scale, pad_y_norm=2,
+        )
+        _gn_matches = match_green_name(_gn_crop)
+        _gn_conf = _gn_matches[0][1] if _gn_matches else 0.0
+        combined_conf = max(top_conf, _gn_conf)
         uidx = box.uma_index
-        if top_conf > best_green_score.get(uidx, 0.0):
-            best_green_score[uidx] = top_conf
+        if combined_conf > best_green_score.get(uidx, 0.0):
+            best_green_score[uidx] = combined_conf
             best_green_box[uidx] = box
         g = box.gold_star_count or 0
         if g > best_green_gold.get(uidx, 0):
@@ -330,9 +342,30 @@ def analyze_image(
             if best_box_cur is not None and best_conf_cur >= 0.5:
                 green_adoptable = box is best_box_cur
             else:
-                green_adoptable = (
-                    box.gold_star_count is None or box.gold_star_count > 0
+                # OCR 確信度が低い場合の fallback。
+                # 位置絶対 row=1 col=0 box は緑タイル内★が HSV で拾えない
+                # 画像（umamusume_* 等）でも必ず緑因子が存在するため、
+                # 同 uma 内に他の色判定 green box がない場合に限り強制採用。
+                # 他に色判定 green box がある場合は、そちらが OCR で正解を
+                # 出している可能性が高いため従来の ★>0 条件で判定する。
+                same_uma_green_others = any(
+                    b for b in boxes
+                    if b.uma_index == uidx_cur
+                    and b.color == "green"
+                    and b.col_index == 0
+                    and not (b.row_index == 1 and b.col_index == 0)
                 )
+                pos_absolute = (
+                    box.row_index == 1
+                    and box.col_index == 0
+                    and not same_uma_green_others
+                )
+                if pos_absolute:
+                    green_adoptable = True
+                else:
+                    green_adoptable = (
+                        box.gold_star_count is None or box.gold_star_count > 0
+                    )
         else:
             green_adoptable = False
 
@@ -597,6 +630,9 @@ def analyze_image(
     # character は ONNX の画像分類だと衣装差などで誤判定しやすいが、
     # 固有スキルは一意に衣装（カード）を決めるため、マッピングが一致する場合は
     # そちらを優先する。マッピングに無い場合は ONNX 結果を残す。
+    # 注: 継承タブ画像（親由来の継承スキル）では逆引き先が自分の衣装と一致せず
+    # 誤上書きする副作用があるが、育成情報タブ画像での精度向上を優先するため
+    # 無条件適用とする。タブ種別が画像から判別できるようになれば再検討する。
     unique_map = load_unique_skill_to_character()
     if unique_map:
         for uma in umas:
