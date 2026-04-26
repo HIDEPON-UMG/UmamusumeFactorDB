@@ -27,10 +27,15 @@ debug_*.png
 # CNN 学習の中間生成物（生データ・チェックポイント・生成モデル）
 # 個別に除外（datasets/ 全体除外だと negation が効かないため）
 datasets/stars/
+datasets/finetune/
 artifacts/
 models/modules/star_classifier/
 # テンプレマッチ用の正解 crop（datasets/red_blue_templates, star_templates,
 # green_name_templates）はパッケージの一部として commit する
+
+# ローカルの作業用バックアップ・一時ファイル
+backups/
+*.bak
 
 # OCR 精度評価の生成物（ラベラー UI / バッチ推論結果 / 途中保存 / ダウンロード CSV）
 tests/fixtures/colored_factors/recognition_results*.json

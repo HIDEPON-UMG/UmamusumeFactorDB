@@ -232,6 +232,7 @@ HTML = """<!DOCTYPE html>
 <header>
   <h1>expected_labels ラベラー</h1>
   <div class="stats" id="stats"></div>
+  <button class="ghost" onclick="load()">↻ リスト再読込</button>
 </header>
 <main>
   <div class="sidebar" id="sidebar"></div>
@@ -257,9 +258,13 @@ let RECOGNIZED = {};  // image -> role -> recognized values（比較用）
 let currentIdx = 0;
 
 async function load() {
+  // 直前に開いていた画像名を覚え、再読込後も同じ位置に戻す
+  const prevName = IMAGES[currentIdx]?.image_name;
   const res = await fetch('/api/labels');
   const data = await res.json();
   IMAGES = data.images;
+  const newIdx = prevName ? IMAGES.findIndex(i => i.image_name === prevName) : -1;
+  currentIdx = newIdx >= 0 ? newIdx : 0;
   renderSidebar();
   renderForm();
   updateStats();

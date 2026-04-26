@@ -34,13 +34,20 @@ OUTPUT_PATH = FIXTURES_DIR / "colored_factors" / "recognition_results.json"
 
 
 def _collect_images() -> list[Path]:
-    """対象画像を相対パスのまま返す（receipt_* / combine_* / sample_* / umamusume_* / image0_*）。"""
+    """対象画像を相対パスのまま返す。
+
+    - receipt_* / combine_* / sample_* / umamusume_* / image0_*: 既存学習用
+    - new_*: E プラン（過学習評価）用に追加した新規画像（テンプレ訓練に含む）
+    - unseen_*: 中期 Day 1 後の汎化検証用「初見」画像（テンプレ訓練に含めない）
+    """
     patterns = [
         "receipt_*.png",
         "combine_*.png",
         "sample_*.png",
         "umamusume_*.png",
         "image0_*.png",
+        "new_*.png",
+        "unseen_*.png",
     ]
     paths: list[Path] = []
     for pat in patterns:

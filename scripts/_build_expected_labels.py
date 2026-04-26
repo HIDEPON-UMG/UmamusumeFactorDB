@@ -84,8 +84,8 @@ def main() -> int:
                     green_name, green_star = old[(image, role, "green")]
 
                 source = "auto"
-                if image.startswith("umamusume_"):
-                    source = "pending"  # ユーザー判定待ち
+                if image.startswith(("umamusume_", "new_")):
+                    source = "pending"  # ユーザー判定待ち（new_ は E プラン用の検証セット）
                 w.writerow([
                     image, role,
                     char,

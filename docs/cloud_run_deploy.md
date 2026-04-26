@@ -64,6 +64,7 @@ gcloud run deploy factor-processor \
 オプションの補足：
 
 - `--source .` で Cloud Build がリポジトリ直下の `Dockerfile` を自動検出（今回は `server/Dockerfile` なので `--dockerfile server/Dockerfile` でも可）
+- Dockerfile は `datasets/red_blue_templates/`, `datasets/star_templates/`, `datasets/green_name_templates/` を必ずイメージに焼き込む（`templates.py` がランタイム参照するため、無いと Red 認識精度が大幅劣化）
 - `--allow-unauthenticated` は Apps Script から公開エンドポイントとして呼ぶため必要（共有シークレットで認証）
 - `--concurrency=1` は推論がメモリ/CPU を占有するので 1 リクエスト 1 インスタンスに
 - `--memory=2Gi` は torch + EasyOCR + ONNX で必要

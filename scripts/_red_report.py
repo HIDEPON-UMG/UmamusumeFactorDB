@@ -1,7 +1,16 @@
-"""pytest の Red 件を項目別・症状別に集計するレポート。"""
+"""pytest の Red 件を項目別・症状別に集計するレポート。
+
+オプション:
+    --scope {all, existing, new, unseen}
+        all      : すべての画像（デフォルト）
+        existing : new_ / unseen_ 以外（既存 28 画像）
+        new      : new_ 始まり（E プラン用に追加した検証セット、テンプレ訓練に含まれる）
+        unseen   : unseen_ 始まり（中期 Day 1 後の汎化検証用、テンプレ訓練に含まれない）
+"""
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
 import os
@@ -15,9 +24,25 @@ EXPECTED_CSV = Path("tests") / "fixtures" / "expected_labels.csv"
 REC_PATH = Path("tests") / "fixtures" / "colored_factors" / "recognition_results.json"
 
 
+def _scope_filter(image: str, scope: str) -> bool:
+    if scope == "all":
+        return True
+    if scope == "new":
+        return image.startswith("new_")
+    if scope == "unseen":
+        return image.startswith("unseen_")
+    if scope == "existing":
+        return not image.startswith(("new_", "unseen_"))
+    raise ValueError(f"unknown scope: {scope}")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scope", choices=["all", "existing", "new", "unseen"], default="all")
+    args = parser.parse_args()
+
     with EXPECTED_CSV.open(encoding="utf-8-sig", newline="") as f:
-        expected = list(csv.DictReader(f))
+        expected = [r for r in csv.DictReader(f) if _scope_filter(r["image_name"], args.scope)]
     rec = json.loads(REC_PATH.read_text(encoding="utf-8"))
 
     # 項目別の Red を収集
@@ -56,9 +81,14 @@ def main() -> int:
 
     # Summary
     print("=" * 70)
-    print("  Red テスト分類レポート")
+    print(f"  Red テスト分類レポート (scope={args.scope})")
     print("=" * 70)
-    print(f"\n全 Red 件数: {sum(len(v) for v in reds.values())}")
+    images_in_scope = {r["image_name"] for r in expected}
+    total_cases = len(expected) * 7  # 7 項目
+    total_reds = sum(len(v) for v in reds.values())
+    print(f"\n対象画像数: {len(images_in_scope)}")
+    print(f"対象ケース数: {total_cases} (= 行数 {len(expected)} × 7 項目)")
+    print(f"Red 件数: {total_reds} ({100.0 * total_reds / max(total_cases, 1):.1f}%)")
     print("\n## 項目別 Red 件数")
     for f, _ in fields:
         print(f"  {f:<14s}: {len(reds.get(f, []))} 件")

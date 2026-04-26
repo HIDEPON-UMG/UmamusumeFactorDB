@@ -1,6 +1,175 @@
 # OCR 精度の残課題と次プラン候補
 
-最終更新: 2026-04-25（追加チューニング後 Red 2 / 546 = 99.6% pass）
+最終更新: 2026-04-25（中期施策完了、構造的限界を実測で確認）
+
+## 次回着手タスク（2026-04-26 以降）
+
+中期施策で **「現アーキテクチャ + 現データ分布の限界」** が実測で証明されたため、次回は以下の優先順位で着手する。
+
+### 優先度 A: データ拡張（最も労力対効果が高い、唯一の正攻法）
+
+- ユーザーが unseen 同ソースの画像を **30-50 枚追加で Pictures フォルダに用意**
+- `python scripts/_import_new_images.py --prefix unseen_` を再実行 → unseen_009 以降に追加投入
+- `python scripts/batch_recognize.py` で認識
+- `python scripts/_append_new_to_expected.py --prefix unseen_` で CSV 雛形追加
+- `python scripts/label_expected_server.py` を起動してユーザーがラベル UI で確定
+- 確定後 `python scripts/_build_red_blue_templates.py` → `_build_green_name_templates.py` → `_build_star_templates.py` でテンプレ再生成
+- `_red_report.py --scope unseen` で再評価。新たに追加した画像と、既存 unseen 8 枚の Red 率を比較して「テンプレマッチが拡張データで汎化したか」確認
+
+期待: 30-50 枚追加で unseen Red 率を 41.7% → 25% 以下に。ただし「テンプレ過学習」が再発する可能性もあるので **必ず別の未知画像（unseen2_*）で汎化評価** することが必須。
+
+工数: ラベリング 2-3h（70-150 行）+ テンプレ再生成 30min + 評価 30min = **半日**。
+
+### 優先度 B: タブ種別 OCR 判別（character Red 7-9 件削減）
+
+- 画像上部の「ウマ娘詳細」「育成情報」「継承情報」タブテキストを EasyOCR で読む（既存 Reader をシングルトンで再利用）
+- `pipeline.analyze_image` 冒頭で `tab_type` を判定して引数化
+- `tab_type == "継承情報"` なら character 逆引き（`unique_skill_to_character.json`）をスキップ
+- expected_labels.csv で「継承タブ画像」を判定して回帰テストに含める
+
+期待: existing 2 件中 1 件（image0_test.png parent1）+ unseen の親由来 character 誤認 2-3 件 = 計 3-4 件削減。
+
+工数: 実装 2h + 検証 1h = **3h**。
+
+### 優先度 C: 複数衣装対応の map 拡張（character Red 3-5 件削減）
+
+- `config/unique_skill_to_character.json` を 1:1 → 1:N (リスト) に拡張
+- 例: `"勝利の鼓動": ["[キセキの白星]オグリキャップ", "[スターライトビート]オグリキャップ"]`
+- `pipeline.py` で character ONNX 推論結果と整合する衣装をリストから選ぶ
+- ONNX 推論が低確信のときは推論結果を保持（逆引きで上書きしない）
+
+期待: 「勝利の鼓動」「精神一到」など複数衣装共通スキル由来の Red 3-5 件削減。
+
+工数: map 整理 2h（共通スキルの洗い出しが時間かかる） + 実装 1h = **3h**。
+
+### 優先度 D: アーキテクチャ変更（最後の手段、工数 1-2 週間）
+
+- 優先度 A-C を試して unseen Red 率が 15% を下回らない場合のみ着手
+- cropper の HSV ベースを YOLOv8n に置換
+- もしくは UI バージョン別パイプライン（画像メタデータから振り分け）
+- Label Studio で 100-200 枚アノテーション → CPU 推論 100ms/枚
+
+### 引き継ぎチートシート
+
+```bash
+cd c:/Users/hidek/OneDrive/ドキュメント/ProjectFolders/UmamusumeFactorDB
+
+# 認識実行
+.venv/Scripts/python.exe scripts/batch_recognize.py
+
+# Red 集計（PYTHONIOENCODING=utf-8 で文字化け回避）
+PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/_red_report.py --scope existing
+PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/_red_report.py --scope new
+PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/_red_report.py --scope unseen
+PYTHONIOENCODING=utf-8 .venv/Scripts/python.exe scripts/_red_report.py --scope all
+
+# pytest フル
+.venv/Scripts/python.exe -m pytest tests/test_recognition.py -v
+
+# データ拡張パイプライン（Day 2 で作成、5184 サンプル）
+.venv/Scripts/python.exe scripts/build_finetune_dataset.py --dry-run
+.venv/Scripts/python.exe scripts/build_finetune_dataset.py
+
+# テンプレ再生成（new/unseen を含めた拡充用）
+.venv/Scripts/python.exe scripts/_build_red_blue_templates.py
+.venv/Scripts/python.exe scripts/_build_green_name_templates.py
+.venv/Scripts/python.exe scripts/_build_star_templates.py
+
+# ラベル UI
+.venv/Scripts/python.exe scripts/label_expected_server.py
+# → http://127.0.0.1:8766
+```
+
+### 中期終了時のベースライン Red（明日の比較用）
+
+- existing: 2 / 546 = 0.4%
+- new: 135 / 420 = 32.1%
+- unseen: 70 / 168 = 41.7%
+- all: 207 / 1134 = 18.3%
+
+---
+
+## 2026-04-25 中期施策 完了報告: M1+M2 + ★再訓練 + Day 4.1 すべて効果ゼロ
+
+### Phase A: 新規 20 画像 (`new_*`) 追加で過学習評価
+
+- 既存 28 画像に対して新規 20 画像を投入し、テンプレマッチの汎化性を測定
+- 結果: existing 2 件 (0.4%) を維持しつつ **new 135 件 (32.1%)** を観測
+- → 既存テンプレが既存 28 画像に **過学習**していると判明
+
+### 短期施策（パラメータ調整）の試行と結果
+
+| 試行 | existing | new | all | 採否 |
+|---|---|---|---|---|
+| 元 v1 (HSV V=180) ベース | **2 (0.4%)** | 135 (32.1%) | **137 (14.2%)** | ベース |
+| v2 テンプレ降格 weight=0.6 | 50 (9.2%) | 120 (28.6%) | 170 | 不採用（既存大幅回帰） |
+| v2 テンプレ降格 weight=0.85 | 37 (6.8%) | 126 (30.0%) | 163 | 不採用（同上） |
+| v1 + HSV V 下限 150 | 34 (6.2%) | 141 (33.6%) | 175 | 不採用（両方悪化） |
+
+→ いずれも全体悪化。**「既存と新規が対立する」構造的トレードオフ**が顕在化、コードは元の v1 + HSV V=180 に復帰。
+
+### 中期施策（M1 データ拡充 + M2 ONNX ファインチューン）の試行
+
+汎化検証用に **未知 8 画像 (`unseen_*`)** を追加投入（テンプレ訓練に含めない）。
+
+| 段階 | existing | new | unseen | all | 効果 |
+|---|---|---|---|---|---|
+| ロールバック後ベースライン | 2 | 135 | **70 (41.7%)** | 207 (18.3%) | — |
+| Day 1 テンプレ拡充 (new+unseen 含む) | 2 | 7 (1.7%) | 67 (39.9%) | 76 (6.7%) | new は過学習評価で激減、unseen は 41.7→39.9% と微減のみ |
+| ★再訓練 (epoch 25, val_acc 1.0) | 2 | 135 | 70 | 207 | **効果ゼロ**（既に val_acc 1.0、改善余地なし） |
+| Day 4.1 character strip 修正 | 2 | 135 | 70 | 207 | **効果ゼロ**（複数衣装共通スキル + 認識誤り） |
+
+Day 1 拡充は user 確定済み画像をテンプレに含める「過学習評価」であり、unseen での効果はわずか 2.1pt のみ。**最終的にロールバックして中期施策を終了**。
+
+### 構造的限界が判明した内訳 (unseen 70 件 / 168 ケース = 41.7%)
+
+| 項目 | unseen Red | 主因 | 解決の困難さ |
+|---|---|---|---|
+| ★系合計 34 (blue 10 + red 14 + green 10) | HSV 検出が新画像で★を見逃し | star_classifier (CNN) は val_acc 1.0 で完璧、HSV 緩和は偽陽性増で全体悪化 | 高 |
+| blue_type 12 + red_type 10 = 22 | OCR/テンプレが新画像で外れる | テンプレ降格は既存回帰、ONNX ファインチューンは train/val ラベル一致のみ可（実行可だが Red 0 件で不要） | 中 |
+| green_name 7 | 緑名前テンプレ偏り + train/val ラベル分離 | green head の ONNX 訓練不可（val ラベル 25 個が train に存在しない） | 高 |
+| character 7 | 衣装誤認 + 複数衣装共通の固有スキル | unique_skill_to_character.json の 1:1 マップでは複数衣装を表現不可 | 高 |
+
+### 最終 Red 数値（中期終了時）
+
+- **existing: 2 件 (0.4%)** ← 維持
+- **new: 135 件 (32.1%)**
+- **unseen: 70 件 (41.7%)**
+- **all: 207 件 (18.3%)**
+
+### 構造的限界の正体
+
+中期で全打ち手が効かなかった原因:
+
+1. **テンプレマッチの本質的偏り**: 新画像で類似サンプルがないと相関スコアが低下し、Pearson 0.92 の閾値を満たせない。閾値を下げると既存画像で誤マッチ激増（短期で実測）
+2. **HSV 検出の解像度依存**: GOLD_STAR_HSV_LO の V 下限が画像セット最適化されており、新解像度・UI バージョンで暗め金★を取りこぼす
+3. **ONNX 訓練の前提崩壊**: green/character の 78-80 ラベルのうち train/val でラベル集合が分離（train のみ 31-34 ラベル、val のみ 24-25 ラベル）→ val_acc gate 不可
+4. **★ CNN は既に完璧**: val_acc 1.0 で改善余地なし。問題は「★が見えていない」こと（HSV 検出側）
+5. **複数衣装で共通の固有スキル**: 「勝利の鼓動」は [キセキの白星] と [スターライトビート] の 2 衣装で共有。1:1 map で表現不能
+
+### 長期施策（次フェーズの候補）
+
+中期で達成不能と判明したため、以下のいずれかが必要:
+
+1. **訓練データドメインの大幅拡張**: unseen と同じソース (UI バージョン / 解像度 / 撮影設定) の画像を 30-50 枚追加し、user 確定 → テンプレ + 訓練データに含める。これが唯一の正攻法だがラベリング工数大
+2. **アーキテクチャ変更**: cropper の HSV ベースを YOLOv8n に置換、UI バージョン別パイプラインを作る等。工数 1-2 週間
+3. **複数衣装対応の map 拡張**: `unique_skill_to_character.json` を 1:1 → 1:N に拡張し、ONNX character 推論結果との整合で衣装を絞る
+4. **タブ種別 OCR 判別**: 画像上部の「育成情報」「継承情報」を OCR で読み、継承タブでは character 逆引きをスキップ
+
+### 残存物（中期で増えた将来用資産）
+
+- `scripts/build_finetune_dataset.py`（Day 2 で作成、5184 サンプル生成可）: 将来の ONNX 訓練データセット用に保持
+- `scripts/_import_new_images.py` の `--prefix` 対応 + `_red_report.py` の `--scope unseen`: 汎化検証フローとして再利用可能
+- `_merge_candidates_v2`（pipeline.py 内）: 未呼出だが将来用に保持
+- `tests/fixtures/debug_crops/` 自動 dump（box<9 時）: 失敗画像の早期可視化用
+- `pipeline.py` の character 逆引きに strip() 照合追加: 効果ゼロだったが副作用もないので保持
+
+### バックアップ
+
+- `backups/datasets_20260425_165810.tar.gz`: Day 1 拡充前の datasets ZIP（中期試行のロールバック用に既に使用済み、保持）
+- `models/modules/star_classifier/prediction.onnx.bak`: ★再訓練前の旧 ONNX（再訓練後と同一精度だが念のため保持）
+
+---
 
 ## 2026-04-25 追加チューニング: Pass 0 にテンプレ統合 + 位置絶対化強化
 

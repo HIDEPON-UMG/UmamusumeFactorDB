@@ -34,6 +34,11 @@ COPY src /app/src
 COPY config/recognizer.json /app/config/recognizer.json
 COPY config/unique_skill_to_character.json /app/config/unique_skill_to_character.json
 COPY models/modules /app/models/modules
+# テンプレマッチング用の参照画像群（赤/青/★/緑名）。
+# これが無いと templates.py が空マッチを返し Red 認識精度が大幅劣化する
+COPY datasets/red_blue_templates /app/datasets/red_blue_templates
+COPY datasets/star_templates /app/datasets/star_templates
+COPY datasets/green_name_templates /app/datasets/green_name_templates
 COPY server/main.py /app/server/main.py
 
 # ビルド時に factor ONNX の softmax 出力版を事前生成

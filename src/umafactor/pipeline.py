@@ -60,17 +60,7 @@ def _merge_candidates(
     onnx_weight: float = 1.0,
     both_bonus: float = 0.15,
 ) -> tuple[list[tuple[str, float]], dict[str, str]]:
-    """ONNX と OCR の候補を統合スコアでマージする。
-
-    Uma のゲームフォントに対しては EasyOCR の方が ONNX より圧倒的に正確なので、
-    OCR 由来候補に重みをかける：
-
-    - 同名が両方にある → スコア = max(ONNX, OCR) + both_bonus （両者一致は信頼度高）
-    - OCR のみ → スコア = OCR × ocr_weight（OCR を優遇）
-    - ONNX のみ → スコア = ONNX × onnx_weight
-
-    さらに OCR の top1 が ocr_strong_threshold 以上なら OCR top1 を強制的に最優先。
-    """
+    """ONNX と OCR の候補を統合スコアでマージする（旧 v1、後方互換用）。"""
     onnx_map = {n: s for n, s in onnx_cands}
     ocr_map = {n: s for n, s in ocr_cands}
 
@@ -79,20 +69,83 @@ def _merge_candidates(
         combined[name] = (s * onnx_weight, "onnx")
     for name, s in ocr_cands:
         if name in combined:
-            # 両方にある場合
             prev_score = combined[name][0]
             new_score = max(prev_score, s * ocr_weight) + both_bonus
             combined[name] = (new_score, "both")
         else:
             combined[name] = (s * ocr_weight, "ocr")
 
-    # ソート
     ordered = sorted(combined.items(), key=lambda kv: -kv[1][0])
 
-    # OCR top1 が強い場合、先頭に移動（fuzzy ratio が exact/near-exact）
     if ocr_cands and ocr_cands[0][1] >= ocr_strong_threshold:
         top_ocr_name = ocr_cands[0][0]
-        # ordered の中から top_ocr_name を先頭に
+        ordered = [(n, v) for n, v in ordered if n == top_ocr_name] + [
+            (n, v) for n, v in ordered if n != top_ocr_name
+        ]
+
+    sources = {n: v[1] for n, v in ordered}
+    merged = [(n, min(1.0, v[0])) for n, v in ordered][:limit]
+    return merged, sources
+
+
+def _merge_candidates_v2(
+    onnx_cands: list[tuple[str, float]],
+    ocr_cands: list[tuple[str, float]],
+    template_cands: list[tuple[str, float]] | None = None,
+    *,
+    limit: int = 8,
+    onnx_weight: float = 1.0,
+    ocr_weight: float = 1.25,
+    template_weight: float = 0.85,
+    ocr_strong_threshold: float = 0.7,
+    both_bonus: float = 0.15,
+    triple_bonus: float = 0.30,
+) -> tuple[list[tuple[str, float]], dict[str, str]]:
+    """ONNX / OCR / Template を重み付き投票でマージする（新 v2）。
+
+    旧 v1 は「template top1 が threshold 以上なら問答無用で先頭昇格」だったため、
+    テンプレが既存画像に過学習している環境では新画像でテンプレが間違うと
+    OCR/ONNX の正解も消されていた。v2 ではテンプレを 1 ソースとして並列化し、
+    重み 0.85 で投票させる：
+
+    - 単一ソース → 重み付きスコアそのまま
+    - 2 ソース合致 → max(weighted) + both_bonus
+    - 3 ソース合致 → max(weighted) + triple_bonus
+    - OCR top1 が ocr_strong_threshold 以上なら先頭強制（v1 互換）
+
+    重み 0.85 は grid search 結果。0.6 では既存画像が大きく回帰（red_type +33 件等）
+    したため、テンプレが top1 で 0.90-0.97 を取る既存画像は投票でも勝てる水準まで
+    引き上げ、新画像で OCR/ONNX が分散している場合のみ消えるバランスに調整。
+    """
+    template_cands = template_cands or []
+
+    contributions: dict[str, dict[str, float]] = {}
+    for name, s in onnx_cands:
+        contributions.setdefault(name, {})["onnx"] = s * onnx_weight
+    for name, s in ocr_cands:
+        contributions.setdefault(name, {})["ocr"] = s * ocr_weight
+    for name, s in template_cands:
+        contributions.setdefault(name, {})["template"] = s * template_weight
+
+    combined: dict[str, tuple[float, str]] = {}
+    for name, srcs in contributions.items():
+        n_sources = len(srcs)
+        base = max(srcs.values())
+        if n_sources >= 3:
+            score = base + triple_bonus
+            tag = "triple"
+        elif n_sources == 2:
+            score = base + both_bonus
+            tag = "+".join(sorted(srcs.keys()))
+        else:
+            score = base
+            tag = next(iter(srcs.keys()))
+        combined[name] = (score, tag)
+
+    ordered = sorted(combined.items(), key=lambda kv: -kv[1][0])
+
+    if ocr_cands and ocr_cands[0][1] >= ocr_strong_threshold:
+        top_ocr_name = ocr_cands[0][0]
         ordered = [(n, v) for n, v in ordered if n == top_ocr_name] + [
             (n, v) for n, v in ordered if n != top_ocr_name
         ]
@@ -209,6 +262,7 @@ def analyze_image(
     image_path: str,
     submitter_id: str,
     debug_crops_dir: str | None = None,
+    auto_debug: bool = True,
 ) -> tuple[Submission, ReviewQueue]:
     img_orig = cv2.imread(image_path)
     if img_orig is None:
@@ -225,6 +279,13 @@ def analyze_image(
 
     if debug_crops_dir:
         _dump_debug_crops(norm_img, sections, boxes, debug_crops_dir)
+    elif auto_debug and len(boxes) < 9:
+        # 因子 box が 3 ウマ × 3 行 = 9 個未満になった画像は cropper 失敗の疑い。
+        # 後から目視で原因究明できるよう自動で debug crops を dump する。
+        import os
+        stem = os.path.splitext(os.path.basename(image_path))[0]
+        auto_dir = os.path.join("tests", "fixtures", "debug_crops", stem)
+        _dump_debug_crops(norm_img, sections, boxes, auto_dir)
 
     factor_pred = get_predictor("factor")
     rank_pred = get_predictor("factor_rank")
@@ -636,8 +697,15 @@ def analyze_image(
     unique_map = load_unique_skill_to_character()
     if unique_map:
         for uma in umas:
-            if uma.green_name and uma.green_name in unique_map:
-                uma.character = unique_map[uma.green_name]
+            if not uma.green_name:
+                continue
+            # OCR が前後スペースを含む green_name を返すケースに備え、strip した値でも照合する。
+            # uma.green_name 本体は変更せず、逆引きのキーマッチング時のみ正規化する。
+            key_candidates = [uma.green_name, uma.green_name.strip()]
+            for k in key_candidates:
+                if k in unique_map:
+                    uma.character = unique_map[k]
+                    break
 
     import os
     submission = Submission(
