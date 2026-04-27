@@ -62,13 +62,24 @@ class ProcessRequest(BaseModel):
     submission_id: str | None = None
 
 
-@app.get("/healthz")
-def healthz() -> dict[str, Any]:
+# /healthz は Cloud Run の Google Front-End が独自に 404 を返してしまうため、
+# /health に変更（/healthz もエイリアスで残す）
+def _health_payload() -> dict[str, Any]:
     return {
         "ok": True,
         "target_tab": TARGET_TAB,
         "has_webhook": bool(APPS_SCRIPT_WEBHOOK_URL),
     }
+
+
+@app.get("/health")
+def health() -> dict[str, Any]:
+    return _health_payload()
+
+
+@app.get("/healthz")
+def healthz() -> dict[str, Any]:
+    return _health_payload()
 
 
 @app.post("/process")

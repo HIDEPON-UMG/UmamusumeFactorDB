@@ -34,11 +34,11 @@ COPY src /app/src
 COPY config/recognizer.json /app/config/recognizer.json
 COPY config/unique_skill_to_character.json /app/config/unique_skill_to_character.json
 COPY models/modules /app/models/modules
-# テンプレマッチング用の参照画像群（赤/青/★/緑名）。
-# これが無いと templates.py が空マッチを返し Red 認識精度が大幅劣化する
-COPY datasets/red_blue_templates /app/datasets/red_blue_templates
-COPY datasets/star_templates /app/datasets/star_templates
-COPY datasets/green_name_templates /app/datasets/green_name_templates
+# テンプレマッチング用の参照画像群（赤/青/★/緑名）を tar.gz で送り込む。
+# image レイヤーに直接 COPY すると Unicode 名（日本語/☆等）のディレクトリが
+# 入り Cloud Run の container import が拒否するため、ASCII 名の tar.gz だけ
+# 焼き込み、起動時に CMD ラッパーで展開する。
+COPY datasets/all_templates.tar.gz /app/datasets/all_templates.tar.gz
 COPY server/main.py /app/server/main.py
 
 # ビルド時に factor ONNX の softmax 出力版を事前生成
@@ -49,5 +49,5 @@ RUN cd /app && python -c "import sys; sys.path.insert(0, 'src'); from umafactor.
 ENV PORT=8080
 EXPOSE 8080
 
-# uvicorn で起動
-CMD ["sh", "-c", "uvicorn server.main:app --host 0.0.0.0 --port ${PORT}"]
+# 起動時にテンプレ tar.gz を展開してから uvicorn を起動する
+CMD ["sh", "-c", "tar -xzf /app/datasets/all_templates.tar.gz -C /app/datasets/ && uvicorn server.main:app --host 0.0.0.0 --port ${PORT}"]
