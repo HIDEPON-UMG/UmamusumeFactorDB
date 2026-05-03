@@ -14,7 +14,10 @@ config/*.secret.json
 .env
 
 # モデルバイナリ（サイズが大きいため除外）
+# 例外: ★分類器は軽量(<500KB)なので推論に必要な実体ごとリポジトリに含める
 models/**/*.onnx
+!models/modules/star_classifier/prediction.onnx
+!models/modules/star_classifier/prediction.onnx.data
 
 # デバッグ出力
 debug_crops/
@@ -29,7 +32,6 @@ debug_*.png
 datasets/stars/
 datasets/finetune/
 artifacts/
-models/modules/star_classifier/
 # テンプレマッチ用の正解 crop（datasets/red_blue_templates, star_templates,
 # green_name_templates）はパッケージの一部として commit する
 
