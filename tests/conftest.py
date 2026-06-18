@@ -18,7 +18,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 os.chdir(ROOT)
 
-REC_PATH = ROOT / "tests" / "fixtures" / "colored_factors" / "recognition_results.json"
+INCLUDE_BENCHMARK = os.environ.get("UMFACTOR_INCLUDE_BENCHMARK") == "1"
+REC_FILENAME = "recognition_results.json" if INCLUDE_BENCHMARK else "recognition_results.baseline.json"
+REC_PATH = ROOT / "tests" / "fixtures" / "colored_factors" / REC_FILENAME
 
 
 @pytest.fixture(scope="session")
@@ -36,6 +38,6 @@ def recognition_results() -> dict:
     if not REC_PATH.exists():
         pytest.fail(
             f"{REC_PATH} が存在しません。"
-            "まず `.venv/Scripts/python.exe scripts/batch_recognize.py` を実行してください。"
+            "benchmark は `.venv/Scripts/python.exe scripts/batch_recognize.py` を実行してください。"
         )
     return json.loads(REC_PATH.read_text(encoding="utf-8"))

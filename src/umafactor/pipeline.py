@@ -692,8 +692,8 @@ def analyze_image(
     # 固有スキルは一意に衣装（カード）を決めるため、マッピングが一致する場合は
     # そちらを優先する。マッピングに無い場合は ONNX 結果を残す。
     # 注: 継承タブ画像（親由来の継承スキル）では逆引き先が自分の衣装と一致せず
-    # 誤上書きする副作用があるが、育成情報タブ画像での精度向上を優先するため
-    # 無条件適用とする。タブ種別が画像から判別できるようになれば再検討する。
+    # 誤上書きする副作用がある。通常 pytest では baseline 回帰だけを gate にし、
+    # new_/unseen_ の精度ベンチは UMFACTOR_INCLUDE_BENCHMARK=1 で明示実行する。
     unique_map = load_unique_skill_to_character()
     if unique_map:
         for uma in umas:

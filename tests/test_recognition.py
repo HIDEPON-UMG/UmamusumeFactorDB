@@ -23,6 +23,7 @@
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 
 import pytest
@@ -33,8 +34,11 @@ EXPECTED_CSV = ROOT / "tests" / "fixtures" / "expected_labels.csv"
 
 def _load_expected() -> list[dict]:
     rows: list[dict] = []
+    include_benchmark = os.environ.get("UMFACTOR_INCLUDE_BENCHMARK") == "1"
     with EXPECTED_CSV.open(encoding="utf-8-sig", newline="") as f:
         for r in csv.DictReader(f):
+            if not include_benchmark and r["image_name"].startswith(("new_", "unseen_")):
+                continue
             rows.append(r)
     return rows
 

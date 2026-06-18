@@ -1,0 +1,8278 @@
+{
+  "combine_2026-01-22_17-04-20.png": {
+    "submission_id": "3527be1c-4ee7-46d8-8d49-24ef0f28a39d",
+    "submitted_at": "2026-04-25T10:32:41.476318+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "combine_2026-01-22_17-04-20.png",
+    "main": {
+      "character": "[ティアード・ペタル]ニシノフラワー",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "先行",
+        "star": 2
+      },
+      "green": {
+        "name": "つぼみ、ほころぶ時",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "オークス",
+          "star": 3
+        },
+        {
+          "name": "スプリンターズS",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "ダート",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 3
+        },
+        {
+          "name": "根性",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "レコメンド",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 2
+        },
+        {
+          "name": "食らいつき",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 3
+        },
+        {
+          "name": "逸る足取り",
+          "star": 2
+        },
+        {
+          "name": "みなぎる闘志",
+          "star": 2
+        },
+        {
+          "name": "気丈な姿勢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "海の加護",
+          "star": 2
+        },
+        {
+          "name": "本気で休んで、もう一度",
+          "star": 2
+        },
+        {
+          "name": "温泉郷シナリオ",
+          "star": 3
+        },
+        {
+          "name": "芝の遺伝子",
+          "star": 1
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "SMS",
+          "star": 3
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Untouchable Eden]メジロラモーヌ",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "マイル",
+        "star": 3
+      },
+      "green": {
+        "name": "解けぬ結い目",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "皐月賞",
+          "star": 1
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "ふり絞り",
+          "star": 2
+        },
+        {
+          "name": "根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "布石",
+          "star": 1
+        },
+        {
+          "name": "負けん気",
+          "star": 2
+        },
+        {
+          "name": "スピードイーター",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 1
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "風切り",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 2
+        },
+        {
+          "name": "一歩ずつ前へ",
+          "star": 2
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "気丈な姿勢",
+          "star": 2
+        },
+        {
+          "name": "ありったけ",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "スピードの目覚め",
+          "star": 3
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "スタミナの目覚め",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 3
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[シューティンスタァ・ルヴュ]フジキセキ",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "マイル",
+        "star": 3
+      },
+      "green": {
+        "name": "煌星のヴォードヴィル",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "ダート",
+          "star": 3
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "秋華賞",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 1
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "左回り○",
+          "star": 3
+        },
+        {
+          "name": "中山レース場○",
+          "star": 2
+        },
+        {
+          "name": "阪神レース場○",
+          "star": 2
+        },
+        {
+          "name": "根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "マイルコーナー○",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 3
+        },
+        {
+          "name": "食らいつき",
+          "star": 3
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 1
+        },
+        {
+          "name": "決定打",
+          "star": 2
+        },
+        {
+          "name": "後先恐れず",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        },
+        {
+          "name": "芝の遺伝子",
+          "star": 2
+        },
+        {
+          "name": "スピードの目覚め",
+          "star": 2
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 1
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "スタミナの目覚め",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "image0_test.png": {
+    "submission_id": "c8e43d81-4a3b-4d3a-b4c1-cb1c48f54747",
+    "submitted_at": "2026-04-25T10:32:54.677184+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "image0_test.png",
+    "main": {
+      "character": "[Sunlit Outsider]ステイゴールド",
+      "blue": {
+        "type": "スタミナ",
+        "star": 2
+      },
+      "red": {
+        "type": "差し",
+        "star": 2
+      },
+      "green": {
+        "name": "黄金を訪ねて",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "先駆け",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "デルマーレース場○",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "徹底マーク○",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 3
+        },
+        {
+          "name": "風切り",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 1
+        },
+        {
+          "name": "差しコーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "ワンチャンス",
+          "star": 2
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "不動の心",
+          "star": 2
+        },
+        {
+          "name": "頂を目指して",
+          "star": 1
+        },
+        {
+          "name": "優等生",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "前だけ見据えて",
+          "star": 2
+        },
+        {
+          "name": "山娘",
+          "star": 2
+        },
+        {
+          "name": "リスタート",
+          "star": 1
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "左回り○",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[キセキの白星]オグリキャップ",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "ダート",
+        "star": 2
+      },
+      "green": {
+        "name": "勝利の鼓動",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "大阪杯",
+          "star": 1
+        },
+        {
+          "name": "マイルCS",
+          "star": 1
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "山娘",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 3
+        },
+        {
+          "name": "駆け降り",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "闘争心",
+          "star": 3
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "差し焦り",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 1
+        },
+        {
+          "name": "克己心",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 1
+        },
+        {
+          "name": "不動の心",
+          "star": 2
+        },
+        {
+          "name": "頂を目指して",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "もう一踏ん張り",
+          "star": 1
+        },
+        {
+          "name": "Dreamsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "リスタート",
+          "star": 1
+        },
+        {
+          "name": "リスタート",
+          "star": 2
+        },
+        {
+          "name": "曇りの日○",
+          "star": 1
+        },
+        {
+          "name": "雨の日○",
+          "star": 2
+        },
+        {
+          "name": "二刀流",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[王者の喊声]ジャングルポケット",
+      "blue": {
+        "type": "スタミナ",
+        "star": 2
+      },
+      "red": {
+        "type": "ダート",
+        "star": 3
+      },
+      "green": {
+        "name": "Faith in the Feral",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "アプローチ",
+          "star": 1
+        },
+        {
+          "name": "芝",
+          "star": 2
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 2
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 3
+        },
+        {
+          "name": "全日本ジュニア優駿",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 3
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "差しコーナー○",
+          "star": 2
+        },
+        {
+          "name": "不動の心",
+          "star": 1
+        },
+        {
+          "name": "溢れる情熱",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "好戦的",
+          "star": 2
+        },
+        {
+          "name": "火花散らして",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 1
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 2
+        },
+        {
+          "name": "リスタート",
+          "star": 2
+        },
+        {
+          "name": "雨の日○",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031432408.png": {
+    "submission_id": "73dbfd05-113d-44f2-ab9c-e42ec53598ec",
+    "submitted_at": "2026-04-25T10:40:13.015268+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031432408.png",
+    "main": {
+      "character": "[Regina dei fiori]ジェンティルドンナ",
+      "blue": {
+        "type": "賢さ",
+        "star": 2
+      },
+      "red": {
+        "type": "マイル",
+        "star": 1
+      },
+      "green": {
+        "name": "烈華の洗礼",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "L'Arc・強心臓",
+          "star": 1
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 1
+        },
+        {
+          "name": "オークス",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "徹底マーク○",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 1
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 3
+        },
+        {
+          "name": "内弁慶",
+          "star": 3
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 3
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 3
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 1
+        },
+        {
+          "name": "勝利に向かって",
+          "star": 2
+        },
+        {
+          "name": "狙いを定めて",
+          "star": 1
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "序盤巧者",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 2
+        },
+        {
+          "name": "地道に重ねて",
+          "star": 3
+        },
+        {
+          "name": "己を信じて",
+          "star": 2
+        },
+        {
+          "name": "健闘",
+          "star": 3
+        },
+        {
+          "name": "意地っ張り",
+          "star": 3
+        },
+        {
+          "name": "気持ちを乗せて",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・体",
+          "star": 2
+        },
+        {
+          "name": "本気で休んで、もう一度",
+          "star": 2
+        },
+        {
+          "name": "URAシナリオ",
+          "star": 2
+        },
+        {
+          "name": "先行の遺伝子",
+          "star": 1
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Engineered Victory]ビワハヤヒデ",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "勝利ヘ至ル累積",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "揺るがぬ信念",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 3
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "抜かりなし",
+          "star": 1
+        },
+        {
+          "name": "本領発揮",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "脇目も振らず",
+          "star": 2
+        },
+        {
+          "name": "狙いを定めて",
+          "star": 2
+        },
+        {
+          "name": "アグレッシブ",
+          "star": 2
+        },
+        {
+          "name": "勝負を懸けて",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・体",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "温泉郷シナリオ",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 2
+        },
+        {
+          "name": "先行の遺伝子",
+          "star": 1
+        },
+        {
+          "name": "賢さの目覚め",
+          "star": 3
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 1
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "先行",
+        "star": 3
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 3
+        },
+        {
+          "name": "川崎レース場○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "良バ場○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "追込けん制",
+          "star": 2
+        },
+        {
+          "name": "深呼吸",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "影打",
+          "star": 3
+        },
+        {
+          "name": "抜かりなし",
+          "star": 1
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "バイブス上昇",
+          "star": 3
+        },
+        {
+          "name": "素直な一歩",
+          "star": 2
+        },
+        {
+          "name": "アグレッシブ",
+          "star": 2
+        },
+        {
+          "name": "勝負を懸けて",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "パワーの目覚め",
+          "star": 1
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 3
+        },
+        {
+          "name": "東の雄",
+          "star": 3
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031506716.png": {
+    "error": "因子グリッドを 3 領域検出できませんでした（1 件）"
+  },
+  "receipt_20260421031558457.png": {
+    "submission_id": "40d70a1e-10da-4e9f-9981-c741d21b2034",
+    "submitted_at": "2026-04-25T10:40:25.822619+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031558457.png",
+    "main": {
+      "character": "[Regina dei fiori]ジェンティルドンナ",
+      "blue": {
+        "type": "賢さ",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "烈華の洗礼",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 2
+        },
+        {
+          "name": "桜花賞",
+          "star": 3
+        },
+        {
+          "name": "オークス",
+          "star": 3
+        },
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 1
+        },
+        {
+          "name": "中距離直線○",
+          "star": 2
+        },
+        {
+          "name": "中距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 1
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 3
+        },
+        {
+          "name": "克己心",
+          "star": 2
+        },
+        {
+          "name": "夢の再生方法",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[初晴・青き絢爛]テイエムオペラオー",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "恵福バルカローレ",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "アプローチ",
+          "star": 2
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        },
+        {
+          "name": "安田記念",
+          "star": 1
+        },
+        {
+          "name": "宝塚記念",
+          "star": 1
+        },
+        {
+          "name": "ジャパンC",
+          "star": 3
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "テンポアップ",
+          "star": 2
+        },
+        {
+          "name": "中距離直線○",
+          "star": 1
+        },
+        {
+          "name": "先行直線○",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 2
+        },
+        {
+          "name": "食らいつき",
+          "star": 1
+        },
+        {
+          "name": "克己心",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[The Proud Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Road to Glory",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "凛然と",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "JBCクラシック",
+          "star": 2
+        },
+        {
+          "name": "道悪○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "先行直線○",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・GUTS",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031733727.png": {
+    "submission_id": "95d08442-a6c7-425b-8468-c88e1c575243",
+    "submitted_at": "2026-04-25T10:40:39.624238+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031733727.png",
+    "main": {
+      "character": "[Universe-Naut]ネオユニヴァース",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "アド・アストラ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "皐月賞",
+          "star": 2
+        },
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "春ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "ペースアップ",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 3
+        },
+        {
+          "name": "ウマ好み",
+          "star": 3
+        },
+        {
+          "name": "ありったけ",
+          "star": 2
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "イグニッション",
+          "star": 1
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 1
+        },
+        {
+          "name": "推力十分",
+          "star": 1
+        },
+        {
+          "name": "影踏み",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "バーニングソウル",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[エル☆Número 1]エルコンドルパサー",
+      "blue": {
+        "type": "パワー",
+        "star": 3
+      },
+      "red": {
+        "type": "差し",
+        "star": 2
+      },
+      "green": {
+        "name": "プランチャ☆ガナドール",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "アメリカンドリーム",
+          "star": 2
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "パワー",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 1
+        },
+        {
+          "name": "阪神レース場○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "先行直線○",
+          "star": 1
+        },
+        {
+          "name": "道悪○",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 3
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 2
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[岩穿つ青]グラスワンダー",
+      "blue": {
+        "type": "賢さ",
+        "star": 1
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "尊み☆ﾗｽﾄｽﾊﾟ—(ﾟ∀ﾟ)—ﾄ!",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "豊食祭シナリオ・じゃがいも",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 1
+        },
+        {
+          "name": "秋華賞",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "道悪○",
+          "star": 2
+        },
+        {
+          "name": "直線回復",
+          "star": 2
+        },
+        {
+          "name": "十万バリキ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "ありったけ",
+          "star": 2
+        },
+        {
+          "name": "マイペース",
+          "star": 2
+        },
+        {
+          "name": "前のめり",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "策士",
+          "star": 3
+        },
+        {
+          "name": "溢れる情熱",
+          "star": 2
+        },
+        {
+          "name": "序盤巧者",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031755150.png": {
+    "submission_id": "ce62c094-a385-47ce-84e7-b72126aae84b",
+    "submitted_at": "2026-04-25T10:40:50.639784+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031755150.png",
+    "main": {
+      "character": "[Clear Bliss]ミスターシービー",
+      "blue": {
+        "type": "賢さ",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "叙情、旅路の果てに",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "日本ダービー",
+          "star": 1
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 3
+        },
+        {
+          "name": "粘り腰",
+          "star": 3
+        },
+        {
+          "name": "推力十分",
+          "star": 3
+        },
+        {
+          "name": "惜しみなし",
+          "star": 1
+        },
+        {
+          "name": "影踏み",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[夢路のよすが]ドリームジャーニー",
+      "blue": {
+        "type": "パワー",
+        "star": 2
+      },
+      "red": {
+        "type": "追込",
+        "star": 2
+      },
+      "green": {
+        "name": "『それでは、よき旅を』",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "パワー",
+          "star": 2
+        },
+        {
+          "name": "差し",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・強心臓",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 1
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 3
+        },
+        {
+          "name": "直滑降",
+          "star": 1
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Maverick]ナリタブライアン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Shadow Break",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "山娘",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "推力十分",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・GUTS",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "receipt_20260421031814474.png": {
+    "submission_id": "ea62df29-d33b-43b4-8e35-43add70a4b5f",
+    "submitted_at": "2026-04-25T10:41:02.908747+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031814474.png",
+    "main": {
+      "character": "[蒼炎の誉]グラスワンダー",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 1
+      },
+      "green": {
+        "name": "演舞・撫子大薙刀",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "二刀流",
+          "star": 1
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "差し",
+          "star": 3
+        },
+        {
+          "name": "ロックオン",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Maverick]ナリタブライアン",
+      "blue": {
+        "type": "パワー",
+        "star": 2
+      },
+      "red": {
+        "type": "差し",
+        "star": 2
+      },
+      "green": {
+        "name": "Shadow Break",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 1
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "差し直線○",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "川崎レース場○",
+          "star": 2
+        },
+        {
+          "name": "良バ場○",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 1
+        },
+        {
+          "name": "長距離直線○",
+          "star": 2
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "差し直線○",
+          "star": 2
+        },
+        {
+          "name": "差しコーナー○",
+          "star": 2
+        },
+        {
+          "name": "食らいつき",
+          "star": 1
+        },
+        {
+          "name": "策士",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・生活リズム",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Natural Brilliance]サトノダイヤモンド",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "晦冥を照らせ永遠の耀き",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 2
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "がむしゃら",
+          "star": 2
+        },
+        {
+          "name": "キレる脚",
+          "star": 2
+        },
+        {
+          "name": "プレッシャー",
+          "star": 2
+        },
+        {
+          "name": "一歩から",
+          "star": 2
+        },
+        {
+          "name": "折れない心",
+          "star": 2
+        },
+        {
+          "name": "熱狂的",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "雪の日○",
+          "star": 3
+        }
+      ]
+    }
+  },
+  "receipt_20260421031832634.png": {
+    "submission_id": "b0b0b9b8-24ea-4c70-b14b-d4c826f8da26",
+    "submitted_at": "2026-04-25T10:41:13.548962+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031832634.png",
+    "main": {
+      "character": "[真実一路]カルストンライトオ",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "短距離",
+        "star": 1
+      },
+      "green": {
+        "name": "無二無三なる一条の路",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 1
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 3
+        },
+        {
+          "name": "しゃかりき",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "胸の高鳴り",
+          "star": 2
+        },
+        {
+          "name": "無三",
+          "star": 1
+        },
+        {
+          "name": "豊食祭シナリオ・いちご",
+          "star": 3
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[レッドホット☆リーダー]サクラバクシンオー",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "短距離",
+        "star": 2
+      },
+      "green": {
+        "name": "CHERRY☆スクランブル",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "集中力",
+          "star": 2
+        },
+        {
+          "name": "短距離直線○",
+          "star": 3
+        },
+        {
+          "name": "東の雄",
+          "star": 3
+        },
+        {
+          "name": "危険回避",
+          "star": 2
+        },
+        {
+          "name": "勢い任せ",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "胸の高鳴り",
+          "star": 2
+        },
+        {
+          "name": "無二",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "L'Arcシナリオ",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・海外遠征",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・強心臓",
+          "star": 3
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[朔月のマ・シェリ]カレンチャン",
+      "blue": {
+        "type": "パワー",
+        "star": 2
+      },
+      "red": {
+        "type": "短距離",
+        "star": 2
+      },
+      "green": {
+        "name": "One True Color",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 3
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "川崎レース場○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "ポジションセンス",
+          "star": 2
+        },
+        {
+          "name": "スプリントギア",
+          "star": 2
+        },
+        {
+          "name": "後方釘付",
+          "star": 1
+        },
+        {
+          "name": "危険回避",
+          "star": 2
+        },
+        {
+          "name": "逃げのコツ○",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "軽い足取り",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 3
+        },
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・強心臓",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031851324.png": {
+    "submission_id": "a4d31890-935f-4f06-98d0-dc7f495ffd7e",
+    "submitted_at": "2026-04-25T10:41:29.667380+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421031851324.png",
+    "main": {
+      "character": "[Saisir le rêve]サクラローレル",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "花開き、世界",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "ささやき",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 3
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 3
+        },
+        {
+          "name": "帝王賞",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "追込のコツ○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "影打",
+          "star": 1
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "ごぼう抜き",
+          "star": 2
+        },
+        {
+          "name": "推力十分",
+          "star": 1
+        },
+        {
+          "name": "端緒",
+          "star": 3
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "Legendsシナリオ",
+          "star": 3
+        },
+        {
+          "name": "長距離の遺伝子",
+          "star": 3
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "前のめり",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[ドラマティック・チュチュ]ウインバリアシオン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 3
+      },
+      "green": {
+        "name": "鋭気のアレグロ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "スピード",
+          "star": 3
+        },
+        {
+          "name": "中距離",
+          "star": 3
+        },
+        {
+          "name": "",
+          "star": 3
+        },
+        {
+          "name": "皐月賞",
+          "star": 3
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 3
+        },
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "JBCクラシック",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "ペースアップ",
+          "star": 1
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "急襲",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        },
+        {
+          "name": "Legendsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "マイルの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[リトモ・デッラ・テッラ]サウンズオブアース",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 3
+      },
+      "green": {
+        "name": "ヴィヴァーチェ・ヴォラーレ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "アプローチ",
+          "star": 3
+        },
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 3
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 3
+        },
+        {
+          "name": "直線一気",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "登山家",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "ごぼう抜き",
+          "star": 1
+        },
+        {
+          "name": "ごぼう抜き",
+          "star": 2
+        },
+        {
+          "name": "惜しみなし",
+          "star": 2
+        },
+        {
+          "name": "好機を捉えて",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "登竜門",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 1
+        },
+        {
+          "name": "賢さの目覚め",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "receipt_20260421031923625.png": {
+    "error": "因子グリッドを 3 領域検出できませんでした（2 件）"
+  },
+  "receipt_20260421032331541.png": {
+    "submission_id": "6de9ed61-2a7c-496c-9029-75b67366fc67",
+    "submitted_at": "2026-04-25T10:41:41.843146+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "receipt_20260421032331541.png",
+    "main": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "賢さ",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 3
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 3
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "先駆け",
+          "star": 1
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "一番乗り",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 2
+        },
+        {
+          "name": "克己心",
+          "star": 2
+        },
+        {
+          "name": "端緒",
+          "star": 2
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "陽の加護",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 1
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "一年の計は",
+          "star": 2
+        },
+        {
+          "name": "S2000",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[雅号・墨龍]カツラギエース",
+      "blue": {
+        "type": "パワー",
+        "star": 3
+      },
+      "red": {
+        "type": "マイル",
+        "star": 2
+      },
+      "green": {
+        "name": "決意一筆",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "影踏み",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 3
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "急旋回",
+          "star": 2
+        },
+        {
+          "name": "逃げのコツ○",
+          "star": 2
+        },
+        {
+          "name": "気迫を込めて",
+          "star": 1
+        },
+        {
+          "name": "イグニッション",
+          "star": 1
+        },
+        {
+          "name": "追い風に乗って",
+          "star": 2
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "時代を変える者",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 3
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 2
+        },
+        {
+          "name": "雨の日○",
+          "star": 2
+        },
+        {
+          "name": "おひとり様○",
+          "star": 2
+        },
+        {
+          "name": "二刀流",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[オニキス・ライン]メジロラモーヌ",
+      "blue": {
+        "type": "スタミナ",
+        "star": 3
+      },
+      "red": {
+        "type": "ダート",
+        "star": 3
+      },
+      "green": {
+        "name": "愛と熔けよただ熔けよ",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "阪神JF",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "東京大賞典",
+          "star": 1
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "良バ場○",
+          "star": 2
+        },
+        {
+          "name": "山娘",
+          "star": 1
+        },
+        {
+          "name": "おひとり様○",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "まっしぐら",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "一番乗り",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 2
+        },
+        {
+          "name": "陽の加護",
+          "star": 1
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 3
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 3
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "sample_oguricap.png": {
+    "submission_id": "50a80fab-8fea-4d47-baa3-439ce3e23cc2",
+    "submitted_at": "2026-04-25T10:41:53.209187+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "sample_oguricap.png",
+    "main": {
+      "character": "[スターライトビート]オグリキャップ",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "勝利の鼓動",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "SMILE",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 3
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "シンパシー",
+          "star": 2
+        },
+        {
+          "name": "闘争心",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "進出開始",
+          "star": 1
+        },
+        {
+          "name": "折れない心",
+          "star": 1
+        },
+        {
+          "name": "品行方正",
+          "star": 1
+        },
+        {
+          "name": "一歩ずつ前へ",
+          "star": 2
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 3
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[初晴・青き絢爛]テイエムオペラオー",
+      "blue": {
+        "type": "スタミナ",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "恵福バルカローレ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "アプローチ",
+          "star": 3
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "菊花賞",
+          "star": 1
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "中距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "差しコーナー○",
+          "star": 1
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "ありったけ",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 2
+        },
+        {
+          "name": "足がかり",
+          "star": 1
+        },
+        {
+          "name": "光明",
+          "star": 2
+        },
+        {
+          "name": "不動の心",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 1
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "大阪杯",
+          "star": 1
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 3
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 3
+        },
+        {
+          "name": "JBCクラシック",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 3
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "秋ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "末脚",
+          "star": 3
+        },
+        {
+          "name": "中距離直線○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "差しのコツ○",
+          "star": 2
+        },
+        {
+          "name": "シンパシー",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "闘争心",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 3
+        },
+        {
+          "name": "覇気十分",
+          "star": 1
+        },
+        {
+          "name": "光明",
+          "star": 2
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 1
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "umamusume_20260420_025146_warn.png": {
+    "submission_id": "ff460280-9216-4f94-b37d-952db82fac67",
+    "submitted_at": "2026-04-25T10:42:08.580877+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260420_025146_warn.png",
+    "main": {
+      "character": "[Lunatic Lab]アグネスタキオン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "芝",
+        "star": 3
+      },
+      "green": {
+        "name": "夏空ハレーション",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "アクセラレーション",
+          "star": 1
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "オークス",
+          "star": 1
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "高松宮記念",
+          "star": 1
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "直滑降",
+          "star": 1
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 3
+        },
+        {
+          "name": "急発進",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 3
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 1
+        },
+        {
+          "name": "Dreamsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "前のめり",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Ultra☆Marine]バンブーメモリー",
+      "blue": {
+        "type": "スタミナ",
+        "star": 1
+      },
+      "red": {
+        "type": "ダート",
+        "star": 2
+      },
+      "green": {
+        "name": "奥義・常夏バーニング！！",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 3
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "スプリントギア",
+          "star": 2
+        },
+        {
+          "name": "短距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "策士",
+          "star": 2
+        },
+        {
+          "name": "仕掛け準備",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "軽い足取り",
+          "star": 2
+        },
+        {
+          "name": "急発進",
+          "star": 1
+        },
+        {
+          "name": "無二",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 3
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "淀みなし",
+          "star": 1
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 2
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "土煙",
+          "star": 1
+        },
+        {
+          "name": "東の雄",
+          "star": 3
+        },
+        {
+          "name": "旅人",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[茶の子雪ん子]ユキノビジン",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "ダート",
+        "star": 2
+      },
+      "green": {
+        "name": "いっぱいおあげんしぇ！",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "淀みなし",
+          "star": 1
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 3
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "BC・サンタアニタパーク",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "春ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "徹底マーク○",
+          "star": 3
+        },
+        {
+          "name": "ペースアップ",
+          "star": 2
+        },
+        {
+          "name": "デルマーレース場○",
+          "star": 2
+        },
+        {
+          "name": "先頭プライド",
+          "star": 2
+        },
+        {
+          "name": "リスタート",
+          "star": 2
+        },
+        {
+          "name": "下り坂巧者",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 2
+        },
+        {
+          "name": "SMS",
+          "star": 3
+        },
+        {
+          "name": "アグレッシブ",
+          "star": 2
+        },
+        {
+          "name": "待ったなし",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "海の加護",
+          "star": 3
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180452_warn.png": {
+    "submission_id": "be2708a9-f3fc-487b-ac60-c0414fb326ee",
+    "submitted_at": "2026-04-25T10:42:23.402022+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180452_warn.png",
+    "main": {
+      "character": "[CODE：グラサージュ]ミホノブルボン",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "逃げ",
+        "star": 2
+      },
+      "green": {
+        "name": "オペレーション・Cacao",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 3
+        },
+        {
+          "name": "秋華賞",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "山娘",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 3
+        },
+        {
+          "name": "BC・デルマー",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "集中力",
+          "star": 3
+        },
+        {
+          "name": "ポジションセンス",
+          "star": 2
+        },
+        {
+          "name": "ささやき",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "先頭プライド",
+          "star": 2
+        },
+        {
+          "name": "シンパシー",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "急発進",
+          "star": 1
+        },
+        {
+          "name": "猛プッシュ",
+          "star": 2
+        },
+        {
+          "name": "押せ押せムード",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        },
+        {
+          "name": "旅人",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Lunatic Lab]アグネスタキオン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "芝",
+        "star": 3
+      },
+      "green": {
+        "name": "夏空ハレーション",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "アクセラレーション",
+          "star": 1
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "反骨精神",
+          "star": 1
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "逃げためらい",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "仕掛け準備",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 3
+        },
+        {
+          "name": "急発進",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 3
+        },
+        {
+          "name": "アオハル点火・賢",
+          "star": 2
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 3
+        },
+        {
+          "name": "Dreamsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "賢さ",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "まっしぐら",
+          "star": 2
+        },
+        {
+          "name": "まっしぐら",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Sugary Wind]ヤマニンゼファー",
+      "blue": {
+        "type": "スタミナ",
+        "star": 3
+      },
+      "red": {
+        "type": "短距離",
+        "star": 3
+      },
+      "green": {
+        "name": "Breezy Treat",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "パーフェクトクラウン",
+          "star": 1
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 1
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "根性",
+          "star": 2
+        },
+        {
+          "name": "良バ場○",
+          "star": 2
+        },
+        {
+          "name": "スプリントギア",
+          "star": 1
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 3
+        },
+        {
+          "name": "シンパシー",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 2
+        },
+        {
+          "name": "待ったなし",
+          "star": 3
+        },
+        {
+          "name": "シビれる走り",
+          "star": 2
+        },
+        {
+          "name": "押しの一手",
+          "star": 2
+        },
+        {
+          "name": "急旋回",
+          "star": 2
+        },
+        {
+          "name": "猛プッシュ",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "海の加護",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "本気で休んで、もう一度",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "春の目覚め",
+          "star": 2
+        },
+        {
+          "name": "前のめり",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180554_warn.png": {
+    "submission_id": "4a4cb7d4-b3b7-4c09-bd93-3fbcef1657d5",
+    "submitted_at": "2026-04-25T10:42:38.404058+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180554_warn.png",
+    "main": {
+      "character": "[ティアード・ペタル]ニシノフラワー",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "短距離",
+        "star": 2
+      },
+      "green": {
+        "name": "つぼみ、ほころぶ時",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "パワー",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "阪神JF",
+          "star": 3
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "良バ場○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "短距離直線○",
+          "star": 1
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "危険回避",
+          "star": 2
+        },
+        {
+          "name": "リスタート",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "精進",
+          "star": 2
+        },
+        {
+          "name": "胸の高鳴り",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 3
+        },
+        {
+          "name": "逃げるが勝ち！",
+          "star": 3
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "海の加護",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Lunatic Lab]アグネスタキオン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "芝",
+        "star": 3
+      },
+      "green": {
+        "name": "夏空ハレーション",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "オークス",
+          "star": 1
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "一匹狼",
+          "star": 1
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "根性",
+          "star": 1
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "直線巧者",
+          "star": 1
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "先行ためらい",
+          "star": 2
+        },
+        {
+          "name": "仕掛け準備",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 3
+        },
+        {
+          "name": "精進",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 3
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 1
+        },
+        {
+          "name": "Dreamsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "賢さの目覚め",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "土煙",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[溶けない砂糖菓子]アストンマーチャン",
+      "blue": {
+        "type": "パワー",
+        "star": 3
+      },
+      "red": {
+        "type": "短距離",
+        "star": 3
+      },
+      "green": {
+        "name": "ふわもこアワー",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "パワー",
+          "star": 1
+        },
+        {
+          "name": "向こう見ず",
+          "star": 1
+        },
+        {
+          "name": "オークス",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "阪神JF",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 3
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 3
+        },
+        {
+          "name": "良バ場○",
+          "star": 3
+        },
+        {
+          "name": "晴れの日○",
+          "star": 1
+        },
+        {
+          "name": "地固め",
+          "star": 2
+        },
+        {
+          "name": "自制心",
+          "star": 2
+        },
+        {
+          "name": "下り坂巧者",
+          "star": 2
+        },
+        {
+          "name": "デルマーレース場○",
+          "star": 2
+        },
+        {
+          "name": "目にも留まらず",
+          "star": 2
+        },
+        {
+          "name": "切り込み隊長",
+          "star": 2
+        },
+        {
+          "name": "抜きん出る一歩",
+          "star": 2
+        },
+        {
+          "name": "譲れぬ一歩",
+          "star": 3
+        },
+        {
+          "name": "灯を胸に",
+          "star": 2
+        },
+        {
+          "name": "気持ちを乗せて",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・根",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 2
+        },
+        {
+          "name": "陽の加護",
+          "star": 3
+        },
+        {
+          "name": "海の加護",
+          "star": 3
+        },
+        {
+          "name": "アメリカンドリーム",
+          "star": 1
+        },
+        {
+          "name": "芝の遺伝子",
+          "star": 2
+        },
+        {
+          "name": "スピードの目覚め",
+          "star": 1
+        },
+        {
+          "name": "反骨精神",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180643_warn.png": {
+    "submission_id": "845da1b8-36e9-4eee-b7be-d38e8c088993",
+    "submitted_at": "2026-04-25T10:42:50.954151+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180643_warn.png",
+    "main": {
+      "character": "[Universe-Naut]ネオユニヴァース",
+      "blue": {
+        "type": "根性",
+        "star": 1
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "アド・アストラ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "ギアシフト",
+          "star": 1
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "足がかり",
+          "star": 2
+        },
+        {
+          "name": "光明",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "春の目覚め",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 2
+        },
+        {
+          "name": "連戦連勝",
+          "star": 1
+        },
+        {
+          "name": "一年の計は",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Boho Flare]ゴールドシチー",
+      "blue": {
+        "type": "根性",
+        "star": 1
+      },
+      "red": {
+        "type": "ダート",
+        "star": 2
+      },
+      "green": {
+        "name": "Silent Sunset Gold",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "安田記念",
+          "star": 1
+        },
+        {
+          "name": "マイル",
+          "star": 1
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 1
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "ペースアップ",
+          "star": 2
+        },
+        {
+          "name": "位置取り押し上げ",
+          "star": 3
+        },
+        {
+          "name": "外差し準備",
+          "star": 2
+        },
+        {
+          "name": "中距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "ありったけ",
+          "star": 3
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "しとやかな足取り",
+          "star": 2
+        },
+        {
+          "name": "進出開始",
+          "star": 2
+        },
+        {
+          "name": "光明",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "静かな熱",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "旅人",
+          "star": 2
+        },
+        {
+          "name": "一年の計は",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[キセキの白星]オグリキャップ",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "ダート",
+        "star": 3
+      },
+      "green": {
+        "name": "聖夜のミラクルラン！",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "フェブラリーS",
+          "star": 1
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 1
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "東京レース場○",
+          "star": 1
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "秋ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "快速",
+          "star": 3
+        },
+        {
+          "name": "一歩ずつ前へ",
+          "star": 2
+        },
+        {
+          "name": "光明",
+          "star": 3
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "春の目覚め",
+          "star": 2
+        },
+        {
+          "name": "阿吽の呼吸",
+          "star": 2
+        },
+        {
+          "name": "想いの継ぎ手",
+          "star": 2
+        },
+        {
+          "name": "二刀流",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180708_warn.png": {
+    "submission_id": "7c41f7a1-450f-41ff-9c36-c138a2f231d3",
+    "submitted_at": "2026-04-25T10:43:01.397995+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180708_warn.png",
+    "main": {
+      "character": "[Engineered Victory]ビワハヤヒデ",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "勝利ヘ至ル累積",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "積極策",
+          "star": 1
+        },
+        {
+          "name": "菊花賞",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "影打",
+          "star": 2
+        },
+        {
+          "name": "本領発揮",
+          "star": 2
+        },
+        {
+          "name": "脇目も振らず",
+          "star": 3
+        },
+        {
+          "name": "バイブス上昇",
+          "star": 2
+        },
+        {
+          "name": "飛躍の予感",
+          "star": 3
+        },
+        {
+          "name": "あるがままに",
+          "star": 3
+        },
+        {
+          "name": "スピードの目覚め",
+          "star": 3
+        },
+        {
+          "name": "連戦連勝",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "想いの継ぎ手",
+          "star": 3
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[初晴・青き絢爛]テイエムオペラオー",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "先行",
+        "star": 2
+      },
+      "green": {
+        "name": "恵福バルカローレ",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "フルスロットル",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "阪神JF",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "スタミナキープ",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 3
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 1
+        },
+        {
+          "name": "影打",
+          "star": 2
+        },
+        {
+          "name": "土煙",
+          "star": 2
+        },
+        {
+          "name": "バイブス上昇",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "決定打",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 1
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 1
+        },
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "二の矢",
+          "star": 2
+        },
+        {
+          "name": "素直な一歩",
+          "star": 2
+        },
+        {
+          "name": "アグレッシブ",
+          "star": 2
+        },
+        {
+          "name": "地道に重ねて",
+          "star": 3
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 1
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 1
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180821_warn.png": {
+    "submission_id": "13d0ca14-a4f0-42c4-bd9b-0f6bc17423e8",
+    "submitted_at": "2026-04-25T10:43:14.536887+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180821_warn.png",
+    "main": {
+      "character": "[総攬]オルフェーヴル",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "追込",
+        "star": 2
+      },
+      "green": {
+        "name": "我が覇道、阻むものなし",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "まなざし",
+          "star": 1
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 1
+        },
+        {
+          "name": "直線巧者",
+          "star": 1
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "打開策",
+          "star": 1
+        },
+        {
+          "name": "込み上げる熱",
+          "star": 2
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 2
+        },
+        {
+          "name": "策士",
+          "star": 2
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 2
+        },
+        {
+          "name": "覇気十分",
+          "star": 3
+        },
+        {
+          "name": "張り切り",
+          "star": 2
+        },
+        {
+          "name": "鬼気迫って",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 3
+        },
+        {
+          "name": "芝の遺伝子",
+          "star": 2
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[オニキス・ライン]メジロラモーヌ",
+      "blue": {
+        "type": "根性",
+        "star": 1
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "愛と熔けよただ熔けよ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 3
+        },
+        {
+          "name": "直線一気",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "直線一気",
+          "star": 1
+        },
+        {
+          "name": "追込",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "地固め",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 3
+        },
+        {
+          "name": "中距離",
+          "star": 2
+        },
+        {
+          "name": "好機を捉えて",
+          "star": 3
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "急襲",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 1
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 1
+        },
+        {
+          "name": "レコメンド",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 3
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 3
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "影打",
+          "star": 2
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 2
+        },
+        {
+          "name": "惜しみなし",
+          "star": 2
+        },
+        {
+          "name": "好機を捉えて",
+          "star": 2
+        },
+        {
+          "name": "精進",
+          "star": 2
+        },
+        {
+          "name": "健脚",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "夏の目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_180913_warn.png": {
+    "submission_id": "0a6f42f7-0f9a-40dc-9abb-0938e985151e",
+    "submitted_at": "2026-04-25T10:43:28.348533+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_180913_warn.png",
+    "main": {
+      "character": "[リアライズ・ルーン]スイープトウショウ",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "追込",
+        "star": 2
+      },
+      "green": {
+        "name": "とっておきmaterialize",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "賢さ",
+          "star": 3
+        },
+        {
+          "name": "レコメンド",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "ヒートアップ",
+          "star": 2
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "仕掛け抜群",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "切れ味",
+          "star": 1
+        },
+        {
+          "name": "SMS",
+          "star": 2
+        },
+        {
+          "name": "推力十分",
+          "star": 2
+        },
+        {
+          "name": "惜しみなし",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "レコメンド",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "中距離の遺伝子",
+          "star": 1
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[夢路のよすが]ドリームジャーニー",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "『それでは、よき旅を』",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "SMS",
+          "star": 2
+        },
+        {
+          "name": "根性",
+          "star": 2
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 3
+        },
+        {
+          "name": "Legendsシナリオ",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 3
+        },
+        {
+          "name": "JBCクラシック",
+          "star": 3
+        },
+        {
+          "name": "川崎記念",
+          "star": 3
+        },
+        {
+          "name": "右回り○",
+          "star": 1
+        },
+        {
+          "name": "追込",
+          "star": 2
+        },
+        {
+          "name": "手練手管",
+          "star": 2
+        },
+        {
+          "name": "急襲",
+          "star": 2
+        },
+        {
+          "name": "躍動",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "あるがままに",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "無三",
+          "star": 2
+        },
+        {
+          "name": "レコメンド",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[ツイステッド・ライン]メジロドーベル",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "彼方、その先へ…",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 2
+        },
+        {
+          "name": "オークス",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "阪神JF",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "東京レース場○",
+          "star": 3
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 1
+        },
+        {
+          "name": "直滑降",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 2
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 2
+        },
+        {
+          "name": "推力十分",
+          "star": 2
+        },
+        {
+          "name": "切り替え上手",
+          "star": 2
+        },
+        {
+          "name": "端緒",
+          "star": 1
+        },
+        {
+          "name": "垣間見た光",
+          "star": 1
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "芝の遺伝子",
+          "star": 2
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "左回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "春の目覚め",
+          "star": 3
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 1
+        },
+        {
+          "name": "健闘",
+          "star": 2
+        },
+        {
+          "name": "叩き良化型",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181002_warn.png": {
+    "submission_id": "c616a270-1015-499f-b347-7c7057693b44",
+    "submitted_at": "2026-04-25T10:43:43.281318+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181002_warn.png",
+    "main": {
+      "character": "[Celestial Road]ナリタトップロード",
+      "blue": {
+        "type": "スタミナ",
+        "star": 2
+      },
+      "red": {
+        "type": "中距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Joy to the World",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 3
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "JBCクラシック",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 1
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "先頭プライド",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "シンパシー",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "しゃかりき",
+          "star": 3
+        },
+        {
+          "name": "一番乗り",
+          "star": 2
+        },
+        {
+          "name": "序盤巧者",
+          "star": 2
+        },
+        {
+          "name": "追い風に乗って",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 1
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 3
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[雅号・墨龍]カツラギエース",
+      "blue": {
+        "type": "パワー",
+        "star": 3
+      },
+      "red": {
+        "type": "マイル",
+        "star": 2
+      },
+      "green": {
+        "name": "決意一筆",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 3
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "先駆け",
+          "star": 2
+        },
+        {
+          "name": "危険回避",
+          "star": 2
+        },
+        {
+          "name": "逃げのコツ○",
+          "star": 2
+        },
+        {
+          "name": "気迫を込めて",
+          "star": 1
+        },
+        {
+          "name": "イグニッション",
+          "star": 1
+        },
+        {
+          "name": "追い風に乗って",
+          "star": 2
+        },
+        {
+          "name": "躍動",
+          "star": 3
+        },
+        {
+          "name": "活路を拓く！",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 3
+        },
+        {
+          "name": "時代を変える者",
+          "star": 2
+        },
+        {
+          "name": "無人島シナリオ",
+          "star": 3
+        },
+        {
+          "name": "ダートの遺伝子",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "お嬢様",
+          "star": 2
+        },
+        {
+          "name": "二刀流",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[エル☆Número 1]エルコンドルパサー",
+      "blue": {
+        "type": "パワー",
+        "star": 1
+      },
+      "red": {
+        "type": "ダート",
+        "star": 3
+      },
+      "green": {
+        "name": "プランチャ☆ガナドール",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "アメリカンドリーム",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 1
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "シンパシー",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・心＋",
+          "star": 2
+        },
+        {
+          "name": "山娘",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "比類なき",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "アオハル点火・根",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "Legendsシナリオ",
+          "star": 3
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "春の目覚め",
+          "star": 2
+        },
+        {
+          "name": "冬の目覚め",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181112_warn.png": {
+    "submission_id": "81d19fdc-02ce-41ff-83e8-637b201b4884",
+    "submitted_at": "2026-04-25T10:43:57.091639+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181112_warn.png",
+    "main": {
+      "character": "[マーガレット・ラッテ]メジロライアン",
+      "blue": {
+        "type": "根性",
+        "star": 3
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "あなたに捧げるフリーポア",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "弾ける足取り",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・心＋",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "ヒートアップ",
+          "star": 2
+        },
+        {
+          "name": "善後策",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 3
+        },
+        {
+          "name": "末脚",
+          "star": 3
+        },
+        {
+          "name": "中距離直線○",
+          "star": 1
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "しとやかな足取り",
+          "star": 2
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "闘争心",
+          "star": 2
+        },
+        {
+          "name": "レコメンド",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 1
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 1
+        },
+        {
+          "name": "夏の目覚め",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 1
+        },
+        {
+          "name": "夏の目覚め",
+          "star": 2
+        },
+        {
+          "name": "東の雄",
+          "star": 2
+        },
+        {
+          "name": "西の雄",
+          "star": 2
+        },
+        {
+          "name": "ノーブレーキ",
+          "star": 2
+        },
+        {
+          "name": "健闘",
+          "star": 1
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[フォーミュラオブルージュ]マルゼンスキー",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "マイル",
+        "star": 2
+      },
+      "green": {
+        "name": "紅焔ギア/LP1211-M",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "フェブラリーS",
+          "star": 2
+        },
+        {
+          "name": "早仕掛け",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・生活リズム",
+          "star": 3
+        },
+        {
+          "name": "菊花賞",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "中距離直線○",
+          "star": 2
+        },
+        {
+          "name": "中距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "食らいつき",
+          "star": 3
+        },
+        {
+          "name": "中盤巧者",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 1
+        },
+        {
+          "name": "雪の日○",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・GUTS",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[エル☆Número 1]エルコンドルパサー",
+      "blue": {
+        "type": "パワー",
+        "star": 1
+      },
+      "red": {
+        "type": "ダート",
+        "star": 2
+      },
+      "green": {
+        "name": "プランチャ☆ガナドール",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "アメリカンドリーム",
+          "star": 3
+        },
+        {
+          "name": "大阪杯",
+          "star": 1
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 1
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "東京大賞典",
+          "star": 2
+        },
+        {
+          "name": "マイル",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 1
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "直滑降",
+          "star": 1
+        },
+        {
+          "name": "シンパシー",
+          "star": 1
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "下り坂巧者",
+          "star": 2
+        },
+        {
+          "name": "確かな足取り",
+          "star": 2
+        },
+        {
+          "name": "長距離",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 1
+        },
+        {
+          "name": "中盤巧者",
+          "star": 1
+        },
+        {
+          "name": "素直な一歩",
+          "star": 1
+        },
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 1
+        },
+        {
+          "name": "アグレッシブ",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "右回りの目覚め",
+          "star": 2
+        },
+        {
+          "name": "秋の目覚め",
+          "star": 3
+        },
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 2
+        },
+        {
+          "name": "健闘",
+          "star": 1
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181445_warn.png": {
+    "submission_id": "00af8f1e-ef80-4b16-b03e-715d00f5a2ac",
+    "submitted_at": "2026-04-25T10:44:05.901589+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181445_warn.png",
+    "main": {
+      "character": "[ドラマティック・チュチュ]ウインバリアシオン",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "鋭気のアレグロ",
+        "star": 1
+      },
+      "skills": [
+        {
+          "name": "スピード",
+          "star": 2
+        },
+        {
+          "name": "スピード",
+          "star": 2
+        },
+        {
+          "name": "勇気の一歩",
+          "star": 1
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 2
+        },
+        {
+          "name": "追込",
+          "star": 1
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 3
+        },
+        {
+          "name": "影踏み",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・GUTS",
+          "star": 3
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[Maverick]ナリタブライアン",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "Shadow Break",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "推力十分",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        },
+        {
+          "name": "パワー",
+          "star": 1
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[夢路のよすが]ドリームジャーニー",
+      "blue": {
+        "type": "パワー",
+        "star": 2
+      },
+      "red": {
+        "type": "追込",
+        "star": 2
+      },
+      "green": {
+        "name": "『それでは、よき旅を』",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 1
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "ヒートアップ",
+          "star": 3
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181631_warn.png": {
+    "submission_id": "667b6e44-0bb8-48c2-a33d-d8bf730aa2d0",
+    "submitted_at": "2026-04-25T10:44:19.188547+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181631_warn.png",
+    "main": {
+      "character": "[ロード・オブ・エンペラー]シンボリルドルフ",
+      "blue": {
+        "type": "スタミナ",
+        "star": 1
+      },
+      "red": {
+        "type": "芝",
+        "star": 2
+      },
+      "green": {
+        "name": "汝、皇帝の神威を見よ",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 3
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "川崎レース場○",
+          "star": 1
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "追込直線○",
+          "star": 3
+        },
+        {
+          "name": "長距離コーナー○",
+          "star": 2
+        },
+        {
+          "name": "追込",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 1
+        },
+        {
+          "name": "盛り返し",
+          "star": 1
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "折れない心",
+          "star": 3
+        },
+        {
+          "name": "たぎる血潮",
+          "star": 1
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・SPD",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・WIT",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[日之本一の総大将]スペシャルウィーク",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "差し",
+        "star": 3
+      },
+      "green": {
+        "name": "威風堂々、夢錦！",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 3
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 3
+        },
+        {
+          "name": "位置取り押し上げ",
+          "star": 1
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "差し",
+          "star": 1
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "がむしゃら",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "折れない心",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "夢の再生方法",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Onyx Soldier]シンボリクリスエス",
+      "blue": {
+        "type": "根性",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 3
+      },
+      "green": {
+        "name": "Mission: Triumph",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "ごぼう抜き",
+          "star": 1
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 1
+        },
+        {
+          "name": "ホープフルS",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "差し直線○",
+          "star": 2
+        },
+        {
+          "name": "川崎記念",
+          "star": 3
+        },
+        {
+          "name": "パーフェクトクラウン",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "胸の高鳴り",
+          "star": 1
+        },
+        {
+          "name": "進出開始",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "端緒",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181731_warn.png": {
+    "submission_id": "72757b35-2c63-49d8-9065-5bf3e719d197",
+    "submitted_at": "2026-04-25T10:44:31.757523+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181731_warn.png",
+    "main": {
+      "character": "[Natural Brilliance]サトノダイヤモンド",
+      "blue": {
+        "type": "根性",
+        "star": 2
+      },
+      "red": {
+        "type": "長距離",
+        "star": 2
+      },
+      "green": {
+        "name": "晦冥を照らせ永遠の耀き",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "無三",
+          "star": 3
+        },
+        {
+          "name": "安田記念",
+          "star": 2
+        },
+        {
+          "name": "マイルCS",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "がむしゃら",
+          "star": 2
+        },
+        {
+          "name": "キレる脚",
+          "star": 2
+        },
+        {
+          "name": "プレッシャー",
+          "star": 2
+        },
+        {
+          "name": "一歩から",
+          "star": 2
+        },
+        {
+          "name": "折れない心",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "二の矢",
+          "star": 3
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[日之本一の総大将]スペシャルウィーク",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "差し",
+        "star": 3
+      },
+      "green": {
+        "name": "威風堂々、夢錦！",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "皐月賞",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "賢さ",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 1
+        },
+        {
+          "name": "天皇賞（秋）",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 3
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 3
+        },
+        {
+          "name": "位置取り押し上げ",
+          "star": 1
+        },
+        {
+          "name": "追い上げ",
+          "star": 2
+        },
+        {
+          "name": "差し直線○",
+          "star": 1
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 2
+        },
+        {
+          "name": "がむしゃら",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "折れない心",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "夢の再生方法",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・GUTS",
+          "star": 1
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Onyx Soldier]シンボリクリスエス",
+      "blue": {
+        "type": "根性",
+        "star": 3
+      },
+      "red": {
+        "type": "長距離",
+        "star": 3
+      },
+      "green": {
+        "name": "Mission: Triumph",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "SMS",
+          "star": 1
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 1
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 1
+        },
+        {
+          "name": "ホープフルS",
+          "star": 1
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "非根幹距離○",
+          "star": 2
+        },
+        {
+          "name": "冬ウマ娘○",
+          "star": 1
+        },
+        {
+          "name": "末脚",
+          "star": 2
+        },
+        {
+          "name": "内弁慶",
+          "star": 2
+        },
+        {
+          "name": "差し直線○",
+          "star": 2
+        },
+        {
+          "name": "登山家",
+          "star": 3
+        },
+        {
+          "name": "ウマ好み",
+          "star": 3
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "粘り腰",
+          "star": 1
+        },
+        {
+          "name": "進出開始",
+          "star": 2
+        },
+        {
+          "name": "むきだしの情熱",
+          "star": 2
+        },
+        {
+          "name": "ごぼう抜き",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・心",
+          "star": 2
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 3
+        },
+        {
+          "name": "メカウマ娘シナリオ・POW",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_181852_warn.png": {
+    "submission_id": "7a261ff5-1dbc-45aa-947f-94b35582cddf",
+    "submitted_at": "2026-04-25T10:44:43.720535+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_181852_warn.png",
+    "main": {
+      "character": "[Σ Experiment]アグネスタキオン",
+      "blue": {
+        "type": "パワー",
+        "star": 3
+      },
+      "red": {
+        "type": "芝",
+        "star": 3
+      },
+      "green": {
+        "name": "超光速微粒子の可能性",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "無三",
+          "star": 3
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "先行直線○",
+          "star": 2
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "イグニッション",
+          "star": 2
+        },
+        {
+          "name": "飛躍の予感",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・海外洋芝適性",
+          "star": 2
+        },
+        {
+          "name": "決定打",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "バーニングソウル",
+          "star": 1
+        },
+        {
+          "name": "URAシナリオ",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[エレガンス・ライン]メジロマックイーン",
+      "blue": {
+        "type": "スタミナ",
+        "star": 3
+      },
+      "red": {
+        "type": "先行",
+        "star": 3
+      },
+      "green": {
+        "name": "貴顕の使命を果たすべく",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "L'Arc・ロンシャン適性",
+          "star": 1
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        },
+        {
+          "name": "日本ダービー",
+          "star": 2
+        },
+        {
+          "name": "ジャパンC",
+          "star": 1
+        },
+        {
+          "name": "有馬記念",
+          "star": 1
+        },
+        {
+          "name": "東京レース場○",
+          "star": 2
+        },
+        {
+          "name": "伏兵○",
+          "star": 1
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "SMS",
+          "star": 2
+        },
+        {
+          "name": "先行コーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "ありったけ",
+          "star": 2
+        },
+        {
+          "name": "食らいつき",
+          "star": 1
+        },
+        {
+          "name": "イグニッション",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 2
+        },
+        {
+          "name": "揺るがぬ信念",
+          "star": 3
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "追込コーナー○",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "U.A.F.シナリオ・スフィア",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[初晴・青き絢爛]テイエムオペラオー",
+      "blue": {
+        "type": "スピード",
+        "star": 3
+      },
+      "red": {
+        "type": "中距離",
+        "star": 3
+      },
+      "green": {
+        "name": "恵福バルカローレ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "破天荒",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "盛り返し",
+          "star": 2
+        },
+        {
+          "name": "逃げコーナー○",
+          "star": 2
+        },
+        {
+          "name": "SMS",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 1
+        },
+        {
+          "name": "中距離直線○",
+          "star": 2
+        },
+        {
+          "name": "SMS",
+          "star": 3
+        },
+        {
+          "name": "差しコーナー○",
+          "star": 2
+        },
+        {
+          "name": "十万バリキ",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 1
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "尻尾上がり",
+          "star": 2
+        },
+        {
+          "name": "フルスロットル",
+          "star": 1
+        },
+        {
+          "name": "込み上げる熱",
+          "star": 2
+        },
+        {
+          "name": "JDダービー",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 3
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "U.A.F.シナリオ・スフィア",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_182056_warn.png": {
+    "submission_id": "d8d0c584-2c7f-4d61-bc4e-ced8183e80c7",
+    "submitted_at": "2026-04-25T10:44:56.297328+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_182056_warn.png",
+    "main": {
+      "character": "[超特急！フルカラー特殊PP]アグネスデジタル",
+      "blue": {
+        "type": "スピード",
+        "star": 1
+      },
+      "red": {
+        "type": "マイル",
+        "star": 2
+      },
+      "green": {
+        "name": "尊み☆ﾗｽﾄｽﾊﾟ—(ﾟ∀ﾟ)—ﾄ!",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "粘り腰",
+          "star": 3
+        },
+        {
+          "name": "フェブラリーS",
+          "star": 3
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "向こう見ず",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "チャンピオンズC",
+          "star": 2
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 3
+        },
+        {
+          "name": "徹底マーク○",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "マイルコーナー○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 1
+        },
+        {
+          "name": "真っ向勝負",
+          "star": 1
+        },
+        {
+          "name": "急浮上",
+          "star": 3
+        },
+        {
+          "name": "踏み込み上手",
+          "star": 2
+        },
+        {
+          "name": "皐月賞",
+          "star": 1
+        },
+        {
+          "name": "勝利に向かって",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 3
+        },
+        {
+          "name": "豊食祭シナリオ・じゃがいも",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[フォーミュラオブルージュ]マルゼンスキー",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "マイル",
+        "star": 2
+      },
+      "green": {
+        "name": "紅焔ギア/LP1211-M",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "ジャパンC",
+          "star": 2
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "夏ウマ娘○",
+          "star": 2
+        },
+        {
+          "name": "直滑降",
+          "star": 2
+        },
+        {
+          "name": "垂れウマ回避",
+          "star": 2
+        },
+        {
+          "name": "マイルコーナー○",
+          "star": 1
+        },
+        {
+          "name": "アクセラレーション",
+          "star": 1
+        },
+        {
+          "name": "スピードイーター",
+          "star": 2
+        },
+        {
+          "name": "先行直線○",
+          "star": 2
+        },
+        {
+          "name": "先行のコツ○",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 1
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "心弾んで",
+          "star": 1
+        },
+        {
+          "name": "風切り",
+          "star": 3
+        },
+        {
+          "name": "ダート",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・賢",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 3
+        },
+        {
+          "name": "豊食祭シナリオ・にんじん",
+          "star": 2
+        },
+        {
+          "name": "豊食祭シナリオ・にんにく",
+          "star": 1
+        },
+        {
+          "name": "豊食祭シナリオ・唐辛子",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[初晴・青き絢爛]テイエムオペラオー",
+      "blue": {
+        "type": "スタミナ",
+        "star": 3
+      },
+      "red": {
+        "type": "マイル",
+        "star": 3
+      },
+      "green": {
+        "name": "恵福バルカローレ",
+        "star": 3
+      },
+      "skills": [
+        {
+          "name": "フルスロットル",
+          "star": 1
+        },
+        {
+          "name": "大阪杯",
+          "star": 2
+        },
+        {
+          "name": "天皇賞（春）",
+          "star": 2
+        },
+        {
+          "name": "NHKマイルC",
+          "star": 3
+        },
+        {
+          "name": "ヴィクトリアマイル",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 2
+        },
+        {
+          "name": "右回り○",
+          "star": 2
+        },
+        {
+          "name": "左回り○",
+          "star": 2
+        },
+        {
+          "name": "根幹距離○",
+          "star": 1
+        },
+        {
+          "name": "直線巧者",
+          "star": 2
+        },
+        {
+          "name": "直線回復",
+          "star": 1
+        },
+        {
+          "name": "位置取り押し上げ",
+          "star": 2
+        },
+        {
+          "name": "コーナー巧者○",
+          "star": 2
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "遊びはおしまいっ！",
+          "star": 2
+        },
+        {
+          "name": "影打",
+          "star": 1
+        },
+        {
+          "name": "会心の一歩",
+          "star": 2
+        },
+        {
+          "name": "品行方正",
+          "star": 1
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・力",
+          "star": 2
+        },
+        {
+          "name": "U.A.F.シナリオ・スフィア",
+          "star": 2
+        }
+      ]
+    }
+  },
+  "umamusume_20260424_182143_warn.png": {
+    "submission_id": "72873fb5-f16f-4567-b129-7b86089706dc",
+    "submitted_at": "2026-04-25T10:45:04.651512+00:00",
+    "submitter_id": "batch_recognize",
+    "image_filename": "umamusume_20260424_182143_warn.png",
+    "main": {
+      "character": "[真実一路]カルストンライトオ",
+      "blue": {
+        "type": "賢さ",
+        "star": 2
+      },
+      "red": {
+        "type": "短距離",
+        "star": 2
+      },
+      "green": {
+        "name": "無二無三なる一条の路",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "伏兵○",
+          "star": 3
+        },
+        {
+          "name": "スプリンターズS",
+          "star": 2
+        },
+        {
+          "name": "集中力",
+          "star": 2
+        },
+        {
+          "name": "スプリントギア",
+          "star": 2
+        },
+        {
+          "name": "短距離直線○",
+          "star": 2
+        },
+        {
+          "name": "いつまでも健やかに",
+          "star": 2
+        },
+        {
+          "name": "軽い足取り",
+          "star": 2
+        },
+        {
+          "name": "無二",
+          "star": 2
+        },
+        {
+          "name": "豊食祭シナリオ・唐辛子",
+          "star": 2
+        }
+      ]
+    },
+    "parent1": {
+      "character": "[The Proud Road]ナリタトップロード",
+      "blue": {
+        "type": "スピード",
+        "star": 2
+      },
+      "red": {
+        "type": "芝",
+        "star": 3
+      },
+      "green": {
+        "name": "Road to Glory",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "早仕掛け",
+          "star": 3
+        },
+        {
+          "name": "朝日杯FS",
+          "star": 2
+        },
+        {
+          "name": "有馬記念",
+          "star": 2
+        },
+        {
+          "name": "ホープフルS",
+          "star": 2
+        },
+        {
+          "name": "直線巧者",
+          "star": 1
+        },
+        {
+          "name": "仕掛け準備",
+          "star": 3
+        },
+        {
+          "name": "後方釘付",
+          "star": 2
+        },
+        {
+          "name": "逃げ",
+          "star": 1
+        },
+        {
+          "name": "ウマ好み",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 1
+        },
+        {
+          "name": "快速",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "海の加護",
+          "star": 3
+        },
+        {
+          "name": "豊食祭シナリオ・いちご",
+          "star": 2
+        }
+      ]
+    },
+    "parent2": {
+      "character": "[Prism]ケイエスミラクル",
+      "blue": {
+        "type": "根性",
+        "star": 1
+      },
+      "red": {
+        "type": "短距離",
+        "star": 2
+      },
+      "green": {
+        "name": "幸せの青い光",
+        "star": 2
+      },
+      "skills": [
+        {
+          "name": "パーフェクトクラウン",
+          "star": 2
+        },
+        {
+          "name": "高松宮記念",
+          "star": 2
+        },
+        {
+          "name": "宝塚記念",
+          "star": 2
+        },
+        {
+          "name": "エリザベス女王杯",
+          "star": 3
+        },
+        {
+          "name": "スプリントギア",
+          "star": 2
+        },
+        {
+          "name": "善後策",
+          "star": 1
+        },
+        {
+          "name": "先頭プライド",
+          "star": 2
+        },
+        {
+          "name": "逃げのコツ○",
+          "star": 2
+        },
+        {
+          "name": "地固め",
+          "star": 1
+        },
+        {
+          "name": "スリップストリーム",
+          "star": 2
+        },
+        {
+          "name": "ひたむき前進",
+          "star": 2
+        },
+        {
+          "name": "瞬発力",
+          "star": 2
+        },
+        {
+          "name": "レースの真髄・体",
+          "star": 2
+        },
+        {
+          "name": "L'Arc・強心臓",
+          "star": 1
+        }
+      ]
+    }
+  }
+}
